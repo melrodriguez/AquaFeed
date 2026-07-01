@@ -11,7 +11,7 @@ import SwiftUI
 struct AquaFeedApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            GameView()
         }
     }
 }
