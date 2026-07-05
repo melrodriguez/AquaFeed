@@ -8,6 +8,6 @@
 enum FishState {
     case wander
     case pause
-    case eat
+    case seekFood
 }
 

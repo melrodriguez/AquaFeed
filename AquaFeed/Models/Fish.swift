@@ -10,9 +10,8 @@ import SwiftUI
 
 class Fish: SKSpriteNode {
     var state: FishState = .wander
-    var swimSpeed: CGFloat { 100 }
-    var hunger: Int = 20
-    
+    var swimSpeed: CGFloat = 200
+
     var sceneWidth: CGFloat {
         self.scene?.size.width ?? 0
     }
@@ -36,6 +35,7 @@ class Fish: SKSpriteNode {
     var centerY: CGFloat {
         sceneHeight / 2
     }
+    
     
     func startState() {
         enterWanderState()
@@ -112,16 +112,7 @@ class Fish: SKSpriteNode {
                            y: rect.minY)
         }
     }
-    
-    func update() {
-        hunger -= 1
-        hunger = max(hunger , 0)
-        
-        if hunger < 10 {
-            self.color = .red
-        }
-    }
-    
+
     func getDistance(from: CGPoint, to: CGPoint) -> CGFloat {
         let dx = to.x - from.x
         let dy = to.y - from.y
