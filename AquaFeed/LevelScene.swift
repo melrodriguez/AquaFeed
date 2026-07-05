@@ -17,11 +17,15 @@ struct PhysicsCategory {
     static let money: UInt32 = 0x1 << 3
 }
 
+let despawnTime = 2.0
+
 class LevelScene: SKScene, SKPhysicsContactDelegate {
     var background = SKSpriteNode(imageNamed: "aquarium")
-    var levelLabel = SKLabelNode(fontNamed: "Chalkduster")
+    var walletLabel = SKLabelNode(fontNamed: "Chalkduster")
     var boundary = SKSpriteNode(color: .red,
                                 size: CGSize(width: 1376, height: 750))
+    var buyFishButton = SKSpriteNode(color: .green,
+                                     size: CGSize(width: 200, height: 100))
     var ground = SKNode()
     
     var maxWidth: CGFloat {
@@ -50,11 +54,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var hungerTimer: Timer?
     var guppyList: [Guppy] = []
     var foodList: [SKSpriteNode] = []
+    var wallet: Int = 200
+    var foodLimit: Int = 1
 
     override func didMove(to view: SKView) {
         setupBackground()
         setupGround()
-        setupLevelLabel()
+        setupUI()
         startLevel()
         
         // enable collision detection
@@ -69,13 +75,32 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         for node in nodes(at: location) {
             if let money = node as? Money {
+                wallet += money.type.value
+                updateWalletLabel()
                 money.removeFromParent()
+                return
+            }
+            
+            if let buyFishButton = node as? SKSpriteNode,
+               buyFishButton.name == "buyFish"
+            {
+                if wallet >= 100 {
+                    wallet -= 100
+                    spawnGuppy()
+                    updateWalletLabel()
+                }
                 return
             }
         }
         
         guard location.y > groundY else { return }
-        spawnFood(at: location)
+        if foodList.count < foodLimit {
+            if wallet >= 5 {
+                wallet -= 5
+                spawnFood(at: location)
+                updateWalletLabel()
+            }
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -84,6 +109,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         for guppy in guppyList {
             guppy.frameUpdate()
         }
+        
+        guppyList.removeAll { $0.isDead }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -105,7 +132,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             if food.action(forKey: "decay") == nil {
                 let decay = SKAction.sequence([
-                    .wait(forDuration: 5.0),
+                    .wait(forDuration: despawnTime),
                     .run { [weak self, weak food] in
                         guard let self = self, let food else { return }
                         self.foodList.removeAll { $0 == food }
@@ -166,16 +193,23 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             if money.action(forKey: "disappear") == nil {
                 let decay = SKAction.sequence([
-                    .wait(forDuration: 5.0),
+                    .wait(forDuration: despawnTime),
                     .removeFromParent()
                 ])
                 
                 money.run(decay, withKey: "disappear")
             }
-
-            
         }
         
+    }
+    
+    func setupUI() {
+        walletLabel.position = CGPoint(x: size.width - 150, y: size.height - 80)
+        walletLabel.fontSize = 30
+        walletLabel.fontColor = .white
+        addChild(walletLabel)
+        updateWalletLabel()
+        addBuyFishButton()
     }
     
     func setupBackground() {
@@ -276,14 +310,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         addChild(money)
     }
     
-    func setupLevelLabel() {
-        levelLabel.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        levelLabel.fontSize = 100
-        levelLabel.fontColor = .white
-        levelLabel.text = "Level 1"
-        addChild(levelLabel)
-    }
-    
     func findNearestFood(to fish: Fish) -> SKSpriteNode? {
         let detectionRange: CGFloat = 500
         
@@ -296,6 +322,25 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 fish.getDistance(from: fish.position, to: $1.position)
 
             }
+    }
+    
+    func updateWalletLabel() {
+        walletLabel.text = "Money: \(wallet)"
+    }
+    
+    func addBuyFishButton() {
+        buyFishButton.position = CGPoint(x: 100, y: size.height - 100)
+        buyFishButton.name = "buyFish"
+        let label = SKLabelNode(fontNamed: "Chalkduster")
+        label.text = "Buy Fish: $100"
+        
+        label.fontSize = 15
+        label.fontColor = .black
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        
+        buyFishButton.addChild(label)
+        addChild(buyFishButton)
     }
     
     func startLevel() {

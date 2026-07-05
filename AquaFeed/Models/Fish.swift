@@ -89,27 +89,47 @@ class Fish: SKSpriteNode {
     
     func getWanderLocation() -> CGPoint {
         let edgeInset: CGFloat = 50
+        let maxVerticalChange: CGFloat = 80
         
         let rect = CGRect(
             x: edgeInset,
-            y: (sceneHeight - maxY) / 2,
+            y: (sceneHeight - maxY) / 2 + 30,
             width: sceneWidth - edgeInset * 2,
-            height: maxY
+            height: maxY - 50
         )
         
         switch Int.random(in: 0..<4) {
         case 0:
-            return CGPoint(x: rect.minX,
-                           y: CGFloat.random(in: rect.minY...rect.maxY))
+            return CGPoint(
+                x: rect.minX,
+                y: max(rect.minY,
+                       min(rect.maxY,
+                           position.y + CGFloat.random(in: -maxVerticalChange...maxVerticalChange))
+                        )
+            )
         case 1:
-            return CGPoint(x: rect.maxX,
-                           y: CGFloat.random(in: rect.minY...rect.maxY))
+            return CGPoint(
+                x: rect.maxX,
+                y: max(rect.minY,
+                       min(rect.maxY,
+                           position.y + CGFloat.random(in: -maxVerticalChange...maxVerticalChange))
+                        )
+            )
         case 2:
-            return CGPoint(x: CGFloat.random(in: rect.minX...rect.maxX),
-                           y: rect.maxY)
+            return CGPoint(
+                x: CGFloat.random(in: rect.minX...rect.maxX),
+                y: max(rect.minY,
+                       min(rect.maxY,
+                           position.y + CGFloat.random(in: -maxVerticalChange...maxVerticalChange))
+                        )
+            )
         default:
             return CGPoint(x: CGFloat.random(in: rect.minX...rect.maxX),
-                           y: rect.minY)
+                           y: max(rect.minY,
+                                  min(rect.maxY,
+                                      position.y + CGFloat.random(in: -maxVerticalChange...maxVerticalChange))
+                                   )
+            )
         }
     }
 

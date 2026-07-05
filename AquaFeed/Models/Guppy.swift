@@ -36,6 +36,7 @@ class Guppy: Fish {
     var timeTillSpawnCoin: Int = 8
     var targetFood: SKSpriteNode?
     var growthPoints: Int = 2
+    var isDead = false
 
     func update() {
         hunger -= 1
@@ -43,13 +44,14 @@ class Guppy: Fish {
         
         color = hunger < 15 ? .red : .orange
         
+        if hunger == 0 {
+            die()
+        }
+        
         if guppySize == .medium || guppySize == .large {
-            print("DECREMENT SPAWN")
             timeTillSpawnCoin -= 1
-            print("\(timeTillSpawnCoin)")
             
             if timeTillSpawnCoin < 1 {
-                print("SPAWN COIN?")
                 guard let levelScene = scene as? LevelScene else { return }
                 
                 if guppySize == .medium {
@@ -118,6 +120,11 @@ class Guppy: Fish {
         case .large:
             break
         }
+    }
+    
+    func die() {
+        isDead = true
+        removeFromParent()
     }
     
 }
