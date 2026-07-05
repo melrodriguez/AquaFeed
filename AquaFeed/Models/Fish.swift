@@ -11,6 +11,7 @@ import SwiftUI
 class Fish: SKSpriteNode {
     var state: FishState = .wander
     var swimSpeed: CGFloat { 100 }
+    var hunger: Int = 20
     
     var sceneWidth: CGFloat {
         self.scene?.size.width ?? 0
@@ -35,7 +36,7 @@ class Fish: SKSpriteNode {
     var centerY: CGFloat {
         sceneHeight / 2
     }
-
+    
     func startState() {
         enterWanderState()
     }
@@ -87,43 +88,37 @@ class Fish: SKSpriteNode {
     }
     
     func getWanderLocation() -> CGPoint {
-        let minHeight =  (sceneHeight - maxY) / 2
-        let maxHeight = ((sceneHeight - maxY) / 2) + maxY
-        let wanderWidth = sceneWidth - 100
-        let wanderHeight = maxHeight - minHeight
+        let edgeInset: CGFloat = 50
         
-        let halfWidth = wanderWidth / 2
-        let halfHeight = wanderHeight / 2
+        let rect = CGRect(
+            x: edgeInset,
+            y: (sceneHeight - maxY) / 2,
+            width: sceneWidth - edgeInset * 2,
+            height: maxY
+        )
         
-        let edge = Int.random(in: 1...4)
-        
-        switch edge {
-        case 1: // Left
-            return CGPoint(
-                x: centerX - halfWidth,
-                y: CGFloat.random(in: (centerY - halfHeight)...(centerY + halfHeight))
-            )
-
-        case 2: // Right
-            return CGPoint(
-                x: centerX + halfWidth,
-                y: CGFloat.random(in: (centerY - halfHeight)...(centerY + halfHeight))
-            )
-
-        case 3: // Top
-            return CGPoint(
-                x: CGFloat.random(in: (centerX - halfWidth)...(centerX + halfWidth)),
-                y: centerY + halfHeight
-            )
-
-        case 4: // Bottom
-            return CGPoint(
-                x: CGFloat.random(in: (centerX - halfWidth)...(centerX + halfWidth)),
-                y: centerY - halfHeight
-            )
-
+        switch Int.random(in: 0..<4) {
+        case 0:
+            return CGPoint(x: rect.minX,
+                           y: CGFloat.random(in: rect.minY...rect.maxY))
+        case 1:
+            return CGPoint(x: rect.maxX,
+                           y: CGFloat.random(in: rect.minY...rect.maxY))
+        case 2:
+            return CGPoint(x: CGFloat.random(in: rect.minX...rect.maxX),
+                           y: rect.maxY)
         default:
-            return CGPoint(x: centerX, y: centerY)
+            return CGPoint(x: CGFloat.random(in: rect.minX...rect.maxX),
+                           y: rect.minY)
+        }
+    }
+    
+    func update() {
+        hunger -= 1
+        hunger = max(hunger , 0)
+        
+        if hunger < 10 {
+            self.color = .red
         }
     }
     
