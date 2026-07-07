@@ -15,6 +15,7 @@ class GameState {
     var foodList: [SKSpriteNode]
     var wallet: Int
     var foodLimit: Int
+    var foodQuality: FoodQuality
     var eggCount: Int
     
     init() {
@@ -22,8 +23,9 @@ class GameState {
         gameOver = false
         guppyList = []
         foodList = []
-        wallet = 200
+        wallet = 1000
         foodLimit = 1
+        foodQuality = FoodQuality.level1
         eggCount = 0
     }
     
@@ -53,5 +55,13 @@ class GameState {
     
     func increaseEggCount() {
         eggCount += 1
+    }
+    
+    func upgradeFood() {
+        if foodQuality == FoodQuality.level1 {
+            foodQuality = FoodQuality.level2
+        } else if foodQuality == FoodQuality.level2 {
+            foodQuality = FoodQuality.level3
+        }
     }
 }

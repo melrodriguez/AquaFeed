@@ -47,7 +47,7 @@ class EndScene: SKScene {
     func addGameEndedText() {
         gameEndedLabel.fontColor = .white
         gameEndedLabel.position = CGPoint(x: size.width / 2, y: size.width / 2)
-        gameEndedLabel.fontSize = 100
+        gameEndedLabel.fontSize = 50
         gameEndedLabel.verticalAlignmentMode = .center
         gameEndedLabel.horizontalAlignmentMode = .center
         gameEndedLabel.text = "Yay, you completed the tutorial"

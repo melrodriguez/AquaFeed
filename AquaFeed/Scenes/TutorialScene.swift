@@ -63,7 +63,7 @@ class TutorialScene: LevelScene {
         }
     }
     
-    override func fishFed(_ food: SKSpriteNode, _ guppy: Guppy) {
+    override func fishFed(_ food: Food, _ guppy: Guppy) {
         super.fishFed(food, guppy)
         
         if guppy.guppySize == .medium && !firstFishGrow {
@@ -78,6 +78,8 @@ class TutorialScene: LevelScene {
         eggCountLabel.isHidden = true
         buyFishButton.isHidden = true
         buyEggButton.isHidden = true
+        upgradeFoodQuality.isHidden = true
+        increaseFoodLimit.isHidden = true
     }
     
     func addTutorialLabel() {

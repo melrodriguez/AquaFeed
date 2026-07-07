@@ -8,6 +8,8 @@
 struct Levels {
     
     static let level1 = LevelConfig(
+        aquarium: 1,
+        level: 1,
         isTutorial: true,
         eggPrice: 150
     )

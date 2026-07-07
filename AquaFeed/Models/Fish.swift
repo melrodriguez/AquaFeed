@@ -93,10 +93,17 @@ class Fish: SKSpriteNode {
         
         let rect = CGRect(
             x: edgeInset,
-            y: (sceneHeight - maxY) / 2 + 30,
+            y: (sceneHeight - maxY) - 150,
             width: sceneWidth - edgeInset * 2,
-            height: maxY - 50
+            height: maxY - 70
         )
+
+        // Keeping this to test bounds further
+//        guard let levelScene = scene as? LevelScene else { return .zero }
+//        let debugRect = SKShapeNode(rect: rect)
+//        debugRect.fillColor = .red
+//        
+//        levelScene.addChild(debugRect)
         
         switch Int.random(in: 0..<4) {
         case 0:
