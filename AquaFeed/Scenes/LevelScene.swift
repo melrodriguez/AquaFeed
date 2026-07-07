@@ -17,15 +17,23 @@ struct PhysicsCategory {
     static let money: UInt32 = 0x1 << 3
 }
 
-let despawnTime = 2.0
+let despawnTime = 1.5
+let guppyPrice = 100
 
 class LevelScene: SKScene, SKPhysicsContactDelegate {
+    var config: LevelConfig!
+    
     var background = SKSpriteNode(imageNamed: "aquarium")
     var walletLabel = SKLabelNode(fontNamed: "Chalkduster")
+    var eggCountLabel = SKLabelNode(fontNamed: "Chalkduster")
     var boundary = SKSpriteNode(color: .red,
                                 size: CGSize(width: 1376, height: 750))
     var buyFishButton = SKSpriteNode(color: .green,
                                      size: CGSize(width: 200, height: 100))
+    
+    var buyEggButton = SKSpriteNode(color: .green,
+                                    size: CGSize(width: 300, height: 100))
+    
     var ground = SKNode()
     
     var maxWidth: CGFloat {
@@ -49,13 +57,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var pauseDuration = 1.0;
+    var state = GameState()
     
-    var gameOver = false
     var hungerTimer: Timer?
-    var guppyList: [Guppy] = []
-    var foodList: [SKSpriteNode] = []
-    var wallet: Int = 200
-    var foodLimit: Int = 1
 
     override func didMove(to view: SKView) {
         setupBackground()
@@ -75,7 +79,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         for node in nodes(at: location) {
             if let money = node as? Money {
-                wallet += money.type.value
+                state.updateWallet(amount: money.type.value)
                 updateWalletLabel()
                 money.removeFromParent()
                 return
@@ -84,19 +88,35 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             if let buyFishButton = node as? SKSpriteNode,
                buyFishButton.name == "buyFish"
             {
-                if wallet >= 100 {
-                    wallet -= 100
+                if buyFishButton.isHidden { return }
+                
+                if state.wallet >= guppyPrice {
+                    state.updateWallet(amount: -guppyPrice)
                     spawnGuppy()
                     updateWalletLabel()
+                }
+                return
+            }
+            
+            if let buyEggButton = node as? SKSpriteNode,
+               buyEggButton.name == "buyEgg"
+            {
+                if buyEggButton.isHidden { return }
+                
+                if state.wallet >= config.eggPrice {
+                    state.updateWallet(amount: -config.eggPrice)
+                    updateWalletLabel()
+                    state.increaseEggCount()
+                    updateEggCountLabel()
                 }
                 return
             }
         }
         
         guard location.y > groundY else { return }
-        if foodList.count < foodLimit {
-            if wallet >= 5 {
-                wallet -= 5
+        if state.foodList.count < state.foodLimit {
+            if state.wallet >= 5 {
+                state.updateWallet(amount: -5)
                 spawnFood(at: location)
                 updateWalletLabel()
             }
@@ -106,11 +126,11 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval) {
         super.update(currentTime)
         
-        for guppy in guppyList {
+        for guppy in state.guppyList {
             guppy.frameUpdate()
         }
         
-        guppyList.removeAll { $0.isDead }
+        state.removeDeadGuppy()
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -130,18 +150,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             guard let food else { return }
             
-            if food.action(forKey: "decay") == nil {
-                let decay = SKAction.sequence([
-                    .wait(forDuration: despawnTime),
-                    .run { [weak self, weak food] in
-                        guard let self = self, let food else { return }
-                        self.foodList.removeAll { $0 == food }
-                    },
-                    .removeFromParent()
-                ])
-                
-                food.run(decay, withKey: "decay")
-            }
+            despawnItem(food, isFood: true)
         }
         
         if categories == PhysicsCategory.food | PhysicsCategory.guppy {
@@ -162,19 +171,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard let food else { return }
             guard let guppy else { return }
             
-            guppy.hunger += 8
-            guppy.updateGrowthPoint(numPoints: 1)
-            if guppy.hunger > 15 {
-                guppy.color = .orange
-            }
-            guppy.targetFood = nil
-            
-            food .removeAllActions()
-            food.removeFromParent()
-            
-            foodList.removeAll { $0 == food }
-            
-            guppy.enterWanderState()
+            fishFed(food, guppy)
         }
         
         if categories == PhysicsCategory.money | PhysicsCategory.ground {
@@ -191,16 +188,56 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             guard let money else { return }
             
-            if money.action(forKey: "disappear") == nil {
-                let decay = SKAction.sequence([
-                    .wait(forDuration: despawnTime),
+            despawnItem(money, isFood: false)
+        }
+    }
+    
+    func fishFed(_ food: SKSpriteNode, _ guppy: Guppy) {
+        guppy.hunger += 8
+        guppy.updateGrowthPoint(numPoints: 1)
+        if guppy.hunger > 15 {
+            guppy.color = .orange
+        }
+        guppy.targetFood = nil
+        
+        food.removeAllActions()
+        food.removeFromParent()
+        
+        state.removeFood(food)
+        
+        guppy.enterWanderState()
+    }
+    
+    func despawnItem(_ item: SKSpriteNode, isFood: Bool) {
+        let despawn: SKAction
+        
+        if item.action(forKey: "despawn") == nil {
+            let waitAction = SKAction.wait(forDuration: despawnTime)
+            
+            if isFood {
+                let runAction = SKAction.run { [weak self, weak item] in
+                    guard let self, let item else { return }
+                    self.state.removeFood(item)
+                }
+                
+                despawn = SKAction.sequence([
+                    waitAction,
+                    runAction,
                     .removeFromParent()
                 ])
-                
-                money.run(decay, withKey: "disappear")
+            } else {
+                despawn = SKAction.sequence([
+                    waitAction,
+                    .removeFromParent()
+                ])
             }
+            
+            item.run(despawn, withKey: "despawn")
         }
-        
+    }
+    
+    func setupConfig(_ config: LevelConfig) {
+        self.config = config
     }
     
     func setupUI() {
@@ -209,7 +246,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         walletLabel.fontColor = .white
         addChild(walletLabel)
         updateWalletLabel()
+        
+        eggCountLabel.position = CGPoint(x: size.width - 150, y: size.height - 120)
+        eggCountLabel.fontSize = 30
+        eggCountLabel.fontColor = .white
+        addChild(eggCountLabel)
+        updateEggCountLabel()
+
         addBuyFishButton()
+        addBuyEggButton()
     }
     
     func setupBackground() {
@@ -264,7 +309,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         food.physicsBody?.contactTestBitMask = PhysicsCategory.ground
         food.physicsBody?.collisionBitMask = PhysicsCategory.ground
         
-        foodList.append(food)
+        state.addFood(food)
         addChild(food)
     }
     
@@ -286,7 +331,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         guppy.physicsBody?.contactTestBitMask = PhysicsCategory.food
         guppy.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        guppyList.append(guppy)
+        state.addGuppy(guppy)
         addChild(guppy)
         guppy.startState()
         
@@ -313,7 +358,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func findNearestFood(to fish: Fish) -> SKSpriteNode? {
         let detectionRange: CGFloat = 500
         
-        return foodList
+        return state.foodList
             .filter {
                 fish.getDistance(from: fish.position, to: $0.position) <= detectionRange
             }
@@ -325,7 +370,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func updateWalletLabel() {
-        walletLabel.text = "Money: \(wallet)"
+        walletLabel.text = "Money: $\(state.wallet)"
     }
     
     func addBuyFishButton() {
@@ -343,6 +388,25 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         addChild(buyFishButton)
     }
     
+    func addBuyEggButton() {
+        buyEggButton.position = CGPoint(x: size.width - 450, y: size.height - 100)
+        buyEggButton.name = "buyEgg"
+        let label = SKLabelNode(fontNamed: "Chalkduster")
+        label.text = "Buy Egg: $\(config.eggPrice)"
+        
+        label.fontSize = 20
+        label.fontColor = .black
+        label.verticalAlignmentMode = .center
+        label.horizontalAlignmentMode = .center
+        
+        buyEggButton.addChild(label)
+        addChild(buyEggButton)
+    }
+    
+    func updateEggCountLabel() {
+        eggCountLabel.text = "Egg Pieces: \(state.eggCount)"
+    }
+    
     func startLevel() {
         spawnGuppy()
         spawnGuppy()
@@ -352,7 +416,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         hungerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
             
-            for guppy in self.guppyList {
+            for guppy in self.state.guppyList {
                 guppy.update()
             }
         }

@@ -48,9 +48,14 @@ class TitleScene: SKScene {
         if node.name == "playButton" || node.parent?.name == "playButton" {
             guard let view = self.view else { return }
             
-            let levelScene = LevelScene(size: size)
+//            let levelScene = LevelScene(size: size)
+//            levelScene.setupConfig(Levels.level1)
+//            let transition = SKTransition.fade(with: .black, duration: 1)
+//            view.presentScene(levelScene, transition: transition)
+            let tutorialScene = TutorialScene(size: size)
+            tutorialScene.setupConfig(Levels.level1)
             let transition = SKTransition.fade(with: .black, duration: 1)
-            view.presentScene(levelScene, transition: transition)
+            view.presentScene(tutorialScene, transition: transition)
         }
     }
 }
