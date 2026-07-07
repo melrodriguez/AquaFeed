@@ -8,8 +8,6 @@
 import SwiftUI
 import SpriteKit
 
-let eggLimit = 3
-
 class GameState {
     var pauseDuration: Float
     var gameOver: Bool
@@ -42,7 +40,6 @@ class GameState {
     }
     
     func removeFood(_ food: SKSpriteNode) {
-        print("remove food")
         foodList.removeAll { $0 == food }
     }
     

@@ -19,6 +19,7 @@ struct PhysicsCategory {
 
 let despawnTime = 1.5
 let guppyPrice = 100
+let eggLimit = 3
 
 class LevelScene: SKScene, SKPhysicsContactDelegate {
     var config: LevelConfig!
@@ -131,6 +132,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         }
         
         state.removeDeadGuppy()
+        
+        // Temporary Game Over Scene
+        if state.eggCount == eggLimit {
+            guard let view = self.view else { return }
+            
+            let endLevelScene = EndScene(size: size)
+            let transition = SKTransition.fade(with: .black, duration: 1)
+            view.presentScene(endLevelScene, transition: transition)
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
