@@ -73,6 +73,11 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var hungerTimer: Timer?
 
     override func didMove(to view: SKView) {
+        // This is just for testing purposes
+        if config.level == 100 {
+            state.wallet = 4000
+        }
+        
         setupBackground()
         setupGround()
         setupMenu()

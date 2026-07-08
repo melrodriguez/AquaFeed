@@ -67,7 +67,7 @@ class TitleScene: SKScene {
             guard let view = self.view else { return }
             
             let levelScene = LevelScene(size: size)
-            levelScene.setupConfig(Levels.level1)
+            levelScene.setupConfig(Levels.levelTest)
             let transition = SKTransition.fade(with: .black, duration: 1)
             view.presentScene(levelScene, transition: transition)
         }

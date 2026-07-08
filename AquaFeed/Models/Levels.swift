@@ -12,4 +12,10 @@ struct Levels {
         level: 1,
         eggPrice: 150
     )
+    
+    static let levelTest = LevelConfig(
+        aquarium: 1,
+        level: 100,
+        eggPrice: 150
+    )
 }
