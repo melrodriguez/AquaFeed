@@ -437,12 +437,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         // TODO: REPLACE WITH VARIABLES HERE
         let guppy = Guppy(color: .orange, size: CGSize(width: 30, height: 30))
         let minY =  (size.height - maxHeight) / 2
-        let maxY = ((size.height - maxHeight) / 2) + maxHeight
+        let maxY = size.height - (size.height * (0.20)) - (guppy.size.width / 2)
         
         let randomX = CGFloat.random(in: 50...size.width - 50)
         let randomY = CGFloat.random(in: minY...maxY)
         
-        guppy.position = CGPoint(x: randomX, y: randomY)
+        guppy.position = CGPoint(x: randomX, y: minY)
         
         guppy.physicsBody = SKPhysicsBody(circleOfRadius: guppy.size.width / 2)
         guppy.physicsBody?.affectedByGravity = false
@@ -461,7 +461,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         let piranha = Piranha(color: .black, size: CGSize(width: 50, height: 50))
         
         let minY =  (size.height - maxHeight) / 2
-        let maxY = ((size.height - maxHeight) / 2) + maxHeight
+        let maxY = size.height - (size.height * (0.20)) - (piranha.size.width / 2)
         
         let randomX = CGFloat.random(in: 50...size.width - 50)
         let randomY = CGFloat.random(in: minY...maxY)

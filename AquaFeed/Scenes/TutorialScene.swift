@@ -14,7 +14,7 @@ class TutorialScene: LevelScene {
     var tutorialStep: Int = 0
     var shownEggMessage: Bool = false
     var tutorialLabel = SKLabelNode(fontNamed: "Chalkduster")
-    var showTextDuration = 2.0
+    var showTextDuration = 2.5
     
     override func didMove(to view: SKView) {
         super.didMove(to: view)
