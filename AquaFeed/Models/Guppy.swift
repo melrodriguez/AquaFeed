@@ -32,6 +32,7 @@ class Guppy: Fish {
             swimSpeed = guppySize.swimSpeed
         }
     }
+    
     var hunger: Int = 20
     var timeTillSpawnCoin: Int = 8
     var targetFood: SKSpriteNode?

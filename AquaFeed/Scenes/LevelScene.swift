@@ -15,10 +15,12 @@ struct PhysicsCategory {
     static let guppy: UInt32 = 0x1 << 1
     static let ground: UInt32 = 0x1 << 2
     static let money: UInt32 = 0x1 << 3
+    static let piranha: UInt32 = 0x1 << 4
 }
 
 let despawnTime = 1.5
 let guppyPrice = 100
+let pirahnaPrice = 1000
 let upgradeFoodQualityCost = 200
 let increaseFoodLimitCost = 300
 let eggLimit = 3
@@ -41,6 +43,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                                           size: CGSize(width: 170, height: 170))
     var increaseFoodLimit = SKSpriteNode(color: .blue,
                                          size: CGSize(width: 170, height: 170))
+    var buyPiranhaButton = SKSpriteNode(color: .blue,
+                                        size: CGSize(width: 170, height: 170))
     var ground = SKNode()
     
     var maxWidth: CGFloat {
@@ -146,6 +150,18 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
             
+            if let buyPiranhaButton = node as? SKSpriteNode,
+               buyPiranhaButton.name == "buyPiranha"
+            {
+                if buyPiranhaButton.isHidden { return }
+                
+                if state.wallet >= pirahnaPrice {
+                    state.updateWallet(amount: -pirahnaPrice)
+                    updateWalletLabel()
+                    spawnPiranha()
+                }
+            }
+            
             if let menu = node as? SKSpriteNode,
                menu.name == "menu"
             { return }
@@ -168,15 +184,20 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guppy.frameUpdate()
         }
         
+        for piranha in state.piranhaList {
+            piranha.frameUpdate()
+        }
+        
         state.removeDeadGuppy()
+        state.removeDeadPiranha()
         
         // Temporary Game Over Scene
         if state.eggCount == eggLimit {
             guard let view = self.view else { return }
             
-            let endLevelScene = EndScene(size: size)
+            let titleScene = TitleScene(size: size)
             let transition = SKTransition.fade(with: .black, duration: 1)
-            view.presentScene(endLevelScene, transition: transition)
+            view.presentScene(titleScene, transition: transition)
         }
     }
     
@@ -236,6 +257,36 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard let money else { return }
             
             despawnItem(money, isFood: false)
+        }
+        
+        if categories == PhysicsCategory.piranha | PhysicsCategory.guppy {
+            var guppy: Guppy?
+            var piranha: Piranha?
+            
+            let firstBody = contact.bodyA.categoryBitMask
+            let secondBody = contact.bodyB.categoryBitMask
+            
+            if firstBody == PhysicsCategory.piranha {
+                piranha = contact.bodyA.node as? Piranha
+                guppy = contact.bodyB.node as? Guppy
+            } else if secondBody == PhysicsCategory.piranha {
+                piranha = contact.bodyB.node as? Piranha
+                guppy = contact.bodyA.node as? Guppy
+            }
+            
+            guard let piranha else { return }
+            guard let guppy else { return }
+            
+            if piranha.state == FishState.seekFood {
+                piranha.hunger += 60
+                if piranha.hunger > 30 {
+                    piranha.color = .black
+                }
+                piranha.targetFood = nil
+                
+                guppy.die()
+                piranha.enterWanderState()
+            }
         }
     }
     
@@ -310,11 +361,11 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         levelLabel.zPosition = 1
         addChild(levelLabel)
         
-
         addBuyFishButton()
         addBuyEggButton()
         addUpgradeFoodButton()
         addIncreaseFoodButton()
+        addBuyPiranhaButton()
     }
     
     func setupMenu() {
@@ -406,6 +457,29 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    func spawnPiranha() {
+        let piranha = Piranha(color: .black, size: CGSize(width: 50, height: 50))
+        
+        let minY =  (size.height - maxHeight) / 2
+        let maxY = ((size.height - maxHeight) / 2) + maxHeight
+        
+        let randomX = CGFloat.random(in: 50...size.width - 50)
+        let randomY = CGFloat.random(in: minY...maxY)
+        
+        piranha.position = CGPoint(x: randomX, y: randomY)
+        
+        piranha.physicsBody = SKPhysicsBody(circleOfRadius: piranha.size.width / 2)
+        piranha.physicsBody?.affectedByGravity = false
+        piranha.physicsBody?.isDynamic = true
+        piranha.physicsBody?.categoryBitMask = PhysicsCategory.piranha
+        piranha.physicsBody?.contactTestBitMask = PhysicsCategory.guppy
+        piranha.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+        state.addPiranha(piranha)
+        addChild(piranha)
+        piranha.startState()
+    }
+
     func spawnMoney(at position: CGPoint, type: MoneyType) {
         let money = Money(type: type)
     
@@ -434,6 +508,22 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             .min {
                 fish.getDistance(from: fish.position, to: $0.position) <
                 fish.getDistance(from: fish.position, to: $1.position)
+
+            }
+    }
+    
+    func findNearestBabyGuppy(to piranha: Piranha) -> Guppy? {
+        let detectionRange: CGFloat = 500
+        
+        return state.guppyList
+            .filter { $0.guppySize == .small}
+            .filter {
+                piranha.getDistance(from: piranha.position, to: $0.position) <=
+                    detectionRange
+            }
+            .min {
+                piranha.getDistance(from: piranha.position, to: $0.position) <
+                piranha.getDistance(from: piranha.position, to: $1.position)
 
             }
     }
@@ -469,6 +559,33 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         addChild(buyFishButton)
     }
     
+    func addBuyPiranhaButton() {
+        buyPiranhaButton.position = CGPoint(x: size.width - 725, y: size.height - 80)
+        buyPiranhaButton.name = "buyPiranha"
+        buyPiranhaButton.zPosition = 1
+        let label1 = SKLabelNode(fontNamed: "Menlo-Bold")
+        label1.text = "Buy Piranha"
+        label1.zPosition = 1
+        label1.fontSize = 25
+        label1.fontColor = .white
+        label1.verticalAlignmentMode = .center
+        label1.horizontalAlignmentMode = .center
+        label1.position = CGPoint(x: 0, y: 15)
+        
+        let label2 = SKLabelNode(fontNamed: "Menlo-Bold")
+        label2.text = "$1000"
+        label2.zPosition = 1
+        label2.fontSize = 25
+        label2.fontColor = .white
+        label2.verticalAlignmentMode = .center
+        label2.horizontalAlignmentMode = .center
+        label2.position = CGPoint(x: 0, y: -15)
+
+        buyPiranhaButton.addChild(label1)
+        buyPiranhaButton.addChild(label2)
+        addChild(buyPiranhaButton)
+    }
+
     func addBuyEggButton() {
         buyEggButton.position = CGPoint(x: size.width - 350, y: size.height - 80)
         buyEggButton.name = "buyEgg"
@@ -570,6 +687,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             for guppy in self.state.guppyList {
                 guppy.update()
+            }
+            
+            for piranha in self.state.piranhaList {
+                piranha.update()
             }
         }
                                          

@@ -12,6 +12,7 @@ class GameState {
     var pauseDuration: Float
     var gameOver: Bool
     var guppyList: [Guppy]
+    var piranhaList: [Piranha]
     var foodList: [SKSpriteNode]
     var wallet: Int
     var foodLimit: Int
@@ -22,6 +23,7 @@ class GameState {
         pauseDuration = 1.0
         gameOver = false
         guppyList = []
+        piranhaList = []
         foodList = []
         wallet = 1000
         foodLimit = 1
@@ -35,6 +37,14 @@ class GameState {
     
     func removeDeadGuppy() {
         guppyList.removeAll { $0.isDead }
+    }
+    
+    func addPiranha(_ Piranha: Piranha) {
+        piranhaList.append(Piranha)
+    }
+    
+    func removeDeadPiranha() {
+        piranhaList.removeAll { $0.isDead }
     }
     
     func addFood(_ food: SKSpriteNode) {

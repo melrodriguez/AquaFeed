@@ -80,6 +80,7 @@ class TutorialScene: LevelScene {
         buyEggButton.isHidden = true
         upgradeFoodQuality.isHidden = true
         increaseFoodLimit.isHidden = true
+        buyPiranhaButton.isHidden = true
     }
     
     func addTutorialLabel() {

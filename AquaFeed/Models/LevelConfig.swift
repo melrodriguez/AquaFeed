@@ -8,9 +8,7 @@
 struct LevelConfig {
     let aquarium: Int
     let level: Int
-    let isTutorial: Bool
     //let spawnRate: Double
-    //let purchasbles: [Purchasable]
     //let enemies: [EnemyType]
     let eggPrice: Int
     //let prize: Pet
