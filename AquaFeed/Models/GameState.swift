@@ -25,7 +25,7 @@ class GameState {
         guppyList = []
         piranhaList = []
         foodList = []
-        wallet = 1000
+        wallet = 200
         foodLimit = 1
         foodQuality = FoodQuality.level1
         eggCount = 0
