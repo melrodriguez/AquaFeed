@@ -30,7 +30,7 @@ class TutorialScene: LevelScene {
             run(SKAction.sequence([
                 SKAction.run {
                     self.showText("Your fish has grown! Good Work!")
-                    self.buyFishButton.isHidden = false
+                    self.buyGuppyButton.isHidden = false
                     self.hasShownMessage = true
                 },
                 SKAction.wait(forDuration: showTextDuration),
@@ -76,11 +76,11 @@ class TutorialScene: LevelScene {
         
         // Make these hidden for the tutorial
         eggCountLabel.isHidden = true
-        buyFishButton.isHidden = true
+        buyGuppyButton.isHidden = true
         buyEggButton.isHidden = true
         upgradeFoodQuality.isHidden = true
         increaseFoodLimit.isHidden = true
-        buyPiranhaButton.isHidden = true
+        buyCarnivoreButton.isHidden = true
     }
     
     func addTutorialLabel() {
