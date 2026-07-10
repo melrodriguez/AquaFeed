@@ -1,14 +1,14 @@
 //
-//  Piranha.swift
+//  Carnivore.swift
 //  AquaFeed
 //
-//  Created by Jacob Dains on 7/7/26.
+//  Created by Rodriguez, Melody A on 7/10/26.
 //
 
 import SwiftUI
 import SpriteKit
 
-class Piranha: Fish {
+class Carnivore: Fish {
     var hunger: Int = 60
     var timeTillSpawnCoin: Int = 15
     var targetFood: Guppy?

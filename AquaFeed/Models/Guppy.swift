@@ -35,7 +35,7 @@ class Guppy: Fish {
     
     var hunger: Int = 20
     var timeTillSpawnCoin: Int = 8
-    var targetFood: SKSpriteNode?
+    var targetFood: Food?
     var growthPoints: Int = 2
     var isDead = false
 
