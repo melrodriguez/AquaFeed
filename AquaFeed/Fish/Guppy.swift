@@ -18,42 +18,9 @@ enum GuppySize {
         case.small:
             return 200
         case.medium:
-            return 180
-        case.large:
             return 170
-        }
-    }
-    
-    var swimFoodSpeed: CGFloat {
-        switch self {
-        case.small:
-            return 210
-        case.medium:
-            return 190
         case.large:
-            return 180
-        }
-    }
-
-    var swimAnimationSpeed: CGFloat {
-        switch self {
-        case.small:
-            return 0.10
-        case.medium:
-            return 0.08
-        case.large:
-            return 0.06
-        }
-    }
-    
-    var swimFoodAnimationSpeed: CGFloat {
-        switch self {
-        case.small:
-            return 0.12
-        case.medium:
-            return 0.10
-        case.large:
-            return 0.08
+            return 140
         }
     }
 }
@@ -65,74 +32,78 @@ class Guppy: Fish {
             swimSpeed = guppySize.swimSpeed
         }
     }
-    
-    var hunger: Int = 100
-    var timeTillSpawnCoin: Int = 8
-    var targetFood: Food?
+//    
+//    var hunger: Int = 100
+//    var timeTillSpawnCoin: Int = 8
+//    var targetFood: Food?
     var growthPoints: Int = 2
-    var isDead = false
-
-    func update() {
-        hunger -= 1
-        hunger = max(hunger , 0)
-        
-        color = hunger < 15 ? .red : .orange
-        
-        if hunger == 0 {
-            die()
-        }
-        
-        if guppySize == .medium || guppySize == .large {
-            timeTillSpawnCoin -= 1
-            
-            if timeTillSpawnCoin < 1 {
-                guard let levelScene = scene as? LevelScene else { return }
-                
-                if guppySize == .medium {
-                    levelScene.spawnMoney(at: self.position, type: .silver)
-                } else {
-                    levelScene.spawnMoney(at: self.position, type: .gold)
-                }
-                
-                timeTillSpawnCoin = 8
-            }
-            
-        }
-    }
-    
-    func frameUpdate() {
-        if hunger < 15,
-           targetFood == nil,
-           let levelScene = scene as? LevelScene,
-           let food = levelScene.findNearestFood(to: self) {
-            targetFood = food
-            state = .seekFood
-        }
-        
-        if state == .seekFood, let food = targetFood {
-            if food.parent == nil {
-                targetFood = nil
-                removeAllActions()
-                enterWanderState()
-                return
-            }
-            
-            removeAllActions()
-            
-            let dx = food.position.x - position.x
-            let dy = food.position.y - position.y
-            
-            let distance = sqrt(dx * dx + dy * dy)
-            
-            if distance > 1 {
-                let step = swimSpeed / 60.0
-                
-                position.x += dx / distance * step
-                position.y += dy / distance * step
-            }
-        }
-    }
-    
+//    var isDead = false
+//
+//    func update() {
+//        hunger -= 1
+//        hunger = max(hunger , 0)
+//        
+//        color = hunger < 15 ? .red : .orange
+//        
+//        if hunger == 0 {
+//            die()
+//        }
+//        
+//        if guppySize == .medium || guppySize == .large {
+//            timeTillSpawnCoin -= 1
+//            
+//            if timeTillSpawnCoin < 1 {
+//                guard let levelScene = scene as? LevelScene else { return }
+//                
+//                if guppySize == .medium {
+//                    levelScene.spawnMoney(at: self.position, type: .silver)
+//                } else {
+//                    levelScene.spawnMoney(at: self.position, type: .gold)
+//                }
+//                
+//                timeTillSpawnCoin = 8
+//            }
+//            
+//        }
+//    }
+//    
+//    func frameUpdate() {
+//        if hunger < 15,
+//           targetFood == nil,
+//           let levelScene = scene as? LevelScene,
+//           let food = levelScene.findNearestFood(to: self) {
+//            targetFood = food
+//            state = .seekFood
+//        }
+//        
+//        if state == .seekFood, let food = targetFood {
+//            if food.parent == nil {
+//                targetFood = nil
+//                removeAllActions()
+//                enterWanderState()
+//                return
+//            }
+//            
+//            removeAllActions()
+//            
+//            let dx = food.position.x - position.x
+//            let dy = food.position.y - position.y
+//            
+//            let distance = sqrt(dx * dx + dy * dy)
+//            
+//            if distance > 1 {
+//                let step = guppySize.swimFoodSpeed / 60.0
+//                
+//                position.x += dx / distance * step
+//                position.y += dy / distance * step
+//            }
+//        }
+//    }
+//    
+//    func startWander() {
+//        super.enterWanderState(swimSpeed: guppySize.sw)
+//    }
+//
     func updateGrowthPoint(numPoints: Int) {
         growthPoints += numPoints
         
@@ -151,26 +122,46 @@ class Guppy: Fish {
         case .medium:
             guppySize = .large
             size = CGSize(width: 60, height: 60)
+            moneyDrop = MoneyType.silver
         case .large:
+            moneyDrop = MoneyType.gold
             break
         }
     }
     
-    override func startSwimming() {
-        let swim = SKAction.repeatForever(
-            .animate(
-                with: swimTextures,
-                timePerFrame: guppySize.swimAnimationSpeed
-            )
-        )
-        
-        run(swim, withKey: "animation")
+    override func handleDropCoin() {
+        if guppySize == .small { return }
+        super.handleDropCoin()
     }
     
-    func
-    func die() {
-        isDead = true
-        removeFromParent()
-    }
+//
+//    override func startSwimming() {
+//        let swim = SKAction.repeatForever(
+//            .animate(
+//                with: swimTextures,
+//                timePerFrame: guppySize.swimAnimationSpeed
+//            )
+//        )
+//        
+//        run(swim, withKey: "animation")
+//    }
+//    
+//    func swimToFood() {
+//        removeAction(forKey: "animation")
+//        
+//        let swim = SKAction.repeatForever(
+//            .animate(
+//                with: swimTextures,
+//                timePerFrame: guppySize.swimFoodAnimationSpeed
+//            )
+//        )
+//        
+//        run(swim, withKey: "animation")
+//    }
+//    
+//    func die() {
+//        isDead = true
+//        removeFromParent()
+//    }
     
 }

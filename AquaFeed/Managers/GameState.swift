@@ -12,7 +12,7 @@ class GameState {
     var pauseDuration: Float
     var gameOver: Bool
     var guppyList: [Guppy]
-    var carnivoreList: [Carnivore]
+    //var carnivoreList: [Carnivore]
     var foodList: [Food]
     var wallet: Int
     var foodLimit: Int
@@ -23,7 +23,7 @@ class GameState {
         pauseDuration = 1.0
         gameOver = false
         guppyList = []
-        carnivoreList = []
+//        carnivoreList = []
         foodList = []
         wallet = 200
         foodLimit = 1
@@ -39,13 +39,13 @@ class GameState {
         guppyList.removeAll { $0.isDead }
     }
     
-    func addCarnivore(_ Carnivore: Carnivore) {
-        carnivoreList.append(Carnivore)
-    }
+//    func addCarnivore(_ Carnivore: Carnivore) {
+//        carnivoreList.append(Carnivore)
+//    }
     
-    func removeDeadCarnivore() {
-        carnivoreList.removeAll { $0.isDead }
-    }
+//    func removeDeadCarnivore() {
+//        carnivoreList.removeAll { $0.isDead }
+//    }
     
     func addFood(_ food: Food) {
         foodList.append(food)

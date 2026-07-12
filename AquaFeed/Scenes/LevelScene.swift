@@ -195,12 +195,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guppy.frameUpdate()
         }
         
-        for carnivore in state.carnivoreList {
-            carnivore.frameUpdate()
-        }
+//        for carnivore in state.carnivoreList {
+//            carnivore.frameUpdate()
+//        }
         
         state.removeDeadGuppy()
-        state.removeDeadCarnivore()
+//        state.removeDeadCarnivore()
         
         // Temporary Game Over Scene
         if state.eggCount == eggLimit {
@@ -231,24 +231,25 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard let money: Money = node(ofType: Money.self, from: contact) else { return }
             
             despawnItem(money, isFood: false)
-        } else if categories == PhysicsCategory.carnivore | PhysicsCategory.guppy {
-            guard
-                let guppy: Guppy = node(ofType: Guppy.self, from: contact),
-                let carnivore: Carnivore = node(ofType: Carnivore.self, from: contact)
-            else { return
-            }
-            
-            if carnivore.state == FishState.seekFood {
-                carnivore.hunger += 60
-                if carnivore.hunger > 30 {
-                    carnivore.color = .black
-                }
-                carnivore.targetFood = nil
-                
-                guppy.die()
-                carnivore.enterWanderState()
-            }
         }
+//        else if categories == PhysicsCategory.carnivore | PhysicsCategory.guppy {
+//            guard
+//                let guppy: Guppy = node(ofType: Guppy.self, from: contact),
+//                let carnivore: Carnivore = node(ofType: Carnivore.self, from: contact)
+//            else { return
+//            }
+//            
+//            if carnivore.state == FishState.seekFood {
+//                carnivore.hunger += 60
+//                if carnivore.hunger > 30 {
+//                    carnivore.color = .black
+//                }
+//                carnivore.targetFood = nil
+//                
+//                guppy.die()
+//                carnivore.enterWanderState()
+//            }
+//        }
     }
     
     func node<T>(ofType type: T.Type,
@@ -388,7 +389,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             swimTextures: FishTextures.guppySmallSwim,
             turnTextures: FishTextures.guppySmallTurn,
             eatTextures: FishTextures.guppySmallEat,
-            scale: 2.0
+            scale: 2.0,
+            swimSpeed: GuppySize.small.swimSpeed,
+            hunger: 30,
+            isStarvingTime: 20,
+            spawnCoinTime: 8,
+            type: "guppy"
         )
         
         guppy.position = randomSpawnPoint(for: guppy.size)
@@ -401,7 +407,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         state.addGuppy(guppy)
         addChild(guppy)
-        guppy.startSwimming()
         guppy.startState()
     }
     
@@ -462,20 +467,20 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             }
     }
     
-    func findNearestBabyGuppy(to carnivore: Carnivore) -> Guppy? {
-        let detectionRange: CGFloat = 500
-        
-        return state.guppyList
-            .filter { $0.guppySize == .small}
-            .filter {
-                carnivore.getDistance(from: carnivore.position, to: $0.position) <=
-                    detectionRange
-            }
-            .min {
-                carnivore.getDistance(from: carnivore.position, to: $0.position) <
-                carnivore.getDistance(from: carnivore.position, to: $1.position)
-            }
-    }
+//    func findNearestBabyGuppy(to carnivore: Carnivore) -> Guppy? {
+//        let detectionRange: CGFloat = 500
+//        
+//        return state.guppyList
+//            .filter { $0.guppySize == .small}
+//            .filter {
+//                carnivore.getDistance(from: carnivore.position, to: $0.position) <=
+//                    detectionRange
+//            }
+//            .min {
+//                carnivore.getDistance(from: carnivore.position, to: $0.position) <
+//                carnivore.getDistance(from: carnivore.position, to: $1.position)
+//            }
+//    }
     
     func updateWalletLabel() {
         walletLabel.text = "$\(state.wallet)"
@@ -638,9 +643,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 guppy.update()
             }
             
-            for carnivore in self.state.carnivoreList {
-                carnivore.update()
-            }
+//            for carnivore in self.state.carnivoreList {
+//                carnivore.update()
+//            }
         }
                                          
     }

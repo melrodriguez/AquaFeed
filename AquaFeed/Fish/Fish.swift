@@ -8,13 +8,24 @@
 import SpriteKit
 import SwiftUI
 
+let swimAnimationSpeedMultiplier: CGFloat = 0.0004
+let swimFoodSpeedMultiplier: CGFloat = 1.05
+
 class Fish: SKSpriteNode {
     var state: FishState = .wander
-    var swimSpeed: CGFloat = 200
+    var swimSpeed: CGFloat
     var swimTextures: [SKTexture]
     var turnTextures: [SKTexture]
     var eatTexutures: [SKTexture]
     var facingLeft: Bool = true
+    var hunger: Int
+    var isStarvingTime: Int
+    var spawnCoinTime: Int
+    var timeTillSpawnCoin: Int
+    var isDead: Bool = false
+    var moneyDrop: MoneyType?
+    var targetFood: SKSpriteNode?
+    var type: String
 
     var sceneWidth: CGFloat {
         self.scene?.size.width ?? 0
@@ -40,10 +51,31 @@ class Fish: SKSpriteNode {
         sceneHeight / 2
     }
     
-    init(swimTextures: [SKTexture], turnTextures: [SKTexture], eatTextures: [SKTexture], scale: CGFloat) {
+    init(
+        swimTextures: [SKTexture],
+        turnTextures: [SKTexture],
+        eatTextures: [SKTexture],
+        scale: CGFloat,
+        swimSpeed: CGFloat,
+        hunger: Int,
+        isStarvingTime: Int,
+        spawnCoinTime: Int,
+        moneyDrop: MoneyType? = nil,
+        type: String
+    ) {
         self.swimTextures = swimTextures
         self.turnTextures = turnTextures
         self.eatTexutures = eatTextures
+        self.swimSpeed = swimSpeed
+        self.hunger = hunger
+        self.isStarvingTime = isStarvingTime
+        self.spawnCoinTime = spawnCoinTime
+        self.timeTillSpawnCoin = spawnCoinTime
+        self.type = type
+        
+        if moneyDrop != nil {
+            self.moneyDrop = moneyDrop
+        }
         
         super.init(
             texture: swimTextures.first,
@@ -65,7 +97,7 @@ class Fish: SKSpriteNode {
         let swim = SKAction.repeatForever(
             .animate(
                 with: swimTextures,
-                timePerFrame: 0.12
+                timePerFrame: swimSpeed * swimAnimationSpeedMultiplier
             )
         )
         
@@ -90,12 +122,12 @@ class Fish: SKSpriteNode {
     }
     
     func startState() {
+        startSwimming()
         enterWanderState()
     }
     
     func enterPauseState() {
         state = .pause
-        
         
         let up = SKAction.moveBy(x: 0, y: 5, duration: 0.5)
         let down = SKAction.moveBy(x: 0, y: -5, duration: 0.5)
@@ -204,5 +236,74 @@ class Fish: SKSpriteNode {
         let dy = to.y - from.y
         
         return sqrt(dx * dx + dy * dy)
+    }
+    
+    func update() {
+        hunger -= 1
+        hunger = max(hunger , 0)
+        
+        //TODO: Handle this shit buddy
+        //color = hunger < isStarvingTime ? .red : .orange
+        
+        if hunger == 0 {
+            die()
+        }
+        
+        handleDropCoin()
+    }
+    
+    func frameUpdate() {
+        if hunger < 15,
+           targetFood == nil {
+            findFood()
+        }
+        
+        if state == .seekFood, let food = targetFood {
+            if food.parent == nil {
+                targetFood = nil
+                removeAllActions()
+                enterWanderState()
+                return
+            }
+            
+            removeAllActions()
+            
+            let dx = food.position.x - position.x
+            let dy = food.position.y - position.y
+            
+            let distance = sqrt(dx * dx + dy * dy)
+            
+            if distance > 1 {
+                let step = (swimSpeed * swimFoodSpeedMultiplier) / 60.0
+                
+                position.x += dx / distance * step
+                position.y += dy / distance * step
+            }
+        }
+    }
+    
+    func findFood() {
+        if let levelScene = scene as? LevelScene,
+           let food = levelScene.findNearestFood(to: self) {
+            targetFood = food
+            state = .seekFood
+        }
+    }
+
+    func handleDropCoin() {
+        timeTillSpawnCoin -= 1
+        if timeTillSpawnCoin < 1 {
+            guard let levelScene = scene as? LevelScene else { return }
+            if moneyDrop != nil {
+                levelScene.spawnMoney(at: self.position, type: moneyDrop!)
+            }
+            
+            timeTillSpawnCoin = spawnCoinTime
+        }
+    }
+
+    func die() {
+        isDead = true
+        removeFromParent()
     }
 }
