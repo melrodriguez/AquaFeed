@@ -23,6 +23,39 @@ enum GuppySize {
             return 170
         }
     }
+    
+    var swimFoodSpeed: CGFloat {
+        switch self {
+        case.small:
+            return 210
+        case.medium:
+            return 190
+        case.large:
+            return 180
+        }
+    }
+
+    var swimAnimationSpeed: CGFloat {
+        switch self {
+        case.small:
+            return 0.10
+        case.medium:
+            return 0.08
+        case.large:
+            return 0.06
+        }
+    }
+    
+    var swimFoodAnimationSpeed: CGFloat {
+        switch self {
+        case.small:
+            return 0.12
+        case.medium:
+            return 0.10
+        case.large:
+            return 0.08
+        }
+    }
 }
 
 class Guppy: Fish {
@@ -33,7 +66,7 @@ class Guppy: Fish {
         }
     }
     
-    var hunger: Int = 20
+    var hunger: Int = 100
     var timeTillSpawnCoin: Int = 8
     var targetFood: Food?
     var growthPoints: Int = 2
@@ -123,6 +156,18 @@ class Guppy: Fish {
         }
     }
     
+    override func startSwimming() {
+        let swim = SKAction.repeatForever(
+            .animate(
+                with: swimTextures,
+                timePerFrame: guppySize.swimAnimationSpeed
+            )
+        )
+        
+        run(swim, withKey: "animation")
+    }
+    
+    func
     func die() {
         isDead = true
         removeFromParent()

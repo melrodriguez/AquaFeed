@@ -11,6 +11,10 @@ import SwiftUI
 class Fish: SKSpriteNode {
     var state: FishState = .wander
     var swimSpeed: CGFloat = 200
+    var swimTextures: [SKTexture]
+    var turnTextures: [SKTexture]
+    var eatTexutures: [SKTexture]
+    var facingLeft: Bool = true
 
     var sceneWidth: CGFloat {
         self.scene?.size.width ?? 0
@@ -36,6 +40,54 @@ class Fish: SKSpriteNode {
         sceneHeight / 2
     }
     
+    init(swimTextures: [SKTexture], turnTextures: [SKTexture], eatTextures: [SKTexture], scale: CGFloat) {
+        self.swimTextures = swimTextures
+        self.turnTextures = turnTextures
+        self.eatTexutures = eatTextures
+        
+        super.init(
+            texture: swimTextures.first,
+            color: .clear,
+            size: CGSize(
+                width: swimTextures.first!.size().width * scale,
+                height: swimTextures.first!.size().height * scale
+            )
+        )
+        
+        setScale(scale)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func startSwimming() {
+        let swim = SKAction.repeatForever(
+            .animate(
+                with: swimTextures,
+                timePerFrame: 0.12
+            )
+        )
+        
+        run(swim, withKey: "animation")
+    }
+    
+    func turnFish(toRight: Bool) {
+        removeAction(forKey: "animation")
+        
+        xScale = toRight ? abs(xScale) : -abs(xScale)
+        
+        let turn = SKAction.animate(
+            with: turnTextures,
+            timePerFrame: 0.06
+        )
+        
+        run(turn) { [weak self] in
+            guard let self = self else { return }
+            self.xScale *= -1
+            self.startSwimming()
+        }
+    }
     
     func startState() {
         enterWanderState()
@@ -75,12 +127,19 @@ class Fish: SKSpriteNode {
         }
         
         let distance = getDistance(from: position, to: target)
-        
         let duration = TimeInterval(distance / swimSpeed)
-        
-        
         let moveAction = SKAction.move(to: target,
                                        duration: duration)
+        
+        if target.x > position.x && facingLeft {
+            
+            facingLeft = false
+            turnFish(toRight: true)
+        } else if target.x < position.x && !facingLeft {
+            facingLeft = true
+            turnFish(toRight: false)
+        }
+        
         
         run(moveAction) { [weak self] in
             self?.enterPauseState()

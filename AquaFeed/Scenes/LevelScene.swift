@@ -384,8 +384,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func spawnGuppy() {
-        // TODO: REPLACE WITH VARIABLES HERE
-        let guppy = Guppy(color: .orange, size: CGSize(width: 30, height: 30))
+        let guppy = Guppy(
+            swimTextures: FishTextures.guppySmallSwim,
+            turnTextures: FishTextures.guppySmallTurn,
+            eatTextures: FishTextures.guppySmallEat,
+            scale: 2.0
+        )
         
         guppy.position = randomSpawnPoint(for: guppy.size)
         guppy.physicsBody = SKPhysicsBody(circleOfRadius: guppy.size.width / 2)
@@ -397,23 +401,25 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         state.addGuppy(guppy)
         addChild(guppy)
+        guppy.startSwimming()
         guppy.startState()
     }
     
     func spawnCarnivore() {
-        let carnivore = Carnivore(color: .black, size: CGSize(width: 50, height: 50))
-       
-        carnivore.position = randomSpawnPoint(for: carnivore.size)
-        carnivore.physicsBody = SKPhysicsBody(circleOfRadius: carnivore.size.width / 2)
-        carnivore.physicsBody?.affectedByGravity = false
-        carnivore.physicsBody?.isDynamic = true
-        carnivore.physicsBody?.categoryBitMask = PhysicsCategory.carnivore
-        carnivore.physicsBody?.contactTestBitMask = PhysicsCategory.guppy
-        carnivore.physicsBody?.collisionBitMask = PhysicsCategory.none
-        
-        state.addCarnivore(carnivore)
-        addChild(carnivore)
-        carnivore.startState()
+        return
+//        let carnivore = Carnivore(color: .black, size: CGSize(width: 50, height: 50))
+//       
+//        carnivore.position = randomSpawnPoint(for: carnivore.size)
+//        carnivore.physicsBody = SKPhysicsBody(circleOfRadius: carnivore.size.width / 2)
+//        carnivore.physicsBody?.affectedByGravity = false
+//        carnivore.physicsBody?.isDynamic = true
+//        carnivore.physicsBody?.categoryBitMask = PhysicsCategory.carnivore
+//        carnivore.physicsBody?.contactTestBitMask = PhysicsCategory.guppy
+//        carnivore.physicsBody?.collisionBitMask = PhysicsCategory.none
+//        
+//        state.addCarnivore(carnivore)
+//        addChild(carnivore)
+//        carnivore.startState()
     }
     
     private func randomSpawnPoint(for fishSize: CGSize) -> CGPoint {
