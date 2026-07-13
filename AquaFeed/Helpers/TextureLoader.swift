@@ -11,8 +11,18 @@ func textures(
     from atlas: SKTextureAtlas,
     prefix: String
 ) -> [SKTexture] {
-    atlas.textureNames
-        .filter { $0.hasPrefix(prefix) }
-        .sorted()
-        .map { atlas.textureNamed($0) }
+    print(atlas.textureNames)
+    
+    let names = atlas.textureNames
+            .filter { $0.hasPrefix(prefix) }
+            .sorted()
+
+        print("Found \(names.count) textures:")
+        names.forEach { print($0) }
+
+        return names.map { atlas.textureNamed($0) }
+//    atlas.textureNames
+//        .filter { $0.hasPrefix(prefix) }
+//        .sorted()
+//        .map { atlas.textureNamed($0) }
 }

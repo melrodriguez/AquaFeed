@@ -17,12 +17,12 @@ class Fish: SKSpriteNode {
     var swimTextures: [SKTexture]
     var turnTextures: [SKTexture]
     var eatTexutures: [SKTexture]
+    var deadTextures: [SKTexture]
     var facingLeft: Bool = true
     var hunger: Int
-//    var isStarvingTime: Int
     var spawnCoinTime: Int
     var timeTillSpawnCoin: Int
-    var isSick: Bool = false
+    var isHungry: Bool = false
     var isDead: Bool = false
     var moneyDrop: MoneyType?
     var targetFood: SKSpriteNode?
@@ -56,20 +56,20 @@ class Fish: SKSpriteNode {
         swimTextures: [SKTexture],
         turnTextures: [SKTexture],
         eatTextures: [SKTexture],
+        deadTextures: [SKTexture],
         scale: CGFloat,
         swimSpeed: CGFloat,
         hunger: Int,
-//        isStarvingTime: Int,
         spawnCoinTime: Int,
         moneyDrop: MoneyType? = nil,
         type: String
     ) {
         self.swimTextures = swimTextures
         self.turnTextures = turnTextures
+        self.deadTextures = deadTextures
         self.eatTexutures = eatTextures
         self.swimSpeed = swimSpeed
         self.hunger = hunger
-//        self.isStarvingTime = isStarvingTime
         self.spawnCoinTime = spawnCoinTime
         self.timeTillSpawnCoin = spawnCoinTime
         self.type = type
@@ -167,7 +167,6 @@ class Fish: SKSpriteNode {
                                        duration: duration)
         
         if target.x > position.x && facingLeft {
-            
             facingLeft = false
             turnFish(toRight: true)
         } else if target.x < position.x && !facingLeft {
@@ -175,10 +174,14 @@ class Fish: SKSpriteNode {
             turnFish(toRight: false)
         }
         
-        
-        run(moveAction) { [weak self] in
-            self?.enterPauseState()
-        }
+        let sequence = SKAction.sequence([
+            moveAction,
+            .run { [weak self] in
+                self?.enterPauseState()
+            }
+        ])
+            
+        run(sequence, withKey: "wander")
     }
     
     func getWanderLocation() -> CGPoint {
@@ -189,14 +192,14 @@ class Fish: SKSpriteNode {
             x: edgeInset,
             y: (sceneHeight - maxY) - 150,
             width: sceneWidth - edgeInset * 2,
-            height: maxY - 70
+            height: maxY - 70 - size.height / 2
         )
 
         // Keeping this to test bounds further
 //        guard let levelScene = scene as? LevelScene else { return .zero }
 //        let debugRect = SKShapeNode(rect: rect)
 //        debugRect.fillColor = .red
-//        
+        
 //        levelScene.addChild(debugRect)
         
         switch Int.random(in: 0..<4) {
@@ -266,8 +269,6 @@ class Fish: SKSpriteNode {
                 return
             }
             
-            removeAllActions()
-            
             let dx = food.position.x - position.x
             let dy = food.position.y - position.y
             
@@ -287,6 +288,34 @@ class Fish: SKSpriteNode {
            let food = levelScene.findNearestFood(to: self) {
             targetFood = food
             state = .seekFood
+            
+            removeAllActions()
+            
+            if food.position.x > position.x && facingLeft {
+                facingLeft = false
+                turnFish(toRight: true)
+            } else if food.position.x < position.x && !facingLeft {
+                facingLeft = true
+                turnFish(toRight: false)
+            } else {
+                startSwimming()
+            }
+        }
+    }
+    
+    // TODO: FIX THE TRANSITION BETWEEN SICK AND SWIM
+    func animateEat() {
+        removeAction(forKey: "animation")
+        
+        let eat = SKAction.animate(
+            with: eatTexutures,
+            timePerFrame: 0.06
+        )
+        
+        run(eat) { [weak self] in
+            guard let self = self else { return }
+            self.startSwimming()
+            self.enterWanderState()
         }
     }
 
@@ -303,7 +332,25 @@ class Fish: SKSpriteNode {
     }
 
     func die() {
-        isDead = true
-        removeFromParent()
+        removeAllActions()
+        
+        let die = SKAction.animate(
+            with: deadTextures,
+            timePerFrame: 0.06
+        )
+        
+        let sequence = SKAction.sequence([
+            die,
+            .wait(forDuration: 0.1)
+        ])
+
+        physicsBody?.affectedByGravity = true
+        
+        run(sequence) { [weak self] in
+            if let self = self {
+                self.isDead = true
+                self.removeFromParent()
+            }
+        }
     }
 }

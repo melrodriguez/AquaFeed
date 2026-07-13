@@ -69,18 +69,18 @@ class Guppy: Fish {
     override func update() {
         super.update()
         
-        if hunger <= isStarvingTime && !isSick {
+        if hunger <= isStarvingTime && !isHungry {
             swimTextures = FishTextures.sickGuppySmallSwim
             turnTextures = FishTextures.sickGuppySmallTurn
             startSwimming()
-            isSick = true
+            isHungry = true
         }
         
-        if isSick && hunger > isStarvingTime {
+        if isHungry && hunger > isStarvingTime {
             swimTextures = FishTextures.guppySmallSwim
             turnTextures = FishTextures.guppySmallTurn
             startSwimming()
-            isSick = false
+            isHungry = false
         }
     }
 }

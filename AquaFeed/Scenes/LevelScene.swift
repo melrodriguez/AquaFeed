@@ -262,6 +262,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func fishFed(_ food: Food, _ guppy: Guppy) {
+        guppy.animateEat()
         guppy.hunger += food.quality.refillValue
         guppy.updateGrowthPoint(numPoints: food.quality.growthPoints)
         if guppy.hunger > 15 {
@@ -273,8 +274,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         food.removeFromParent()
         
         state.removeFood(food)
-        
-        guppy.enterWanderState()
     }
     
     func despawnItem(_ item: SKSpriteNode, isFood: Bool) {
@@ -389,9 +388,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             swimTextures: FishTextures.guppySmallSwim,
             turnTextures: FishTextures.guppySmallTurn,
             eatTextures: FishTextures.guppySmallEat,
+            deadTextures: FishTextures.guppySmallDead,
             scale: 2.0,
             swimSpeed: GuppySize.small.swimSpeed,
-            hunger: 30,
+            hunger: 10,
             spawnCoinTime: 8,
             type: "guppy"
         )
