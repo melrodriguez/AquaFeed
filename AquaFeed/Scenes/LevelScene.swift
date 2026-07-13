@@ -392,7 +392,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             scale: 2.0,
             swimSpeed: GuppySize.small.swimSpeed,
             hunger: 30,
-            isStarvingTime: 20,
             spawnCoinTime: 8,
             type: "guppy"
         )

@@ -19,9 +19,10 @@ class Fish: SKSpriteNode {
     var eatTexutures: [SKTexture]
     var facingLeft: Bool = true
     var hunger: Int
-    var isStarvingTime: Int
+//    var isStarvingTime: Int
     var spawnCoinTime: Int
     var timeTillSpawnCoin: Int
+    var isSick: Bool = false
     var isDead: Bool = false
     var moneyDrop: MoneyType?
     var targetFood: SKSpriteNode?
@@ -58,7 +59,7 @@ class Fish: SKSpriteNode {
         scale: CGFloat,
         swimSpeed: CGFloat,
         hunger: Int,
-        isStarvingTime: Int,
+//        isStarvingTime: Int,
         spawnCoinTime: Int,
         moneyDrop: MoneyType? = nil,
         type: String
@@ -68,7 +69,7 @@ class Fish: SKSpriteNode {
         self.eatTexutures = eatTextures
         self.swimSpeed = swimSpeed
         self.hunger = hunger
-        self.isStarvingTime = isStarvingTime
+//        self.isStarvingTime = isStarvingTime
         self.spawnCoinTime = spawnCoinTime
         self.timeTillSpawnCoin = spawnCoinTime
         self.type = type
@@ -94,6 +95,8 @@ class Fish: SKSpriteNode {
     }
     
     func startSwimming() {
+        removeAction(forKey: "animation")
+        
         let swim = SKAction.repeatForever(
             .animate(
                 with: swimTextures,
@@ -241,9 +244,6 @@ class Fish: SKSpriteNode {
     func update() {
         hunger -= 1
         hunger = max(hunger , 0)
-        
-        //TODO: Handle this shit buddy
-        //color = hunger < isStarvingTime ? .red : .orange
         
         if hunger == 0 {
             die()
