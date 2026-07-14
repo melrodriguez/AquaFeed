@@ -11,8 +11,10 @@ func textures(
     from atlas: SKTextureAtlas,
     prefix: String
 ) -> [SKTexture] {
-    print(atlas.textureNames)
+//    print(atlas)
+//    print(atlas.textureNames)
     
+    //print(prefix)
     let names = atlas.textureNames
             .filter { $0.hasPrefix(prefix) }
             .sorted()

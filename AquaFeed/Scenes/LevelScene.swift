@@ -391,7 +391,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             deadTextures: FishTextures.guppySmallDead,
             scale: 2.0,
             swimSpeed: GuppySize.small.swimSpeed,
-            hunger: 10,
+            hunger: 30,
             spawnCoinTime: 8,
             type: "guppy"
         )

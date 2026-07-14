@@ -23,6 +23,62 @@ enum GuppySize {
             return 140
         }
     }
+    
+    var swimTextures: [SKTexture] {
+        switch self {
+        case.small:
+            return FishTextures.guppySmallSwim
+        case.medium:
+            return FishTextures.guppyMedSwim
+        case.large:
+            return FishTextures.guppyBigSwim
+        }
+    }
+    
+    var turnTextures: [SKTexture] {
+        switch self {
+        case.small:
+            return FishTextures.guppySmallTurn
+        case.medium:
+            return FishTextures.guppyMedTurn
+        case.large:
+            return FishTextures.guppyBigTurn
+        }
+    }
+    
+    var eatTextures: [SKTexture] {
+        switch self {
+        case.small:
+            return FishTextures.guppySmallEat
+        case.medium:
+            return FishTextures.guppyMedEat
+        case.large:
+            return FishTextures.guppyBigEat
+        }
+    }
+    
+    var sickSwimTextures: [SKTexture] {
+        switch self {
+        case.small:
+            return FishTextures.sickGuppySmallSwim
+        case.medium:
+            return FishTextures.sickGuppyMedSwim
+        case.large:
+            return FishTextures.sickGuppyBigSwim
+        }
+    }
+    
+    var sickTurnTextures: [SKTexture] {
+        switch self {
+        case.small:
+            return FishTextures.sickGuppySmallTurn
+        case.medium:
+            return FishTextures.sickGuppyMedTurn
+        case.large:
+            return FishTextures.sickGuppyBigTurn
+        }
+    }
+
 }
 
 class Guppy: Fish {
@@ -50,11 +106,17 @@ class Guppy: Fish {
         switch guppySize {
         case .small:
             guppySize = .medium
-            size = CGSize(width: 40, height: 40)
+            swimTextures = guppySize.swimTextures
+            turnTextures = guppySize.turnTextures
+            setFishScale(texture: guppySize.swimTextures.first!, scale: 2.0)
+            startSwimming()
         case .medium:
             guppySize = .large
-            size = CGSize(width: 60, height: 60)
             moneyDrop = MoneyType.silver
+            swimTextures = guppySize.swimTextures
+            turnTextures = guppySize.turnTextures
+            setFishScale(texture: guppySize.swimTextures.first!, scale: 2.0)
+            startSwimming()
         case .large:
             moneyDrop = MoneyType.gold
             break
@@ -70,15 +132,15 @@ class Guppy: Fish {
         super.update()
         
         if hunger <= isStarvingTime && !isHungry {
-            swimTextures = FishTextures.sickGuppySmallSwim
-            turnTextures = FishTextures.sickGuppySmallTurn
+            swimTextures = guppySize.sickSwimTextures
+            turnTextures = guppySize.sickTurnTextures
             startSwimming()
             isHungry = true
         }
         
         if isHungry && hunger > isStarvingTime {
-            swimTextures = FishTextures.guppySmallSwim
-            turnTextures = FishTextures.guppySmallTurn
+            swimTextures = guppySize.swimTextures
+            turnTextures = guppySize.turnTextures
             startSwimming()
             isHungry = false
         }

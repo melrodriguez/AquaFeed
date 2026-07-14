@@ -10,6 +10,7 @@ import SpriteKit
 enum FishTextures {
     static let smallGuppyAtlas = SKTextureAtlas(named: "SmallGuppy")
     static let medGuppyAtlas = SKTextureAtlas(named: "MediumGuppy")
+    static let bigGuppyAtlas = SKTextureAtlas(named: "LargeGuppy")
     
     static let guppySmallSwim = textures(from: smallGuppyAtlas, prefix: "guppy_small_swim")
     static let guppySmallTurn = textures(from: smallGuppyAtlas, prefix: "guppy_small_turn")
@@ -23,6 +24,12 @@ enum FishTextures {
     static let guppyMedEat = textures(from: medGuppyAtlas, prefix: "guppy_med_eat")
     static let sickGuppyMedSwim = textures(from: medGuppyAtlas, prefix: "sick_guppy_med_swim")
     static let sickGuppyMedTurn = textures(from: medGuppyAtlas, prefix: "sick_guppy_med_turn")
-    static let guppyMedDead = textures(from: smallGuppyAtlas, prefix: "guppy_med_dead")
+    static let guppyMedDead = textures(from: medGuppyAtlas, prefix: "guppy_med_dead")
 
+    static let guppyBigSwim = textures(from: bigGuppyAtlas, prefix: "guppy_big_swim")
+    static let guppyBigTurn = textures(from: bigGuppyAtlas, prefix: "guppy_big_turn")
+    static let guppyBigEat = textures(from: bigGuppyAtlas, prefix: "guppy_big_eat")
+    static let sickGuppyBigSwim = textures(from: bigGuppyAtlas, prefix: "sick_guppy_big_swim")
+    static let sickGuppyBigTurn = textures(from: bigGuppyAtlas, prefix: "sick_guppy_big_turn")
+    static let guppyBigDead = textures(from: bigGuppyAtlas, prefix: "guppy_big_dead")
 }
