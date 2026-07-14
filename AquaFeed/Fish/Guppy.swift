@@ -78,6 +78,17 @@ enum GuppySize {
             return FishTextures.sickGuppyBigTurn
         }
     }
+    
+    var deadTextures: [SKTexture] {
+        switch self {
+        case.small:
+            return FishTextures.guppySmallDead
+        case.medium:
+            return FishTextures.guppyMedDead
+        case.large:
+            return FishTextures.guppyBigDead
+        }
+    }
 
 }
 
@@ -86,6 +97,10 @@ class Guppy: Fish {
     var guppySize: GuppySize = .small {
         didSet {
             swimSpeed = guppySize.swimSpeed
+            swimTextures = guppySize.swimTextures
+            turnTextures = guppySize.turnTextures
+            eatTextures = guppySize.eatTextures
+            deadTextures = guppySize.deadTextures
         }
     }
     
@@ -94,11 +109,13 @@ class Guppy: Fish {
     
     func updateGrowthPoint(numPoints: Int) {
         growthPoints += numPoints
-        
+    }
+    
+    func canGrow() {
         if guppySize == .small {
-            if growthPoints > 6 { grow() }
+            if growthPoints > 4 { grow() }
         } else if guppySize == .medium {
-            if growthPoints > 12 { grow() }
+            if growthPoints > 8 { grow() }
         }
     }
     
@@ -106,21 +123,15 @@ class Guppy: Fish {
         switch guppySize {
         case .small:
             guppySize = .medium
-            swimTextures = guppySize.swimTextures
-            turnTextures = guppySize.turnTextures
-            setFishScale(texture: guppySize.swimTextures.first!, scale: 2.0)
-            startSwimming()
+            moneyDrop = MoneyType.silver
         case .medium:
             guppySize = .large
-            moneyDrop = MoneyType.silver
-            swimTextures = guppySize.swimTextures
-            turnTextures = guppySize.turnTextures
-            setFishScale(texture: guppySize.swimTextures.first!, scale: 2.0)
-            startSwimming()
-        case .large:
             moneyDrop = MoneyType.gold
+        case .large:
             break
         }
+        
+        setFishScale(texture: guppySize.swimTextures.first!, scale: 2.0)
     }
     
     override func handleDropCoin() {
@@ -143,6 +154,22 @@ class Guppy: Fish {
             turnTextures = guppySize.turnTextures
             startSwimming()
             isHungry = false
+        }
+    }
+    
+    override func animateEat() {
+        removeAction(forKey: "animation")
+        
+        let eat = SKAction.animate(
+            with: eatTextures,
+            timePerFrame: 0.06
+        )
+        
+        run(eat) { [weak self] in
+            guard let self = self else { return }
+            self.canGrow()
+            self.startSwimming()
+            self.enterWanderState()
         }
     }
 }

@@ -16,7 +16,7 @@ class Fish: SKSpriteNode {
     var swimSpeed: CGFloat
     var swimTextures: [SKTexture]
     var turnTextures: [SKTexture]
-    var eatTexutures: [SKTexture]
+    var eatTextures: [SKTexture]
     var deadTextures: [SKTexture]
     var facingLeft: Bool = true
     var hunger: Int
@@ -67,7 +67,7 @@ class Fish: SKSpriteNode {
         self.swimTextures = swimTextures
         self.turnTextures = turnTextures
         self.deadTextures = deadTextures
-        self.eatTexutures = eatTextures
+        self.eatTextures = eatTextures
         self.swimSpeed = swimSpeed
         self.hunger = hunger
         self.spawnCoinTime = spawnCoinTime
@@ -100,7 +100,12 @@ class Fish: SKSpriteNode {
             height: texture.size().height * scale
         )
         
-        setScale(scale)
+        if xScale < 0 {
+            setScale(scale)
+            xScale *= -1
+        } else {
+            setScale(scale)
+        }
     }
     
     func startSwimming() {
@@ -116,6 +121,7 @@ class Fish: SKSpriteNode {
         run(swim, withKey: "animation")
     }
     
+    // TODO: FIX THE TO RIGHT IT IS NOT NEEDED?
     func turnFish(toRight: Bool) {
         removeAction(forKey: "animation")
         
@@ -317,7 +323,7 @@ class Fish: SKSpriteNode {
         removeAction(forKey: "animation")
         
         let eat = SKAction.animate(
-            with: eatTexutures,
+            with: eatTextures,
             timePerFrame: 0.06
         )
         

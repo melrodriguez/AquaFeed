@@ -91,6 +91,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         let location = touch.location(in: self)
         
         for node in nodes(at: location) {
+            if let money = node as? Money {
+                state.updateWallet(amount: money.type.value)
+                updateWalletLabel()
+                money.removeFromParent()
+                return
+            }
+            
             handleNodeTap(node)
             
             // Prevent dropping food when clicking menu
@@ -262,9 +269,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func fishFed(_ food: Food, _ guppy: Guppy) {
+        guppy.updateGrowthPoint(numPoints: food.quality.growthPoints)
         guppy.animateEat()
         guppy.hunger += food.quality.refillValue
-        guppy.updateGrowthPoint(numPoints: food.quality.growthPoints)
         if guppy.hunger > 15 {
             guppy.color = .orange
         }
