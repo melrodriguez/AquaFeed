@@ -113,9 +113,9 @@ class Guppy: Fish {
     
     func canGrow() {
         if guppySize == .small {
-            if growthPoints > 4 { grow() }
+            if growthPoints > 6 { grow() }
         } else if guppySize == .medium {
-            if growthPoints > 8 { grow() }
+            if growthPoints > 12 { grow() }
         }
     }
     

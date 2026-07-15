@@ -11,6 +11,7 @@ enum FishTextures {
     static let smallGuppyAtlas = SKTextureAtlas(named: "SmallGuppy")
     static let medGuppyAtlas = SKTextureAtlas(named: "MediumGuppy")
     static let bigGuppyAtlas = SKTextureAtlas(named: "LargeGuppy")
+    static let carnivoreAtlas = SKTextureAtlas(named: "Carnivore")
     
     static let guppySmallSwim = textures(from: smallGuppyAtlas, prefix: "guppy_small_swim")
     static let guppySmallTurn = textures(from: smallGuppyAtlas, prefix: "guppy_small_turn")
@@ -32,4 +33,11 @@ enum FishTextures {
     static let sickGuppyBigSwim = textures(from: bigGuppyAtlas, prefix: "sick_guppy_big_swim")
     static let sickGuppyBigTurn = textures(from: bigGuppyAtlas, prefix: "sick_guppy_big_turn")
     static let guppyBigDead = textures(from: bigGuppyAtlas, prefix: "guppy_big_dead")
+    
+    static let carnivoreSwim = textures(from: carnivoreAtlas, prefix: "carnivore_swim")
+    static let carnivoreTurn = textures(from: carnivoreAtlas, prefix: "carnivore_turn")
+    static let carnivoreEat = textures(from: carnivoreAtlas, prefix: "carnivore_eat")
+    static let sickCarnivoreSwim = textures(from: carnivoreAtlas, prefix: "sick_carnivore_swim")
+    static let sickCarnivoreTurn = textures(from: carnivoreAtlas, prefix: "sick_carnivore_turn")
+    static let carnivoreDead = textures(from: carnivoreAtlas, prefix: "carnivore_dead")
 }

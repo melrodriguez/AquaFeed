@@ -9,9 +9,10 @@ import SpriteKit
 import SwiftUI
 
 let swimAnimationSpeedMultiplier: CGFloat = 0.0004
-let swimFoodSpeedMultiplier: CGFloat = 1.05
 
+// TODO: Check if type thing is useful
 class Fish: SKSpriteNode {
+    
     var state: FishState = .wander
     var swimSpeed: CGFloat
     var swimTextures: [SKTexture]
@@ -26,7 +27,7 @@ class Fish: SKSpriteNode {
     var isDead: Bool = false
     var moneyDrop: MoneyType?
     var targetFood: SKSpriteNode?
-    var type: String
+    var swimFoodSpeedMultiplier: CGFloat
 
     var sceneWidth: CGFloat {
         self.scene?.size.width ?? 0
@@ -62,7 +63,7 @@ class Fish: SKSpriteNode {
         hunger: Int,
         spawnCoinTime: Int,
         moneyDrop: MoneyType? = nil,
-        type: String
+        swimFoodSpeedMultiplier: CGFloat = 1.05
     ) {
         self.swimTextures = swimTextures
         self.turnTextures = turnTextures
@@ -72,7 +73,7 @@ class Fish: SKSpriteNode {
         self.hunger = hunger
         self.spawnCoinTime = spawnCoinTime
         self.timeTillSpawnCoin = spawnCoinTime
-        self.type = type
+        self.swimFoodSpeedMultiplier = swimFoodSpeedMultiplier
         
         if moneyDrop != nil {
             self.moneyDrop = moneyDrop

@@ -8,69 +8,38 @@
 import SwiftUI
 import SpriteKit
 
-//class Carnivore: Fish {
-//    var hunger: Int = 60
-//    var timeTillSpawnCoin: Int = 15
-//    var targetFood: Guppy?
-//    var isDead = false
-//
-//    func update() {
-//        hunger -= 1
-//        hunger = max(hunger , 0)
-//        
-//        color = hunger < 20 ? .yellow : .black
-//        
-//        if hunger == 0 {
-//            die()
-//        }
-//        
-//        timeTillSpawnCoin -= 1
-//        
-//        if timeTillSpawnCoin < 1 {
-//            guard let levelScene = scene as? LevelScene else { return }
-//            
-//            levelScene.spawnMoney(at: self.position, type: .diamond)
-//            
-//            timeTillSpawnCoin = 15
-//        }
-//    }
-//    
-//    func frameUpdate() {
-//        if hunger < 30,
-//           targetFood == nil,
-//           let levelScene = scene as? LevelScene,
-//           let food = levelScene.findNearestBabyGuppy(to: self) {
-//            targetFood = food
-//            state = .seekFood
-//        }
-//        
-//        if state == .seekFood, let food = targetFood {
-//            if food.parent == nil {
-//                targetFood = nil
-//                removeAllActions()
-//                enterWanderState()
-//                return
-//            }
-//            
-//            removeAllActions()
-//            
-//            let dx = food.position.x - position.x
-//            let dy = food.position.y - position.y
-//            
-//            let distance = sqrt(dx * dx + dy * dy)
-//            
-//            if distance > 1 {
-//                let step = swimSpeed / 60.0
-//                
-//                position.x += dx / distance * step
-//                position.y += dy / distance * step
-//            }
-//        }
-//    }
-//    
-//    func die() {
-//        isDead = true
-//        removeFromParent()
-//    }
-//    
-//}
+class Carnivore: Fish {
+    let isStarvingTime: Int = 20
+
+    override func update() {
+        super.update()
+        
+        if hunger <= isStarvingTime && !isHungry {
+            swimTextures = FishTextures.sickCarnivoreSwim
+            turnTextures = FishTextures.sickCarnivoreTurn
+            startSwimming()
+            isHungry = true
+        }
+        
+        if isHungry && hunger > isStarvingTime {
+            swimTextures = FishTextures.carnivoreSwim
+            turnTextures = FishTextures.carnivoreTurn
+            startSwimming()
+            isHungry = false
+        }
+    }
+    
+    override func animateEat() {
+        removeAction(forKey: "animation")
+        
+        let eat = SKAction.animate(
+            with: eatTextures,
+            timePerFrame: 0.06
+        )
+        
+        run(eat) { [weak self] in
+            guard let self = self else { return }
+            self.startState()
+        }
+    }
+}
