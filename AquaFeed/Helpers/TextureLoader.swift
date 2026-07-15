@@ -19,8 +19,8 @@ func textures(
             .filter { $0.hasPrefix(prefix) }
             .sorted()
 
-        print("Found \(names.count) textures:")
-        names.forEach { print($0) }
+//        print("Found \(names.count) textures:")
+//        names.forEach { print($0) }
 
         return names.map { atlas.textureNamed($0) }
 //    atlas.textureNames

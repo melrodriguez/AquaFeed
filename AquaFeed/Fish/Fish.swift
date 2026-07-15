@@ -94,12 +94,7 @@ class Fish: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setFishScale(texture: SKTexture, scale: CGFloat) {
-        size = CGSize(
-            width: texture.size().width * scale,
-            height: texture.size().height * scale
-        )
-        
+    func setFishScale(scale: CGFloat) {
         if xScale < 0 {
             setScale(scale)
             xScale *= -1

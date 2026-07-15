@@ -124,14 +124,14 @@ class Guppy: Fish {
         case .small:
             guppySize = .medium
             moneyDrop = MoneyType.silver
+            setFishScale(scale: 2.5)
         case .medium:
             guppySize = .large
             moneyDrop = MoneyType.gold
+            setFishScale(scale: 3.0)
         case .large:
             break
         }
-        
-        setFishScale(texture: guppySize.swimTextures.first!, scale: 2.0)
     }
     
     override func handleDropCoin() {
@@ -168,8 +168,7 @@ class Guppy: Fish {
         run(eat) { [weak self] in
             guard let self = self else { return }
             self.canGrow()
-            self.startSwimming()
-            self.enterWanderState()
+            self.startState()
         }
     }
 }
