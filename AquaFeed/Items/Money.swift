@@ -24,11 +24,14 @@ enum MoneyType {
         }
     }
     
-    var color: UIColor {
+    var texture: SKTexture {
         switch self {
-        case.silver: return .lightGray
-        case.gold: return .yellow
-        case.diamond: return .blue
+        case.silver:
+            return ItemTextures.silverCoin
+        case.gold:
+            return ItemTextures.goldCoin
+        case.diamond:
+            return ItemTextures.diamond
         }
     }
     
@@ -46,7 +49,14 @@ class Money: SKSpriteNode {
     
     init(type: MoneyType) {
         self.type = type
-        super.init(texture: nil, color: type.color, size: type.size)
+        super.init(
+            texture: type.texture,
+            color: .clear,
+            size: CGSize(
+                width: type.texture.size().width,
+                height: type.texture.size().height
+            )
+        )
     }
     
     required init?(coder aDecoder: NSCoder) {

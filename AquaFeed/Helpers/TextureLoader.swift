@@ -12,7 +12,7 @@ func textures(
     prefix: String
 ) -> [SKTexture] {
 //    print(atlas)
-//    print(atlas.textureNames)
+    print(atlas.textureNames)
     
     //print(prefix)
     let names = atlas.textureNames

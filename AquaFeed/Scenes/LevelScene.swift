@@ -649,9 +649,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 guppy.update()
             }
             
-//            for carnivore in self.state.carnivoreList {
-//                carnivore.update()
-//            }
+            for carnivore in self.state.carnivoreList {
+                carnivore.update()
+            }
         }
                                          
     }
