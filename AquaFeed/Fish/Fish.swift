@@ -313,7 +313,7 @@ class Fish: SKSpriteNode {
             }
         }
     }
-    
+
     // TODO: FIX THE TRANSITION BETWEEN SICK AND SWIM
     func animateEat() {
         removeAction(forKey: "animation")

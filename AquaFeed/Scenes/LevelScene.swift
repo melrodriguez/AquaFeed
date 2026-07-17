@@ -96,7 +96,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 return
             }
             
-            handleNodeTap(node)
+            if let alien = node as? Alien {
+                if alien.isDead { return }
+                alien.decreaseHealth(damage: state.gunDamage)
+                alien.bump(from: location)
+            }
+            
+            handleNodeButtons(node)
             
             // Prevent dropping food when clicking menu
             if let menu = node as? SKSpriteNode,
@@ -115,7 +121,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    private func handleNodeTap(_ node: SKNode) {
+    private func handleNodeButtons(_ node: SKNode) {
         switch node.name {
         case "buyGuppy":
             buyGuppy()
@@ -460,7 +466,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     private func randomSpawnPoint(for fishSize: CGSize) -> CGPoint {
-        let adjustedMaxY = maxY - (fishSize.width / 2)
+        let adjustedMaxY = maxY - (fishSize.height / 2)
         
         let randomX = CGFloat.random(in: 50...size.width - 50)
         let randomY = CGFloat.random(in: minY...adjustedMaxY)
@@ -715,7 +721,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnGuppy()
         spawnGuppy()
-        spawnAlien(alienType: AlienType.sylvester)
         
         hungerTimer?.invalidate()
         
