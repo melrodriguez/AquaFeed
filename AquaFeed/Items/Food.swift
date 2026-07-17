@@ -46,11 +46,14 @@ enum FoodQuality {
         }
     }
     
-    var size: CGSize {
+    var scale: CGFloat {
         switch self {
-        case.level1: return CGSize(width: 15, height: 15)
-        case.level2: return CGSize(width: 20, height: 20)
-        case.level3: return CGSize(width: 25, height: 25)
+        case.level1:
+            return 2.5
+        case.level2:
+            return 3.0
+        case.level3:
+            return 4.0
         }
     }
 }
@@ -64,8 +67,8 @@ class Food: SKSpriteNode {
             texture: quality.texture,
             color: .clear,
             size: CGSize(
-                width: quality.texture.size().width,
-                height: quality.texture.size().height
+                width: quality.texture.size().width * quality.scale,
+                height: quality.texture.size().height * quality.scale
             )
         )
     }

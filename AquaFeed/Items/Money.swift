@@ -35,11 +35,14 @@ enum MoneyType {
         }
     }
     
-    var size: CGSize {
+    var scale: CGFloat {
         switch self {
-        case.silver: return CGSize(width: 30, height: 30)
-        case.gold: return CGSize(width: 30, height: 30)
-        case.diamond: return CGSize(width: 40, height: 40)
+        case.silver:
+            return 3.0
+        case.gold:
+            return 3.5
+        case.diamond:
+            return 4.0
         }
     }
 }
@@ -53,8 +56,8 @@ class Money: SKSpriteNode {
             texture: type.texture,
             color: .clear,
             size: CGSize(
-                width: type.texture.size().width,
-                height: type.texture.size().height
+                width: type.texture.size().width * type.scale,
+                height: type.texture.size().height * type.scale
             )
         )
     }

@@ -20,5 +20,4 @@ enum ItemTextures {
     static let food3 = itemAtlas.textureNamed("food_03")
     
     static let gun = itemAtlas.textureNamed("gun")
-    static let arrow = itemAtlas.textureNamed("arrow")
 }

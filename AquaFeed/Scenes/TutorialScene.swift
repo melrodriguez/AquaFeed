@@ -50,7 +50,6 @@ class TutorialScene: LevelScene {
                 SKAction.wait(forDuration: 20),
                 SKAction.run {
                     self.buyEggButton.isHidden = false
-                    self.eggCountLabel.isHidden = false
                     self.showText("Buy 3 egg pieces to complete level!")
                     self.shownEggMessage = true
                 },
@@ -75,7 +74,6 @@ class TutorialScene: LevelScene {
         super.setupUI()
         
         // Make these hidden for the tutorial
-        eggCountLabel.isHidden = true
         buyGuppyButton.isHidden = true
         buyEggButton.isHidden = true
         upgradeFoodQuality.isHidden = true
