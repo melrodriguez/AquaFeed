@@ -34,20 +34,26 @@ enum FoodQuality {
             return 3
         }
     }
-
-    var color: UIColor {
+    
+    var texture: SKTexture {
         switch self {
-        case.level1: return .yellow
-        case.level2: return .green
-        case.level3: return .red
+        case.level1:
+            return ItemTextures.food1
+        case.level2:
+            return ItemTextures.food2
+        case.level3:
+            return ItemTextures.food3
         }
     }
     
-    var size: CGSize {
+    var scale: CGFloat {
         switch self {
-        case.level1: return CGSize(width: 15, height: 15)
-        case.level2: return CGSize(width: 20, height: 20)
-        case.level3: return CGSize(width: 25, height: 25)
+        case.level1:
+            return 2.5
+        case.level2:
+            return 3.0
+        case.level3:
+            return 4.0
         }
     }
 }
@@ -57,7 +63,14 @@ class Food: SKSpriteNode {
     
     init(quality: FoodQuality) {
         self.quality = quality
-        super.init(texture: nil, color: quality.color, size: quality.size)
+        super.init(
+            texture: quality.texture,
+            color: .clear,
+            size: CGSize(
+                width: quality.texture.size().width * quality.scale,
+                height: quality.texture.size().height * quality.scale
+            )
+        )
     }
     
     required init?(coder aDecoder: NSCoder) {
