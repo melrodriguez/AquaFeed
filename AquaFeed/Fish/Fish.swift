@@ -260,7 +260,7 @@ class Fish: SKSpriteNode {
         hunger = max(hunger , 0)
         
         if hunger == 0 {
-            die()
+            die(showDieAnimation: true)
         }
         
         handleDropCoin()
@@ -342,26 +342,31 @@ class Fish: SKSpriteNode {
         }
     }
 
-    func die() {
+    func die(showDieAnimation: Bool) {
         removeAllActions()
         
-        let die = SKAction.animate(
-            with: deadTextures,
-            timePerFrame: 0.06
-        )
-        
-        let sequence = SKAction.sequence([
-            die,
-            .wait(forDuration: 0.1)
-        ])
-
-        physicsBody?.affectedByGravity = true
-        
-        run(sequence) { [weak self] in
-            if let self = self {
-                self.isDead = true
-                self.removeFromParent()
+        if showDieAnimation {
+            let die = SKAction.animate(
+                with: deadTextures,
+                timePerFrame: 0.06
+            )
+            
+            let sequence = SKAction.sequence([
+                die,
+                .wait(forDuration: 0.1)
+            ])
+            
+            physicsBody?.affectedByGravity = true
+            
+            run(sequence) { [weak self] in
+                if let self = self {
+                    self.isDead = true
+                    self.removeFromParent()
+                }
             }
+        } else {
+            self.isDead = true
+            removeFromParent()
         }
     }
 }

@@ -13,22 +13,26 @@ class GameState {
     var gameOver: Bool
     var guppyList: [Guppy]
     var carnivoreList: [Carnivore]
+    var alienList: [Alien]
     var foodList: [Food]
     var wallet: Int
     var foodLimit: Int
     var foodQuality: FoodQuality
     var eggCount: Int
+    var gunDamage: Int
     
     init() {
         pauseDuration = 1.0
         gameOver = false
         guppyList = []
         carnivoreList = []
+        alienList = []
         foodList = []
         wallet = 200
         foodLimit = 1
         foodQuality = FoodQuality.level1
         eggCount = 0
+        gunDamage = 10
     }
     
     func addGuppy(_ Guppy: Guppy) {
@@ -47,6 +51,14 @@ class GameState {
         carnivoreList.removeAll { $0.isDead }
     }
     
+    func addAlien(_ Alien: Alien) {
+        alienList.append(Alien)
+    }
+    
+    func removeDeadAlien() {
+        alienList.removeAll { $0.isDead }
+    }
+
     func addFood(_ food: Food) {
         foodList.append(food)
     }

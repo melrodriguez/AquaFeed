@@ -16,6 +16,7 @@ struct PhysicsCategory {
     static let ground: UInt32 = 0x1 << 2
     static let money: UInt32 = 0x1 << 3
     static let carnivore: UInt32 = 0x1 << 4
+    static let alien: UInt32 = 0x1 << 5
 }
 
 let despawnTime = 1.5
@@ -204,8 +205,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             carnivore.frameUpdate()
         }
         
+        for alien in state.alienList {
+            alien.frameUpdate()
+        }
+
         state.removeDeadGuppy()
         state.removeDeadCarnivore()
+        state.removeDeadAlien()
         
         // Temporary Game Over Scene
         if state.eggCount == eggLimit {
@@ -248,8 +254,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 carnivore.animateEat()
                 carnivore.hunger += 60
                 carnivore.targetFood = nil
-                guppy.die()
+                guppy.die(showDieAnimation: false)
             }
+        }
+        else if categories == PhysicsCategory.alien | PhysicsCategory.guppy ||
+                    categories == PhysicsCategory.alien | PhysicsCategory.carnivore {
+            guard
+                let fish: Fish = node(ofType: Fish.self, from: contact),
+                let alien: Alien = node(ofType: Alien.self, from: contact)
+            else { return
+            }
+            
+            fish.die(showDieAnimation: false)
+            alien.prey = nil
         }
     }
     
@@ -427,6 +444,21 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         return
     }
     
+    func spawnAlien(alienType: AlienType) {
+        let alien = Alien(alienType: alienType)
+        
+        alien.position = randomSpawnPoint(for: alien.size)
+        alien.physicsBody = SKPhysicsBody(circleOfRadius: alien.size.width / 2)
+        alien.physicsBody?.affectedByGravity = false
+        alien.physicsBody?.isDynamic = true
+        alien.physicsBody?.categoryBitMask = PhysicsCategory.alien
+        alien.physicsBody?.contactTestBitMask = PhysicsCategory.guppy | PhysicsCategory.carnivore
+        alien.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+        state.addAlien(alien)
+        addChild(alien)
+    }
+    
     private func randomSpawnPoint(for fishSize: CGSize) -> CGPoint {
         let adjustedMaxY = maxY - (fishSize.width / 2)
         
@@ -478,6 +510,17 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             .min {
                 fish.getDistance(from: fish.position, to: $0.position) <
                 fish.getDistance(from: fish.position, to: $1.position)
+            }
+    }
+    
+    func findNearestFish(to alien: Alien) -> Fish? {
+        let allFish = state.guppyList + state.carnivoreList
+        
+        return allFish
+            .filter { !$0.isDead }
+            .min {
+                alien.getDistance(from: alien.position, to: $0.position) <
+                alien.getDistance(from: alien.position, to: $1.position)
             }
     }
     
@@ -672,6 +715,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnGuppy()
         spawnGuppy()
+        spawnAlien(alienType: AlienType.sylvester)
         
         hungerTimer?.invalidate()
         
