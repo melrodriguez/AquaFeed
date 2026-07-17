@@ -111,12 +111,18 @@ class Guppy: Fish {
         growthPoints += numPoints
     }
     
-    func canGrow() {
+    func canGrow() -> Bool {
         if guppySize == .small {
-            if growthPoints > 6 { grow() }
+            if growthPoints > 6 {
+                return true
+            }
         } else if guppySize == .medium {
-            if growthPoints > 12 { grow() }
+            if growthPoints > 12 {
+                return true
+            }
         }
+        
+        return false
     }
     
     func grow() {
@@ -142,18 +148,22 @@ class Guppy: Fish {
     override func update() {
         super.update()
         
-        if hunger <= isStarvingTime && !isHungry {
+        updateAppearnce()
+    }
+    
+    func updateAppearnce() {
+        if hunger <= isStarvingTime {
             swimTextures = guppySize.sickSwimTextures
             turnTextures = guppySize.sickTurnTextures
+            showingHungryVisual = true
             startSwimming()
-            isHungry = true
-        }
-        
-        if isHungry && hunger > isStarvingTime {
-            swimTextures = guppySize.swimTextures
-            turnTextures = guppySize.turnTextures
-            startSwimming()
-            isHungry = false
+        } else {
+            if showingHungryVisual {
+                swimTextures = guppySize.swimTextures
+                turnTextures = guppySize.turnTextures
+                showingHungryVisual = false
+                startSwimming()
+            }
         }
     }
     
@@ -167,7 +177,12 @@ class Guppy: Fish {
         
         run(eat) { [weak self] in
             guard let self = self else { return }
-            self.canGrow()
+            if self.canGrow() {
+                self.grow()
+            } else {
+                self.updateAppearnce()
+            }
+            
             self.startState()
         }
     }

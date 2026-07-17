@@ -23,7 +23,7 @@ class Fish: SKSpriteNode {
     var hunger: Int
     var spawnCoinTime: Int
     var timeTillSpawnCoin: Int
-    var isHungry: Bool = false
+    var showingHungryVisual: Bool = false
     var isDead: Bool = false
     var moneyDrop: MoneyType?
     var targetFood: SKSpriteNode?
@@ -118,10 +118,8 @@ class Fish: SKSpriteNode {
     }
     
     // TODO: FIX THE TO RIGHT IT IS NOT NEEDED?
-    func turnFish(toRight: Bool) {
+    func turnFish() {
         removeAction(forKey: "animation")
-        
-        xScale = toRight ? abs(xScale) : -abs(xScale)
         
         let turn = SKAction.animate(
             with: turnTextures,
@@ -130,7 +128,8 @@ class Fish: SKSpriteNode {
         
         run(turn) { [weak self] in
             guard let self = self else { return }
-            self.xScale *= -1
+            
+            self.xScale = self.facingLeft ? abs(self.xScale) : -abs(self.xScale)
             self.startSwimming()
         }
     }
@@ -179,10 +178,10 @@ class Fish: SKSpriteNode {
         
         if target.x > position.x && facingLeft {
             facingLeft = false
-            turnFish(toRight: true)
+            turnFish()
         } else if target.x < position.x && !facingLeft {
             facingLeft = true
-            turnFish(toRight: false)
+            turnFish()
         }
         
         let sequence = SKAction.sequence([
@@ -304,10 +303,10 @@ class Fish: SKSpriteNode {
             
             if food.position.x > position.x && facingLeft {
                 facingLeft = false
-                turnFish(toRight: true)
+                turnFish()
             } else if food.position.x < position.x && !facingLeft {
                 facingLeft = true
-                turnFish(toRight: false)
+                turnFish()
             } else {
                 startSwimming()
             }

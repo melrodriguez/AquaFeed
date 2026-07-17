@@ -13,19 +13,22 @@ class Carnivore: Fish {
 
     override func update() {
         super.update()
-        
-        if hunger <= isStarvingTime && !isHungry {
+        updateAppearance()
+    }
+    
+    func updateAppearance() {
+        if hunger <= isStarvingTime {
             swimTextures = FishTextures.sickCarnivoreSwim
             turnTextures = FishTextures.sickCarnivoreTurn
+            showingHungryVisual = true
             startSwimming()
-            isHungry = true
-        }
-        
-        if isHungry && hunger > isStarvingTime {
-            swimTextures = FishTextures.carnivoreSwim
-            turnTextures = FishTextures.carnivoreTurn
-            startSwimming()
-            isHungry = false
+        } else {
+            if showingHungryVisual {
+                swimTextures = FishTextures.carnivoreSwim
+                turnTextures = FishTextures.carnivoreTurn
+                showingHungryVisual = false
+                startSwimming()
+            }
         }
     }
     
@@ -39,6 +42,7 @@ class Carnivore: Fish {
         
         run(eat) { [weak self] in
             guard let self = self else { return }
+            self.updateAppearance()
             self.startState()
         }
     }
