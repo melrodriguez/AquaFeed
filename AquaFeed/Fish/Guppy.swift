@@ -148,10 +148,10 @@ class Guppy: Fish {
     override func update() {
         super.update()
         
-        updateAppearnce()
+        updateAppearance()
     }
     
-    func updateAppearnce() {
+    func updateAppearance() {
         if hunger <= isStarvingTime {
             swimTextures = guppySize.sickSwimTextures
             turnTextures = guppySize.sickTurnTextures
@@ -180,7 +180,7 @@ class Guppy: Fish {
             if self.canGrow() {
                 self.grow()
             } else {
-                self.updateAppearnce()
+                self.updateAppearance()
             }
             
             self.startState()
