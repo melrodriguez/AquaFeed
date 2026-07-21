@@ -1,10 +1,3 @@
-//
-//  ItemTextures.swift
-//  AquaFeed
-//
-//  Created by Jacob Dains on 7/15/26.
-//
-
 import SpriteKit
 
 enum ItemTextures {

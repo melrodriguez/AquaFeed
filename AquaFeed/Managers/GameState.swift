@@ -1,33 +1,55 @@
-//
-//  GameState.swift
-//  AquaFeed
-//
-//  Created by Jacob Dains on 7/6/26.
-//
-
 import SwiftUI
 import SpriteKit
 
+struct PhysicsCategory {
+    static let none: UInt32 = 0
+    static let food: UInt32 = 0x1 << 0
+    static let guppy: UInt32 = 0x1 << 1
+    static let ground: UInt32 = 0x1 << 2
+    static let money: UInt32 = 0x1 << 3
+    static let carnivore: UInt32 = 0x1 << 4
+    static let alien: UInt32 = 0x1 << 5
+}
+
 class GameState {
+    static let shared = GameState()
+    
     var pauseDuration: Float
     var gameOver: Bool
     var guppyList: [Guppy]
     var carnivoreList: [Carnivore]
     var alienList: [Alien]
     var foodList: [Food]
+    var moneyList: [Money]
     var wallet: Int
     var foodLimit: Int
     var foodQuality: FoodQuality
     var eggCount: Int
     var gunDamage: Int
     
-    init() {
+    private init() {
         pauseDuration = 1.0
         gameOver = false
         guppyList = []
         carnivoreList = []
         alienList = []
         foodList = []
+        moneyList = []
+        wallet = 200
+        foodLimit = 1
+        foodQuality = FoodQuality.level1
+        eggCount = 0
+        gunDamage = 10
+    }
+    
+    func restartLevel() {
+        pauseDuration = 1.0
+        gameOver = false
+        guppyList = []
+        carnivoreList = []
+        alienList = []
+        foodList = []
+        moneyList = []
         wallet = 200
         foodLimit = 1
         foodQuality = FoodQuality.level1
@@ -67,6 +89,14 @@ class GameState {
         foodList.removeAll { $0 == food }
     }
     
+    func addMoney(_ money: Money) {
+        moneyList.append(money)
+    }
+    
+    func removeMoney(_ money: SKSpriteNode) {
+        moneyList.removeAll { $0 == money }
+    }
+
     func updateWallet(amount: Int) {
         wallet += amount
     }

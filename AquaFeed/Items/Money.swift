@@ -1,10 +1,3 @@
-//
-//  Money.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/5/26.
-//
-
 import SwiftUI
 import SpriteKit
 
@@ -49,6 +42,7 @@ enum MoneyType {
 
 class Money: SKSpriteNode {
     var type: MoneyType
+    var isCollected: Bool = false
     
     init(type: MoneyType) {
         self.type = type
@@ -64,6 +58,10 @@ class Money: SKSpriteNode {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setMoneyAsCollected() {
+        isCollected = true
     }
 }
 

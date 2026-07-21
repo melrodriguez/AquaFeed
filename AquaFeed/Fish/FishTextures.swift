@@ -1,10 +1,3 @@
-//
-//  FishTextures.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/11/26.
-//
-
 import SpriteKit
 
 enum FishTextures {
