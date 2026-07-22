@@ -118,8 +118,28 @@ class SpawnManager {
         money.physicsBody?.contactTestBitMask = PhysicsCategory.ground
         money.physicsBody?.collisionBitMask = PhysicsCategory.ground
 
-        GameState.shared.addMoney(money)
         scene.addChild(money)
+        GameState.shared.addMoney(money)
+    }
+    
+    func spawnStinky() {
+        guard let scene = scene else { return }
+        let minY = (scene.size.height - (scene.size.height * 0.70)) / 2
+        print(minY)
+
+        let stinky = Stinky(type: PetType.stinky)
+        
+        stinky.position = CGPoint(x: 50, y: minY)
+        stinky.physicsBody = SKPhysicsBody(circleOfRadius: stinky.size.width / 2)
+        stinky.physicsBody?.affectedByGravity = false
+        stinky.physicsBody?.isDynamic = true
+        stinky.physicsBody?.categoryBitMask = PhysicsCategory.stinky
+        stinky.physicsBody?.contactTestBitMask = PhysicsCategory.money
+        stinky.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+        GameState.shared.addPet(stinky)
+        scene.addChild(stinky)
+        stinky.setState(.wander)
     }
 
     private func getSpawnPoint(for spriteSize: CGSize) -> CGPoint {
@@ -134,13 +154,4 @@ class SpawnManager {
         
         return CGPoint(x: randomX, y: randomY)
     }
-
-//    private func randomSpawnPoint(for fishSize: CGSize) -> CGPoint {
-//        let adjustedMaxY = maxY - (fishSize.height / 2)
-//        
-//        let randomX = CGFloat.random(in: 50...size.width - 50)
-//        let randomY = CGFloat.random(in: minY...adjustedMaxY)
-//        
-//        return CGPoint(x: randomX, y: randomY)
-//    }
 }

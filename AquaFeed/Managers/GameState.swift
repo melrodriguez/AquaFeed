@@ -1,16 +1,6 @@
 import SwiftUI
 import SpriteKit
 
-struct PhysicsCategory {
-    static let none: UInt32 = 0
-    static let food: UInt32 = 0x1 << 0
-    static let guppy: UInt32 = 0x1 << 1
-    static let ground: UInt32 = 0x1 << 2
-    static let money: UInt32 = 0x1 << 3
-    static let carnivore: UInt32 = 0x1 << 4
-    static let alien: UInt32 = 0x1 << 5
-}
-
 class GameState {
     static let shared = GameState()
     
@@ -21,6 +11,7 @@ class GameState {
     var alienList: [Alien]
     var foodList: [Food]
     var moneyList: [Money]
+    var petList: [Pet]
     var wallet: Int
     var foodLimit: Int
     var foodQuality: FoodQuality
@@ -35,6 +26,7 @@ class GameState {
         alienList = []
         foodList = []
         moneyList = []
+        petList = []
         wallet = 200
         foodLimit = 1
         foodQuality = FoodQuality.level1
@@ -75,10 +67,20 @@ class GameState {
     
     func addAlien(_ Alien: Alien) {
         alienList.append(Alien)
+        
+        for pet in petList {
+            pet.alienAppeared()
+        }
     }
     
     func removeDeadAlien() {
         alienList.removeAll { $0.isDead }
+        
+        if alienList.isEmpty {
+            for pet in petList {
+                pet.allAliensDisappeared()
+            }
+        }
     }
 
     func addFood(_ food: Food) {
@@ -91,10 +93,31 @@ class GameState {
     
     func addMoney(_ money: Money) {
         moneyList.append(money)
+        
+        for pet in petList {
+            if let stinky = pet as? Stinky {
+                stinky.setState(.collectingCoin)
+            }
+        }
     }
     
     func removeMoney(_ money: SKSpriteNode) {
         moneyList.removeAll { $0 == money }
+        
+        for pet in petList {
+            if let stinky = pet as? Stinky {
+                if let targetMoney = stinky.targetMoney {
+                    if money == targetMoney {
+                        stinky.targetMoney = nil
+                        stinky.setState(.wander)
+                    }
+                }
+            }
+        }
+    }
+    
+    func addPet(_ pet: Pet) {
+        petList.append(pet)
     }
 
     func updateWallet(amount: Int) {

@@ -11,6 +11,10 @@ class Stinky: Pet {
         self.scene?.size.width ?? 0
     }
     
+    var sceneHeight: CGFloat {
+        self.scene?.size.height ?? 0
+    }
+    
     var minX: CGFloat {
         50
     }
@@ -19,43 +23,24 @@ class Stinky: Pet {
         sceneWidth - 50
     }
     
+    var yPos: CGFloat {
+        (sceneHeight - (sceneHeight * 0.70)) / 2
+    }
+    
     var targetMoney: Money?
-    var state: State = .wander
+    var state: State = .hiding
     var goingLeft: Bool = true
-    var yPos: CGFloat = 10
     var normalSpeed: CGFloat = 100
-    var fastSpeed: CGFloat = 150
+    var fastSpeed: CGFloat = 500
     
+    override func alienAppeared() {
+        setState(.hiding)
+    }
     
-    override init(
-//        moveTextures: [SKTexture]? = nil,
-//        turnTextures: [SKTexture]? = nil,
-//        initialTexture: SKTexture,
-//        scale: CGFloat
-        color: UIColor,
-        size: CGSize
-    ) {
-//        if moveTextures != nil {
-//            self.moveTextures = moveTextures
-//        }
-//
-//        if turnTextures != nil {
-//            self.turnTextures = turnTextures
-//        }
-        
-        super.init(
-            color: color,
-            size: size
-        )
-        
-//        setScale(scale)
+    override func allAliensDisappeared() {
         setState(.wander)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     func setState(_ newState: State) {
         guard state != newState else {return}
         
@@ -71,14 +56,28 @@ class Stinky: Pet {
     private func enterState(_ state: State) {
         switch state {
         case .wander:
+            animateWander()
             wander()
         case .hiding:
             hide()
         case .collectingCoin:
+            animateGoToCoin()
+            updateTargetCoin()
             goToTargetCoin()
         }
     }
     
+    private func animateWander() {
+        let move = SKAction.repeatForever(
+            .animate(
+                with: PetType.stinky.moveTextures,
+                timePerFrame: 0.08
+            )
+        )
+        
+        run(move, withKey: "animation")
+    }
+
     private func wander() {
         let endPos = getWanderLocation()
         let distance = abs(endPos.x - position.x)
@@ -94,14 +93,13 @@ class Stinky: Pet {
     
     private func getWanderLocation() -> CGPoint {
         let currentXPos = position.x
-        var xPos = 0
         
-        if currentXPos == minX {
+        if currentXPos <= minX {
             goingLeft = false
             turn()
         }
         
-        if currentXPos == maxX {
+        if currentXPos >= maxX {
             goingLeft = true
             turn()
         }
@@ -114,11 +112,21 @@ class Stinky: Pet {
     }
     
     private func hide() {
-        print("Stinky: I am hiding right now")
+        let hide = PetTextures.stinkyHide
+        
+        let animation = SKAction.sequence([
+            .setTexture(hide[0]),
+            .wait(forDuration: 0.1),
+            .setTexture(hide[1])
+        ])
+        
+        run(animation)
     }
     
     private func turn() {
-        print("Stinky: I turn")
+        removeAction(forKey: "animation")
+        xScale *= -1
+        animateWander()
     }
     
     private func updateTargetCoin() {
@@ -137,11 +145,21 @@ class Stinky: Pet {
             }
     }
     
+    private func animateGoToCoin() {
+        let move = SKAction.repeatForever(
+            .animate(
+                with: PetType.stinky.moveTextures,
+                timePerFrame: 0.07
+            )
+        )
+        
+        run(move, withKey: "animation")
+    }
+
     private func goToTargetCoin() {
         guard let money = targetMoney,
               !money.isCollected else {
             targetMoney = nil
-            state = .wander
             setState(.wander)
             return
         }
@@ -162,6 +180,17 @@ class Stinky: Pet {
         }
         
         let target = CGPoint(x: targetXPos, y: yPos)
-        run(SKAction.move(to: target, duration: duration))
+        let move = SKAction.move(to: target, duration: duration)
+        let removeMovingAnimation = SKAction.run { [weak self] in
+            self?.removeAction(forKey: "animation")
+        }
+        
+        let sequence = SKAction.sequence([
+            move,
+            removeMovingAnimation
+        ])
+        
+        run(sequence)
     }
+    
 }

@@ -269,6 +269,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             fish.die(showDieAnimation: false)
             alien.prey = nil
         }
+        else if categories == PhysicsCategory.stinky | PhysicsCategory.money {
+            guard
+                let money: Money = node(ofType: Money.self, from: contact)
+            else { return
+            }
+            
+            state.updateWallet(amount: money.type.value)
+            updateWalletLabel()
+            money.setMoneyAsCollected()
+            money.removeFromParent()
+            state.removeMoney(money)
+            return
+        }
     }
     
     func node<T>(ofType type: T.Type,
@@ -566,7 +579,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
-        
+        spawnManager.spawnStinky()
+
         hungerTimer?.invalidate()
         
         hungerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in

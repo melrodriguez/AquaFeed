@@ -1,30 +1,17 @@
 import SpriteKit
 
 class Pet: SKSpriteNode {
-//    var moveTextures: [SKTexture]?
-//    var turnTextures: [SKTexture]?
-    var enemySpawned: Bool = false
-
-    init(
-//        moveTextures: [SKTexture]? = nil,
-//        turnTextures: [SKTexture]? = nil,
-//        initialTexture: SKTexture,
-//        scale: CGFloat
-        color: UIColor,
-        size: CGSize
-    ) {
-//        if moveTextures != nil {
-//            self.moveTextures = moveTextures
-//        }
-//
-//        if turnTextures != nil {
-//            self.turnTextures = turnTextures
-//        }
+    init(type: PetType) {
+        print(PetType.stinky.moveTextures)
+        let scale = type.scale
         
         super.init(
-            texture: nil,
-            color: color,
-            size: size
+            texture: type.moveTextures.first!,
+            color: .clear,
+            size: CGSize (
+                width: type.moveTextures.first!.size().width * scale,
+                height: type.moveTextures.first!.size().height * scale
+            )
         )
         
 //        setScale(scale)
@@ -32,5 +19,13 @@ class Pet: SKSpriteNode {
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func alienAppeared() {
+        print("AHH ENEMY APPEARED")
+    }
+    
+    func allAliensDisappeared() {
+        print("OKAY FIRE")
     }
 }
