@@ -8,17 +8,6 @@
 import SpriteKit
 import SwiftUI
 
-// TODO: MAYBE MOVE PHYSICS CATEGORY
-struct PhysicsCategory {
-    static let none: UInt32 = 0
-    static let food: UInt32 = 0x1 << 0
-    static let guppy: UInt32 = 0x1 << 1
-    static let ground: UInt32 = 0x1 << 2
-    static let money: UInt32 = 0x1 << 3
-    static let carnivore: UInt32 = 0x1 << 4
-    static let alien: UInt32 = 0x1 << 5
-}
-
 let despawnTime = 1.5
 let guppyPrice = 100
 let carnivorePrice = 1000
@@ -44,6 +33,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var foodUpgradeLabel1 = SKSpriteNode(texture: ItemTextures.food1)
     var foodUpgradeLabel2 = SKSpriteNode(texture: ItemTextures.food2)
     var ground = SKNode()
+    lazy var spawnManager = SpawnManager(scene: self)
     
     var maxHeight: CGFloat {
         size.height * 0.70
@@ -62,16 +52,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var pauseDuration = 1.0;
-    var state = GameState()
+    let state = GameState.shared
     
     var hungerTimer: Timer?
 
     override func didMove(to view: SKView) {
         // This is just for testing purposes
+        state.restartLevel()
+        
         if config.level == 100 {
             state.wallet = 4000
         }
         
+
         setupBackground()
         setupGround()
         setupMenu()
@@ -92,7 +85,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             if let money = node as? Money {
                 state.updateWallet(amount: money.type.value)
                 updateWalletLabel()
+                money.setMoneyAsCollected()
                 money.removeFromParent()
+                state.removeMoney(money)
                 return
             }
             
@@ -115,7 +110,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         if state.foodList.count < state.foodLimit {
             if state.wallet >= 5 {
                 state.updateWallet(amount: -5)
-                spawnFood(at: location)
+                spawnManager.spawnFood(at: location, quality: state.foodQuality)
                 updateWalletLabel()
             }
         }
@@ -148,7 +143,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         if state.wallet >= guppyPrice {
             state.updateWallet(amount: -guppyPrice)
-            spawnGuppy()
+            spawnManager.spawnGuppy()
             updateWalletLabel()
         }
         return
@@ -196,7 +191,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         if state.wallet >= carnivorePrice {
             state.updateWallet(amount: -carnivorePrice)
             updateWalletLabel()
-            spawnCarnivore()
+            spawnManager.spawnCarnivore()
         }
     }
     
@@ -213,6 +208,14 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         for alien in state.alienList {
             alien.frameUpdate()
+        }
+        
+        for pet in state.petList {
+            if let itchy = pet as? Itchy {
+                if itchy.state == .charge && itchy.chaseAlien {
+                    itchy.frameUpdate()
+                }
+            }
         }
 
         state.removeDeadGuppy()
@@ -240,8 +243,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard
                 let food: Food = node(ofType: Food.self, from: contact),
                 let guppy: Guppy = node(ofType: Guppy.self, from: contact)
-            else { return
-            }
+            else { return }
                 
             fishFed(food, guppy)
         } else if categories == PhysicsCategory.money | PhysicsCategory.ground {
@@ -253,8 +255,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard
                 let guppy: Guppy = node(ofType: Guppy.self, from: contact),
                 let carnivore: Carnivore = node(ofType: Carnivore.self, from: contact)
-            else { return
-            }
+            else { return }
             
             if carnivore.state == FishState.seekFood {
                 carnivore.animateEat()
@@ -268,11 +269,30 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard
                 let fish: Fish = node(ofType: Fish.self, from: contact),
                 let alien: Alien = node(ofType: Alien.self, from: contact)
-            else { return
-            }
+            else { return }
             
             fish.die(showDieAnimation: false)
             alien.prey = nil
+        }
+        else if categories == PhysicsCategory.stinky | PhysicsCategory.money {
+            guard
+                let money: Money = node(ofType: Money.self, from: contact)
+            else { return }
+            
+            state.updateWallet(amount: money.type.value)
+            updateWalletLabel()
+            money.setMoneyAsCollected()
+            money.removeFromParent()
+            state.removeMoney(money)
+            return
+        }
+        else if categories == PhysicsCategory.itchy | PhysicsCategory.alien {
+            guard
+                let itchy: Itchy = node(ofType: Itchy.self, from: contact),
+                let alien: Alien = node(ofType: Alien.self, from:contact)
+            else { return }
+            
+            itchy.isTouchingAlien = true
         }
     }
     
@@ -379,156 +399,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         addChild(ground)
     }
     
-    func spawnFood(at position: CGPoint) {
-        let food = Food(quality: state.foodQuality)
-        food.position = position
-        food.name = "food"
-        
-        food.physicsBody = SKPhysicsBody(rectangleOf: food.size)
-        food.physicsBody?.affectedByGravity = true
-        food.physicsBody?.linearDamping = 2.0
-        food.physicsBody?.angularDamping = 2.0
-        food.physicsBody?.mass = 0.2
-        food.physicsBody?.categoryBitMask = PhysicsCategory.food
-        food.physicsBody?.contactTestBitMask = PhysicsCategory.ground
-        food.physicsBody?.collisionBitMask = PhysicsCategory.ground
-        
-        state.addFood(food)
-        addChild(food)
-    }
-    
-    func spawnGuppy() {
-        let guppy = Guppy(
-            swimTextures: FishTextures.guppySmallSwim,
-            turnTextures: FishTextures.guppySmallTurn,
-            eatTextures: FishTextures.guppySmallEat,
-            deadTextures: FishTextures.guppySmallDead,
-            scale: 2.0,
-            swimSpeed: GuppySize.small.swimSpeed,
-            hunger: 25,
-            spawnCoinTime: 8
-        )
-        
-        guppy.position = randomSpawnPoint(for: guppy.size)
-        guppy.physicsBody = SKPhysicsBody(circleOfRadius: guppy.size.width / 2)
-        guppy.physicsBody?.affectedByGravity = false
-        guppy.physicsBody?.isDynamic = true
-        guppy.physicsBody?.categoryBitMask = PhysicsCategory.guppy
-        guppy.physicsBody?.contactTestBitMask = PhysicsCategory.food
-        guppy.physicsBody?.collisionBitMask = PhysicsCategory.none
-        
-        state.addGuppy(guppy)
-        addChild(guppy)
-        guppy.startState()
-    }
-    
-    func spawnCarnivore() {
-        let carnivore = Carnivore(
-            swimTextures: FishTextures.carnivoreSwim,
-            turnTextures: FishTextures.carnivoreTurn,
-            eatTextures: FishTextures.carnivoreEat,
-            deadTextures: FishTextures.carnivoreDead,
-            scale: 2.0,
-            swimSpeed: 170,
-            hunger: 60,
-            spawnCoinTime: 30,
-            moneyDrop: MoneyType.diamond,
-            swimFoodSpeedMultiplier: 1.5
-        )
-       
-        carnivore.position = randomSpawnPoint(for: carnivore.size)
-        carnivore.physicsBody = SKPhysicsBody(circleOfRadius: carnivore.size.width / 2)
-        carnivore.physicsBody?.affectedByGravity = false
-        carnivore.physicsBody?.isDynamic = true
-        carnivore.physicsBody?.categoryBitMask = PhysicsCategory.carnivore
-        carnivore.physicsBody?.contactTestBitMask = PhysicsCategory.guppy
-        carnivore.physicsBody?.collisionBitMask = PhysicsCategory.none
-        
-        state.addCarnivore(carnivore)
-        addChild(carnivore)
-        carnivore.startState()
-        return
-    }
-    
-    func spawnAlien(alienType: AlienType) {
-        let alien = Alien(alienType: alienType)
-        
-        alien.position = randomSpawnPoint(for: alien.size)
-        alien.physicsBody = SKPhysicsBody(circleOfRadius: alien.size.width / 2)
-        alien.physicsBody?.affectedByGravity = false
-        alien.physicsBody?.isDynamic = true
-        alien.physicsBody?.categoryBitMask = PhysicsCategory.alien
-        alien.physicsBody?.contactTestBitMask = PhysicsCategory.guppy | PhysicsCategory.carnivore
-        alien.physicsBody?.collisionBitMask = PhysicsCategory.none
-        
-        state.addAlien(alien)
-        addChild(alien)
-    }
-    
-    private func randomSpawnPoint(for fishSize: CGSize) -> CGPoint {
-        let adjustedMaxY = maxY - (fishSize.height / 2)
-        
-        let randomX = CGFloat.random(in: 50...size.width - 50)
-        let randomY = CGFloat.random(in: minY...adjustedMaxY)
-        
-        return CGPoint(x: randomX, y: randomY)
-    }
-
-    func spawnMoney(at position: CGPoint, type: MoneyType) {
-        let money = Money(type: type)
-    
-        money.position = position
-        money.name = "money"
-        
-        money.physicsBody = SKPhysicsBody(rectangleOf: money.size)
-        money.physicsBody?.affectedByGravity = true
-        money.physicsBody?.linearDamping = 2.0
-        money.physicsBody?.angularDamping = 2.0
-        money.physicsBody?.mass = 0.2
-        money.physicsBody?.categoryBitMask = PhysicsCategory.money
-        money.physicsBody?.contactTestBitMask = PhysicsCategory.ground
-        money.physicsBody?.collisionBitMask = PhysicsCategory.ground
-
-        addChild(money)
-    }
-    
-    func findNearestFood(to fish: Fish) -> SKSpriteNode? {
-        let detectionRangeFood: CGFloat = 500
-        let detectionRangeFish: CGFloat = 1000
-        
-        if fish is Guppy {
-            return state.foodList
-                .filter {
-                    fish.getDistance(from: fish.position, to: $0.position) <= detectionRangeFood
-                }
-                .min {
-                    fish.getDistance(from: fish.position, to: $0.position) <
-                    fish.getDistance(from: fish.position, to: $1.position)
-                }
-        }
-        
-        return state.guppyList
-            .filter { $0.guppySize == .small}
-            .filter {
-                fish.getDistance(from: fish.position, to: $0.position) <=
-                    detectionRangeFish
-            }
-            .min {
-                fish.getDistance(from: fish.position, to: $0.position) <
-                fish.getDistance(from: fish.position, to: $1.position)
-            }
-    }
-    
-    func findNearestFish(to alien: Alien) -> Fish? {
-        let allFish = state.guppyList + state.carnivoreList
-        
-        return allFish
-            .filter { !$0.isDead }
-            .min {
-                alien.getDistance(from: alien.position, to: $0.position) <
-                alien.getDistance(from: alien.position, to: $1.position)
-            }
-    }
     
     func updateWalletLabel() {
         walletLabel.text = "$\(state.wallet)"
@@ -719,9 +589,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startLevel() {
-        spawnGuppy()
-        spawnGuppy()
-        
+        spawnManager.spawnGuppy()
+        spawnManager.spawnGuppy()
+
         hungerTimer?.invalidate()
         
         hungerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in

@@ -1,10 +1,3 @@
-//
-//  Carnivore.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/10/26.
-//
-
 import SwiftUI
 import SpriteKit
 
@@ -45,5 +38,20 @@ class Carnivore: Fish {
             self.updateAppearance()
             self.startState()
         }
+    }
+    
+    override func findNearestFood() -> SKSpriteNode? {
+        let detectionRangeFish: CGFloat = 1000
+        
+        return GameState.shared.guppyList
+            .filter { $0.guppySize == .small}
+            .filter {
+                getDistance(from: position, to: $0.position) <=
+                    detectionRangeFish
+            }
+            .min {
+                getDistance(from: position, to: $0.position) <
+                getDistance(from: position, to: $1.position)
+            }
     }
 }

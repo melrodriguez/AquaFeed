@@ -1,10 +1,3 @@
-//
-//  Guppy.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/4/26.
-//
-
 import SwiftUI
 import SpriteKit
 

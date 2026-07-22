@@ -1,10 +1,3 @@
-//
-//  Alien.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/17/26.
-//
-
 import SpriteKit
 
 enum AlienType {
@@ -129,8 +122,7 @@ class Alien: SKSpriteNode {
     }
     
     func findPrey() {
-        if let levelScene = scene as? LevelScene,
-           let target = levelScene.findNearestFish(to: self) {
+        if let target = findNearestFish() {
             prey = target
         }
     }
@@ -163,5 +155,16 @@ class Alien: SKSpriteNode {
         
         position.x += bumpVelocity.dx
         position.y += bumpVelocity.dy
+    }
+    
+    func findNearestFish() -> Fish? {
+        let allFish = GameState.shared.guppyList + GameState.shared.carnivoreList
+        
+        return allFish
+            .filter { !$0.isDead }
+            .min {
+                getDistance(from: position, to: $0.position) <
+                getDistance(from: position, to: $1.position)
+            }
     }
 }

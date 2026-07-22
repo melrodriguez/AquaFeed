@@ -1,10 +1,3 @@
-//
-//  AlienTextures.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/17/26.
-//
-
 import SpriteKit
 
 enum AlienTextures {

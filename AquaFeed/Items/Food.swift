@@ -1,10 +1,3 @@
-//
-//  Food.swift
-//  AquaFeed
-//
-//  Created by Jacob Dains on 7/7/26.
-//
-
 import SwiftUI
 import SpriteKit
 

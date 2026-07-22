@@ -1,10 +1,3 @@
-//
-//  LevelConfig.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/5/26.
-//
-
 struct LevelConfig {
     let aquarium: Int
     let level: Int

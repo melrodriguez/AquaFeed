@@ -1,10 +1,3 @@
-//
-//  TitleScene.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/1/26.
-//
-
 import SpriteKit
 import SwiftUI
 
@@ -72,13 +65,13 @@ class TitleScene: SKScene {
             view.presentScene(levelScene, transition: transition)
         }
         
-        if node.name == "tutorialButton" || node.parent?.name == "tutorialButton" {
-            guard let view = self.view else { return }
-            
-            let tutorialScene = TutorialScene(size: size)
-            tutorialScene.setupConfig(Levels.level1)
-            let transition = SKTransition.fade(with: .black, duration: 1)
-            view.presentScene(tutorialScene, transition: transition)
-        }
+//        if node.name == "tutorialButton" || node.parent?.name == "tutorialButton" {
+//            guard let view = self.view else { return }
+//            
+//            let tutorialScene = TutorialScene(size: size)
+//            tutorialScene.setupConfig(Levels.level1)
+//            let transition = SKTransition.fade(with: .black, duration: 1)
+//            view.presentScene(tutorialScene, transition: transition)
+//        }
     }
 }

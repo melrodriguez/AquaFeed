@@ -1,10 +1,3 @@
-//
-//  GameView.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/1/26.
-//
-
 import SwiftUI
 import SpriteKit
 

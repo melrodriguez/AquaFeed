@@ -1,10 +1,3 @@
-//
-//  Fish.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/4/26.
-//
-
 import SpriteKit
 import SwiftUI
 
@@ -117,7 +110,6 @@ class Fish: SKSpriteNode {
         run(swim, withKey: "animation")
     }
     
-    // TODO: FIX THE TO RIGHT IT IS NOT NEEDED?
     func turnFish() {
         removeAction(forKey: "animation")
         
@@ -247,13 +239,6 @@ class Fish: SKSpriteNode {
         }
     }
 
-    func getDistance(from: CGPoint, to: CGPoint) -> CGFloat {
-        let dx = to.x - from.x
-        let dy = to.y - from.y
-        
-        return sqrt(dx * dx + dy * dy)
-    }
-    
     func update() {
         hunger -= 1
         hunger = max(hunger , 0)
@@ -294,8 +279,7 @@ class Fish: SKSpriteNode {
     }
     
     func findFood() {
-        if let levelScene = scene as? LevelScene,
-           let food = levelScene.findNearestFood(to: self) {
+        if let food = findNearestFood() {
             targetFood = food
             state = .seekFood
             
@@ -334,7 +318,7 @@ class Fish: SKSpriteNode {
         if timeTillSpawnCoin < 1 {
             guard let levelScene = scene as? LevelScene else { return }
             if moneyDrop != nil {
-                levelScene.spawnMoney(at: self.position, type: moneyDrop!)
+                levelScene.spawnManager.spawnMoney(at: self.position, type: moneyDrop!)
             }
             
             timeTillSpawnCoin = spawnCoinTime
@@ -367,5 +351,18 @@ class Fish: SKSpriteNode {
             self.isDead = true
             removeFromParent()
         }
+    }
+    
+    func findNearestFood() -> SKSpriteNode? {
+        let detectionRangeFood: CGFloat = 500
+        
+        return GameState.shared.foodList
+            .filter {
+                getDistance(from: position, to: $0.position) <= detectionRangeFood
+            }
+            .min {
+                getDistance(from: position, to: $0.position) <
+                getDistance(from: position, to: $1.position)
+            }
     }
 }
