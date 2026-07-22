@@ -13,6 +13,7 @@ let guppyPrice = 100
 let carnivorePrice = 1000
 let upgradeFoodQualityCost = 200
 let increaseFoodLimitCost = 300
+let laserUpgradePrice = 1000
 let eggLimit = 3
 let maxQualityUpgrade = FoodQuality.level3
 
@@ -30,6 +31,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var upgradeFoodQuality = SKSpriteNode(imageNamed: "menu_board")
     var increaseFoodLimit = SKSpriteNode(imageNamed: "menu_board")
     var buyCarnivoreButton = SKSpriteNode(imageNamed: "menu_board")
+    var upgradeLaser = SKSpriteNode(imageNamed: "menu_board")
+    var upgradeLaserLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     var foodUpgradeLabel1 = SKSpriteNode(texture: ItemTextures.food1)
     var foodUpgradeLabel2 = SKSpriteNode(texture: ItemTextures.food2)
     var ground = SKNode()
@@ -133,6 +136,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         case "buyCarnivore":
             buyCarnivore()
         
+        case "upgradeLaser":
+            buylaserUpgrade()
+        
         default:
             break
         }
@@ -192,6 +198,17 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             state.updateWallet(amount: -carnivorePrice)
             updateWalletLabel()
             spawnManager.spawnCarnivore()
+        }
+    }
+    
+    func buylaserUpgrade() {
+        if upgradeLaser.isHidden { return }
+        
+        if state.wallet >= laserUpgradePrice {
+            state.updateWallet(amount: -laserUpgradePrice)
+            updateWalletLabel()
+            state.upgradeLaser()
+            updateUpgradeLaserLabel()
         }
     }
     
@@ -370,6 +387,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         addUpgradeFoodButton()
         addIncreaseFoodButton()
         addBuyCarnivoreButton()
+        addUpgradeLaserButton()
     }
     
     func setupMenu() {
@@ -585,6 +603,47 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         } else {
             foodUpgradeLabel1.texture = ItemTextures.food2
             foodUpgradeLabel2.texture = ItemTextures.food3
+        }
+    }
+    
+    func addUpgradeLaserButton() {
+        upgradeLaser.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
+        upgradeLaser.position = CGPoint(x: size.width - 535, y: size.height - 85)
+        upgradeLaser.name = "upgradeLaser"
+        upgradeLaser.zPosition = 1
+        
+        let laserLabel = SKSpriteNode(texture: ItemTextures.gun)
+        laserLabel.size = CGSize(
+            width: ItemTextures.gun.size().width * 3.0,
+            height: ItemTextures.gun.size().height * 3.0
+        )
+        laserLabel.position = CGPoint(x: -25, y: 15)
+        
+        let priceLabel = SKLabelNode(fontNamed: "Menlo-Bold")
+        priceLabel.text = "$\(laserUpgradePrice)"
+        priceLabel.verticalAlignmentMode = .center
+        priceLabel.horizontalAlignmentMode = .center
+        priceLabel.position = CGPoint(x: 0, y: -40)
+        
+        upgradeLaserLabel.text = "x\(state.gunUpgrade)"
+        upgradeLaserLabel.name = "laserLevel"
+        upgradeLaserLabel.verticalAlignmentMode = .center
+        upgradeLaserLabel.horizontalAlignmentMode = .center
+        upgradeLaserLabel.position = CGPoint(x: 25, y: 15)
+        
+        upgradeLaser.addChild(laserLabel)
+        upgradeLaser.addChild(priceLabel)
+        upgradeLaser.addChild(upgradeLaserLabel)
+        addChild(upgradeLaser)
+    }
+    
+    func updateUpgradeLaserLabel() {
+        for node in upgradeLaser.children {
+            if let label = node as? SKLabelNode,
+               label.name == "laserLevel"
+            {
+                label.text = "x\(state.gunUpgrade)"
+            }
         }
     }
     

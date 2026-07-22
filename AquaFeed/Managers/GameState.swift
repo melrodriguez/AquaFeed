@@ -17,6 +17,7 @@ class GameState {
     var foodQuality: FoodQuality
     var eggCount: Int
     var gunDamage: Int
+    var gunUpgrade: Int
     
     private init() {
         pauseDuration = 1.0
@@ -32,6 +33,7 @@ class GameState {
         foodQuality = FoodQuality.level1
         eggCount = 0
         gunDamage = 10
+        gunUpgrade = 1
     }
     
     func restartLevel() {
@@ -138,5 +140,10 @@ class GameState {
         } else if foodQuality == FoodQuality.level2 {
             foodQuality = FoodQuality.level3
         }
+    }
+    
+    func upgradeLaser() {
+        gunUpgrade += 1
+        gunDamage += 20
     }
 }

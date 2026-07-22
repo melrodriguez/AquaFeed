@@ -10,9 +10,22 @@
 		8B42B1B32FE2EEB4007BF627 /* AquaFeed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AquaFeed.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8B2F735230107480008A82E0 /* Exceptions for "AquaFeed" folder in "AquaFeed" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Scenes/Untitled.swift,
+			);
+			target = 8B42B1B22FE2EEB4007BF627 /* AquaFeed */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8B42B1B52FE2EEB4007BF627 /* AquaFeed */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8B2F735230107480008A82E0 /* Exceptions for "AquaFeed" folder in "AquaFeed" target */,
+			);
 			path = AquaFeed;
 			sourceTree = "<group>";
 		};
