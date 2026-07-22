@@ -141,6 +141,24 @@ class SpawnManager {
         scene.addChild(stinky)
         stinky.setState(.wander)
     }
+    
+    func spawnItchy() {
+        guard let scene = scene else { return }
+        
+        let itchy = Itchy(type: PetType.itchy)
+        
+        itchy.position = CGPoint(x: 50, y: 500)
+        itchy.physicsBody = SKPhysicsBody(circleOfRadius: itchy.size.width / 2)
+        itchy.physicsBody?.affectedByGravity = false
+        itchy.physicsBody?.isDynamic = true
+        itchy.physicsBody?.categoryBitMask = PhysicsCategory.itchy
+        itchy.physicsBody?.contactTestBitMask = PhysicsCategory.alien
+        itchy.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+        GameState.shared.addPet(itchy)
+        scene.addChild(itchy)
+        itchy.setState(.swim)
+    }
 
     private func getSpawnPoint(for spriteSize: CGSize) -> CGPoint {
         guard let scene = scene else { return .zero }

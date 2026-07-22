@@ -209,6 +209,14 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         for alien in state.alienList {
             alien.frameUpdate()
         }
+        
+        for pet in state.petList {
+            if let itchy = pet as? Itchy {
+                if itchy.state == .charge && itchy.chaseAlien {
+                    itchy.frameUpdate()
+                }
+            }
+        }
 
         state.removeDeadGuppy()
         state.removeDeadCarnivore()
@@ -235,8 +243,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard
                 let food: Food = node(ofType: Food.self, from: contact),
                 let guppy: Guppy = node(ofType: Guppy.self, from: contact)
-            else { return
-            }
+            else { return }
                 
             fishFed(food, guppy)
         } else if categories == PhysicsCategory.money | PhysicsCategory.ground {
@@ -248,8 +255,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard
                 let guppy: Guppy = node(ofType: Guppy.self, from: contact),
                 let carnivore: Carnivore = node(ofType: Carnivore.self, from: contact)
-            else { return
-            }
+            else { return }
             
             if carnivore.state == FishState.seekFood {
                 carnivore.animateEat()
@@ -263,8 +269,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             guard
                 let fish: Fish = node(ofType: Fish.self, from: contact),
                 let alien: Alien = node(ofType: Alien.self, from: contact)
-            else { return
-            }
+            else { return }
             
             fish.die(showDieAnimation: false)
             alien.prey = nil
@@ -272,8 +277,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         else if categories == PhysicsCategory.stinky | PhysicsCategory.money {
             guard
                 let money: Money = node(ofType: Money.self, from: contact)
-            else { return
-            }
+            else { return }
             
             state.updateWallet(amount: money.type.value)
             updateWalletLabel()
@@ -281,6 +285,14 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             money.removeFromParent()
             state.removeMoney(money)
             return
+        }
+        else if categories == PhysicsCategory.itchy | PhysicsCategory.alien {
+            guard
+                let itchy: Itchy = node(ofType: Itchy.self, from: contact),
+                let alien: Alien = node(ofType: Alien.self, from:contact)
+            else { return }
+            
+            itchy.isTouchingAlien = true
         }
     }
     
@@ -579,7 +591,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
-        spawnManager.spawnStinky()
 
         hungerTimer?.invalidate()
         

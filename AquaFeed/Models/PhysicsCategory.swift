@@ -7,5 +7,6 @@ struct PhysicsCategory {
     static let carnivore: UInt32 = 0x1 << 4
     static let alien: UInt32 = 0x1 << 5
     static let stinky: UInt32 = 0x1 << 6
+    static let itchy: UInt32 = 0x1 << 7
 }
 

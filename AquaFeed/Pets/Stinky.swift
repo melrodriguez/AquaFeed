@@ -7,22 +7,6 @@ class Stinky: Pet {
         case collectingCoin
     }
     
-    var sceneWidth: CGFloat {
-        self.scene?.size.width ?? 0
-    }
-    
-    var sceneHeight: CGFloat {
-        self.scene?.size.height ?? 0
-    }
-    
-    var minX: CGFloat {
-        50
-    }
-    
-    var maxX: CGFloat {
-        sceneWidth - 50
-    }
-    
     var yPos: CGFloat {
         (sceneHeight - (sceneHeight * 0.70)) / 2
     }
