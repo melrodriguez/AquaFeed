@@ -11,19 +11,21 @@ class Stinky: Pet {
         (sceneHeight - (sceneHeight * 0.70)) / 2
     }
     
+    let moveTextures: [SKTexture] = PetTextures.stinkyMove
+    let hideTextures: [SKTexture] = PetTextures.stinkyHide
+    let scale: CGFloat = 2.5
     var targetMoney: Money?
-    var state: State = .wander
+    var state: State = .hiding
     var goingLeft: Bool = true
     var normalSpeed: CGFloat = 100
     var fastSpeed: CGFloat = 500
+    
 
     init() {
         super.init(
-            texture: PetType.stinky.moveTextures.first!,
-            scale: PetType.stinky.scale
+            texture: moveTextures.first!,
+            scale: scale
         )
-
-        enterState(state)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -160,6 +162,8 @@ class Stinky: Pet {
             setState(.wander)
             return
         }
+        
+        print("Going to target coin")
         
         let targetXPos = targetMoney!.position.x
         let distance = abs(targetXPos - position.x)

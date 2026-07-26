@@ -591,6 +591,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
+        spawnManager.spawnStinky()
 
         hungerTimer?.invalidate()
         

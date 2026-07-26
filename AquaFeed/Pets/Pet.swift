@@ -21,10 +21,10 @@ class Pet: SKSpriteNode {
         super.init(
             texture: texture,
             color: .clear,
-            size: CGSize {
-                width: texture.size().width * scale
+            size: CGSize (
+                width: texture.size().width * scale,
                 height: texture.size().height * scale
-            }
+            )
         )
     }
     

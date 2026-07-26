@@ -10,4 +10,6 @@ enum PetTextures {
     static let itchyTurn = textures(from: petAtlas, prefix: "itchy_turn")
     static let itchyCharge = petAtlas.textureNamed("itchy_charge_01")
     static let itchyChargeTurn = textures(from: petAtlas, prefix: "itchy_charge_turn")
+    
+    static let nikoTextures = textures(from: petAtlas, prefix: "niko")
 }

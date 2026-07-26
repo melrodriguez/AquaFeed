@@ -6,6 +6,8 @@ class Itchy: Pet {
         case charge
     }
     
+    let moveTextures: [SKTexture] = PetTextures.itchySwim
+    let scale: CGFloat = 3.0
     var state: State = .swim
     var normalSpeed: CGFloat = 100
     var chargeSpeed: CGFloat = 400
@@ -18,8 +20,8 @@ class Itchy: Pet {
 
     init() {
         super.init(
-            texture: PetType.itchy.moveTextures.first!,
-            scale: PetType.itchy.scale
+            texture: moveTextures.first!,
+            scale: scale
         )
 
         enterState(state)

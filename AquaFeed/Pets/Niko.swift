@@ -3,18 +3,18 @@ import SpriteKit
 class Niko: Pet {
     enum State {
         case normal
-        case waiting
+        case wait
     }
 
-    let pearlTime: Int = 40
+    let pearlTime: Float = 40.0
     var state: State = .normal
-    var timeTillPearl: Int = 34
+    var timeTillPearl: Float = 34.0
     var hasPearlBeenCollected: Bool = false
+    var showPearl: Bool = false
 
     init() {
         super.init(
-            // Add Niko's texture
-            texture: PetType.itchy.moveTextures.first!,
+            texture: PetTextures.nikoTextures.first!,
             scale: 1.0
         )
 
@@ -39,21 +39,28 @@ class Niko: Pet {
 
     private func enterState(_ state: State) {
         switch state {
-        case normal:
+        case .normal:
             startAnimation()
-        case waiting:
+        case .wait:
             startWait()
         }
     }
 
     private func startAnimation() {
-        // start animation
-        print("start animation")
+        let calcTime = timeTillPearl / Float(PetTextures.nikoTextures.count)
+        let interval = TimeInterval(calcTime)
+        
+        
+        let animation = SKAction.animate(
+            with: PetTextures.nikoTextures,
+            timePerFrame: interval
+        )
+        
+        run(animation, withKey: "animation")
     }
 
     private func startWait() {
-        // Leave mouth open
-        print("start wait")
+        texture = PetTextures.nikoTextures.last!
     }
 
     func update() {
