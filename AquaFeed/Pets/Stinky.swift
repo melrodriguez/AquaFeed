@@ -12,11 +12,24 @@ class Stinky: Pet {
     }
     
     var targetMoney: Money?
-    var state: State = .hiding
+    var state: State = .wander
     var goingLeft: Bool = true
     var normalSpeed: CGFloat = 100
     var fastSpeed: CGFloat = 500
-    
+
+    init() {
+        super.init(
+            texture: PetType.stinky.moveTextures.first!,
+            scale: PetType.stinky.scale
+        )
+
+        enterState(state)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func alienAppeared() {
         setState(.hiding)
     }

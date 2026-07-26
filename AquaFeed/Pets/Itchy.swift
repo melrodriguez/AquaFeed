@@ -15,6 +15,19 @@ class Itchy: Pet {
     var damageCooldown: TimeInterval = 0.5
     var lastDamageTime: TimeInterval = 0
     var chaseAlien: Bool = false
+
+    init() {
+        super.init(
+            texture: PetType.itchy.moveTextures.first!,
+            scale: PetType.itchy.scale
+        )
+
+        enterState(state)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func setState(_ newState: State) {
         guard state != newState else {return}
