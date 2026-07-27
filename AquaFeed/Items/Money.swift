@@ -5,6 +5,7 @@ enum MoneyType {
     case silver
     case gold
     case diamond
+    case pearl
     
     var value: Int {
         switch self {
@@ -14,6 +15,8 @@ enum MoneyType {
             return 35
         case.diamond:
             return 200
+        case.pearl:
+            return 500
         }
     }
     
@@ -25,6 +28,8 @@ enum MoneyType {
             return ItemTextures.goldCoin
         case.diamond:
             return ItemTextures.diamond
+        case.pearl:
+            return ItemTextures.pearl
         }
     }
     
@@ -36,6 +41,8 @@ enum MoneyType {
             return 3.5
         case.diamond:
             return 4.0
+        case.pearl:
+            return 3.0
         }
     }
 }

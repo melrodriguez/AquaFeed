@@ -220,7 +220,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
 
         state.removeDeadGuppy()
         state.removeDeadCarnivore()
-        state.removeDeadAlien()
         
         // Temporary Game Over Scene
         if state.eggCount == eggLimit {
@@ -288,7 +287,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         }
         else if categories == PhysicsCategory.itchy | PhysicsCategory.alien {
             guard
-                let itchy: Itchy = node(ofType: Itchy.self, from: contact),
+                let itchy: Itchy = node(ofType: Itchy.self, from: contact)
             else { return }
             
             itchy.isTouchingAlien = true
@@ -589,7 +588,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
-        spawnManager.spawnStinky()
+        spawnManager.spawnNiko()
 
         hungerTimer?.invalidate()
         
@@ -603,7 +602,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             for carnivore in self.state.carnivoreList {
                 carnivore.update()
             }
+            
+            for pet in self.state.petList {
+                if let niko = pet as? Niko {
+                    niko.update()
+                }
+            }
         }
-                                         
     }
 }

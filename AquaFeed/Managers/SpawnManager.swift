@@ -125,7 +125,6 @@ class SpawnManager {
     func spawnStinky() {
         guard let scene = scene else { return }
         let minY = (scene.size.height - (scene.size.height * 0.70)) / 2
-        print(minY)
 
         let stinky = Stinky()
         
@@ -156,6 +155,30 @@ class SpawnManager {
         
         GameState.shared.addPet(itchy)
         scene.addChild(itchy)
+    }
+    
+    func spawnNiko() {
+        guard let scene = scene else { return }
+        
+        let niko = Niko()
+        
+        niko.position = CGPoint(x: 500, y: 500)
+        GameState.shared.addPet(niko)
+        scene.addChild(niko)
+    }
+    
+    func spawnPearl(at position: CGPoint) -> Money? {
+        guard let scene = scene else { return nil }
+        
+        let pearl = Money(type: MoneyType.pearl)
+    
+        pearl.position = position
+        
+        pearl.physicsBody = SKPhysicsBody(rectangleOf: pearl.size)
+
+        scene.addChild(pearl)
+        pearl.isHidden = true
+        return pearl
     }
 
     private func getSpawnPoint(for spriteSize: CGSize) -> CGPoint {

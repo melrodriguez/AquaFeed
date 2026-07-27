@@ -66,7 +66,7 @@ class Stinky: Pet {
     private func animateWander() {
         let move = SKAction.repeatForever(
             .animate(
-                with: PetType.stinky.moveTextures,
+                with: moveTextures,
                 timePerFrame: 0.08
             )
         )
@@ -153,7 +153,7 @@ class Stinky: Pet {
     private func animateGoToCoin() {
         let move = SKAction.repeatForever(
             .animate(
-                with: PetType.stinky.moveTextures,
+                with: moveTextures,
                 timePerFrame: 0.07
             )
         )
@@ -168,7 +168,6 @@ class Stinky: Pet {
             setState(.wander)
             return
         }
-        print("got to coin")
         
         let targetXPos = targetMoney!.position.x
         let duration = 0.2

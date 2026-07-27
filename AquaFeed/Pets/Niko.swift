@@ -11,12 +11,17 @@ class Niko: Pet {
     var timeTillPearl: Float = 34.0
     var hasPearlBeenCollected: Bool = false
     var showPearl: Bool = false
+    var pearl: Money?
 
     init() {
         super.init(
             texture: PetTextures.nikoTextures.first!,
-            scale: 1.0
+            scale: 3.0
         )
+        
+        guard let levelScene = scene as? LevelScene else { return }
+        
+        pearl = levelScene.spawnManager.spawnPearl(at: self.position)
 
         enterState(state)
     }
@@ -68,6 +73,7 @@ class Niko: Pet {
         timeTillPearl = max(timeTillPearl, 0)
 
         if state == .normal && timeTillPearl == 0 {
+            print("Time till pearl?")
             setState(.wait)
         }
 

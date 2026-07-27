@@ -65,7 +65,7 @@ class Itchy: Pet {
     private func animateWander() {
         let move = SKAction.repeatForever(
             .animate(
-                with: PetType.itchy.moveTextures,
+                with: moveTextures,
                 timePerFrame: 0.12
             )
         )
@@ -110,7 +110,7 @@ class Itchy: Pet {
         removeAction(forKey: "animation")
         
         let turn = SKAction.animate(
-            with: PetType.itchy.turnTextures,
+            with: PetTextures.itchyTurn,
             timePerFrame: 0.06
         )
         
