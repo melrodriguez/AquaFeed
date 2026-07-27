@@ -18,8 +18,6 @@ class Stinky: Pet {
     var state: State = .hiding
     var goingLeft: Bool = true
     var normalSpeed: CGFloat = 100
-    var fastSpeed: CGFloat = 500
-    
 
     init() {
         super.init(
@@ -61,7 +59,6 @@ class Stinky: Pet {
             hide()
         case .collectingCoin:
             animateGoToCoin()
-            updateTargetCoin()
             goToTargetCoin()
         }
     }
@@ -125,13 +122,22 @@ class Stinky: Pet {
     private func turn() {
         removeAction(forKey: "animation")
         xScale *= -1
-        animateWander()
+        
+        if state == .wander {
+            animateWander()
+        }
     }
     
-    private func updateTargetCoin() {
+    func updateTargetCoin() {
+        if targetMoney != nil {
+            return
+        }
+        
         if let money = findNearestMoney() {
             targetMoney = money
             setState(.collectingCoin)
+        } else {
+            setState(.wander)
         }
     }
     
@@ -162,13 +168,10 @@ class Stinky: Pet {
             setState(.wander)
             return
         }
-        
-        print("Going to target coin")
+        print("got to coin")
         
         let targetXPos = targetMoney!.position.x
-        let distance = abs(targetXPos - position.x)
-        let duration = distance / fastSpeed
-        
+        let duration = 0.2
         
         if goingLeft && (targetXPos > position.x) {
             goingLeft = false

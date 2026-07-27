@@ -289,7 +289,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         else if categories == PhysicsCategory.itchy | PhysicsCategory.alien {
             guard
                 let itchy: Itchy = node(ofType: Itchy.self, from: contact),
-                let alien: Alien = node(ofType: Alien.self, from:contact)
             else { return }
             
             itchy.isTouchingAlien = true
@@ -323,23 +322,22 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         if item.action(forKey: "despawn") == nil {
             let waitAction = SKAction.wait(forDuration: despawnTime)
             
-            if isFood {
-                let runAction = SKAction.run { [weak self, weak item] in
-                    guard let self, let item else { return }
+            let runAction = SKAction.run { [weak self, weak item] in
+                guard let self, let item else { return }
+                
+                if isFood {
                     self.state.removeFood(item)
+                } else {
+                    self.state.removeMoney(item)
                 }
                 
-                despawn = SKAction.sequence([
-                    waitAction,
-                    runAction,
-                    .removeFromParent()
-                ])
-            } else {
-                despawn = SKAction.sequence([
-                    waitAction,
-                    .removeFromParent()
-                ])
             }
+            
+            despawn = SKAction.sequence([
+                waitAction,
+                runAction,
+                .removeFromParent()
+            ])
             
             item.run(despawn, withKey: "despawn")
         }

@@ -96,7 +96,7 @@ class GameState {
         
         for pet in petList {
             if let stinky = pet as? Stinky {
-                stinky.setState(.collectingCoin)
+                stinky.updateTargetCoin()
             }
         }
     }
@@ -108,8 +108,9 @@ class GameState {
             if let stinky = pet as? Stinky {
                 if let targetMoney = stinky.targetMoney {
                     if money == targetMoney {
+                        print("Set money to nil")
                         stinky.targetMoney = nil
-                        stinky.setState(.wander)
+                        stinky.updateTargetCoin()
                     }
                 }
             }
