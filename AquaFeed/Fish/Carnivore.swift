@@ -43,7 +43,7 @@ class Carnivore: Fish {
     override func findNearestFood() -> SKSpriteNode? {
         let detectionRangeFish: CGFloat = 1000
         
-        return GameState.shared.guppyList
+        return LevelState.shared.guppyList
             .filter { $0.guppySize == .small}
             .filter {
                 getDistance(from: position, to: $0.position) <=

@@ -356,7 +356,7 @@ class Fish: SKSpriteNode {
     func findNearestFood() -> SKSpriteNode? {
         let detectionRangeFood: CGFloat = 500
         
-        return GameState.shared.foodList
+        return LevelState.shared.foodList
             .filter {
                 getDistance(from: position, to: $0.position) <= detectionRangeFood
             }

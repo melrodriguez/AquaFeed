@@ -55,13 +55,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     var pauseDuration = 1.0;
-    let state = GameState.shared
+    let state = LevelState.shared
     
     var hungerTimer: Timer?
 
     override func didMove(to view: SKView) {
         // This is just for testing purposes
-        state.restartLevel()
+        state.setupLevel()
         
         if config.level == 100 {
             state.wallet = 4000
@@ -242,14 +242,17 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         state.removeDeadGuppy()
         state.removeDeadCarnivore()
         
-        // Temporary Game Over Scene
         if state.eggCount == eggLimit {
-            guard let view = self.view else { return }
-            
-            let titleScene = TitleScene(size: size)
-            let transition = SKTransition.fade(with: .black, duration: 1)
-            view.presentScene(titleScene, transition: transition)
+            completeLevel()
         }
+    }
+    
+    func completeLevel() {
+        guard let view = self.view else { return }
+        
+        let titleScene = TitleScene(size: size)
+        let transition = SKTransition.fade(with: .black, duration: 1)
+        view.presentScene(titleScene, transition: transition)
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -651,7 +654,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
-        spawnManager.spawnNiko()
 
         hungerTimer?.invalidate()
         

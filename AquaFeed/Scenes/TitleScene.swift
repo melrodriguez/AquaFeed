@@ -12,7 +12,6 @@ class TitleScene: SKScene {
         setupBackground()
         setupGameLabel()
         setupPlayButton()
-        setupTutorialButton()
     }
     
     func setupBackground() {
@@ -35,21 +34,6 @@ class TitleScene: SKScene {
         addChild(playButton)
     }
     
-    func setupTutorialButton() {
-        tutorialButton.position = CGPoint(x: size.width / 2, y: size.height / 2 - 300)
-        tutorialButton.name = "tutorialButton"
-        
-        let tutorialLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-        tutorialLabel.fontColor = .black
-        tutorialLabel.fontSize = 20
-        tutorialLabel.text = "Play Tutorial"
-        tutorialLabel.verticalAlignmentMode = .center
-        tutorialLabel.horizontalAlignmentMode = .center
-        
-        tutorialButton.addChild(tutorialLabel)
-        addChild(tutorialButton)
-    }
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         
@@ -59,19 +43,23 @@ class TitleScene: SKScene {
         if node.name == "playButton" || node.parent?.name == "playButton" {
             guard let view = self.view else { return }
             
-            let levelScene = LevelScene(size: size)
-            levelScene.setupConfig(Levels.levelTest)
-            let transition = SKTransition.fade(with: .black, duration: 1)
-            view.presentScene(levelScene, transition: transition)
-        }
-        
-        if node.name == "tutorialButton" || node.parent?.name == "tutorialButton" {
-            guard let view = self.view else { return }
+            GameState.shared.load()
             
-            let tutorialScene = TutorialScene(size: size)
-            tutorialScene.setupConfig(Levels.level1)
-            let transition = SKTransition.fade(with: .black, duration: 1)
-            view.presentScene(tutorialScene, transition: transition)
+            if GameState.shared.hasCompletedTutorial {
+                let levelSelectionScene = LevelSelectionScene(size: size)
+                let transition = SKTransition.fade(with: .black, duration: 1)
+                view.presentScene(levelSelectionScene, transition: transition)
+            } else {
+                let tutorialScene = TutorialScene(size: size)
+                tutorialScene.setupConfig(Levels.level1)
+                let transition = SKTransition.fade(with: .black, duration: 1)
+                view.presentScene(tutorialScene, transition: transition)
+            }
+            
+//            let levelScene = LevelScene(size: size)
+//            levelScene.setupConfig(Levels.level1)
+//            let transition = SKTransition.fade(with: .black, duration: 1)
+//            view.presentScene(levelScene, transition: transition)
         }
     }
 }

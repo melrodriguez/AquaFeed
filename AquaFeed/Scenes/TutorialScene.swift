@@ -75,6 +75,14 @@ class TutorialScene: LevelScene {
         upgradeLaser.isHidden = true
     }
     
+    override func completeLevel() {
+        GameState.shared.levels[1].unlocked = true
+        GameState.shared.hasCompletedTutorial = true
+        GameState.shared.save()
+        
+        super.completeLevel()
+    }
+    
     func addTutorialLabel() {
         tutorialLabel.fontSize = 30
         tutorialLabel.fontColor = .green

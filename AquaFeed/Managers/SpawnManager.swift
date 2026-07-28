@@ -3,7 +3,8 @@ import SpriteKit
 class SpawnManager {
     
     weak var scene: LevelScene?
-    
+    let state = LevelState.shared
+
     init(scene: LevelScene) {
         self.scene = scene
     }
@@ -30,7 +31,7 @@ class SpawnManager {
         guppy.physicsBody?.contactTestBitMask = PhysicsCategory.food
         guppy.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        GameState.shared.addGuppy(guppy)
+        state.addGuppy(guppy)
         scene.addChild(guppy)
         guppy.startState()
     }
@@ -59,7 +60,7 @@ class SpawnManager {
         carnivore.physicsBody?.contactTestBitMask = PhysicsCategory.guppy
         carnivore.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        GameState.shared.addCarnivore(carnivore)
+        state.addCarnivore(carnivore)
         scene.addChild(carnivore)
         carnivore.startState()
     }
@@ -77,7 +78,7 @@ class SpawnManager {
         alien.physicsBody?.contactTestBitMask = PhysicsCategory.guppy | PhysicsCategory.carnivore
         alien.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        GameState.shared.addAlien(alien)
+        state.addAlien(alien)
         scene.addChild(alien)
     }
     
@@ -97,7 +98,7 @@ class SpawnManager {
         food.physicsBody?.contactTestBitMask = PhysicsCategory.ground
         food.physicsBody?.collisionBitMask = PhysicsCategory.ground
         
-        GameState.shared.addFood(food)
+        state.addFood(food)
         scene.addChild(food)
     }
     
@@ -119,7 +120,7 @@ class SpawnManager {
         money.physicsBody?.collisionBitMask = PhysicsCategory.ground
 
         scene.addChild(money)
-        GameState.shared.addMoney(money)
+        state.addMoney(money)
     }
     
     func spawnStinky() {
@@ -136,7 +137,7 @@ class SpawnManager {
         stinky.physicsBody?.contactTestBitMask = PhysicsCategory.money
         stinky.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        GameState.shared.addPet(stinky)
+        state.addPet(stinky)
         scene.addChild(stinky)
     }
     
@@ -153,7 +154,7 @@ class SpawnManager {
         itchy.physicsBody?.contactTestBitMask = PhysicsCategory.alien
         itchy.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        GameState.shared.addPet(itchy)
+        state.addPet(itchy)
         scene.addChild(itchy)
     }
     
@@ -163,7 +164,7 @@ class SpawnManager {
         let niko = Niko()
         
         niko.position = CGPoint(x: 650, y: 530)
-        GameState.shared.addPet(niko)
+        state.addPet(niko)
         scene.addChild(niko)
         niko.setState(.normal)
     }

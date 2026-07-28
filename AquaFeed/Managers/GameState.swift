@@ -4,146 +4,73 @@ import SpriteKit
 class GameState {
     static let shared = GameState()
     
-    var pauseDuration: Float
-    var gameOver: Bool
-    var guppyList: [Guppy]
-    var carnivoreList: [Carnivore]
-    var alienList: [Alien]
-    var foodList: [Food]
-    var moneyList: [Money]
-    var petList: [Pet]
-    var wallet: Int
-    var foodLimit: Int
-    var foodQuality: FoodQuality
-    var eggCount: Int
-    var gunDamage: Int
-    var gunUpgrade: Int
+    var levels: [Level] = [
+        Level(id: 1, unlocked: true),
+        Level(id: 2, unlocked: false),
+        Level(id: 3, unlocked: false),
+        Level(id: 4, unlocked: false),
+        Level(id: 5, unlocked: false),
+    ]
     
-    private init() {
-        pauseDuration = 1.0
-        gameOver = false
-        guppyList = []
-        carnivoreList = []
-        alienList = []
-        foodList = []
-        moneyList = []
-        petList = []
-        wallet = 200
-        foodLimit = 1
-        foodQuality = FoodQuality.level1
-        eggCount = 0
-        gunDamage = 10
-        gunUpgrade = 1
-    }
+    var pets: [PetInfo] = [
+        PetInfo(type: PetType.stinky, texture: PetTextures.stinkyMove.first!, unlocked: false),
+        PetInfo(type: PetType.itchy, texture: PetTextures.itchySwim.first!, unlocked: false),
+        PetInfo(type: PetType.niko, texture: PetTextures.nikoTextures.first!, unlocked: false),
+    ]
     
-    func restartLevel() {
-        pauseDuration = 1.0
-        gameOver = false
-        guppyList = []
-        carnivoreList = []
-        alienList = []
-        foodList = []
-        moneyList = []
-        wallet = 200
-        foodLimit = 1
-        foodQuality = FoodQuality.level1
-        eggCount = 0
-        gunDamage = 10
-    }
+    var hasCompletedTutorial: Bool = false
     
-    func addGuppy(_ Guppy: Guppy) {
-        guppyList.append(Guppy)
-    }
-    
-    func removeDeadGuppy() {
-        guppyList.removeAll { $0.isDead }
-    }
-    
-    func addCarnivore(_ Carnivore: Carnivore) {
-        carnivoreList.append(Carnivore)
-    }
-    
-    func removeDeadCarnivore() {
-        carnivoreList.removeAll { $0.isDead }
-    }
-    
-    func addAlien(_ Alien: Alien) {
-        alienList.append(Alien)
+    func save() {
+        UserDefaults.standard.set(hasCompletedTutorial, forKey: "hasCompletedTutorial")
         
-        for pet in petList {
-            pet.alienAppeared()
-        }
-    }
-    
-    func removeDeadAlien() {
-        alienList.removeAll { $0.isDead }
+        var unlockedLevels: Set<Int> = []
         
-        if alienList.isEmpty {
-            for pet in petList {
-                pet.allAliensDisappeared()
+        for level in levels {
+            if level.unlocked {
+                unlockedLevels.insert(level.id)
             }
         }
-    }
-
-    func addFood(_ food: Food) {
-        foodList.append(food)
-    }
-    
-    func removeFood(_ food: SKSpriteNode) {
-        foodList.removeAll { $0 == food }
-    }
-    
-    func addMoney(_ money: Money) {
-        moneyList.append(money)
         
-        for pet in petList {
-            if let stinky = pet as? Stinky {
-                stinky.updateTargetCoin()
+        UserDefaults.standard.set(
+            Array(unlockedLevels),
+            forKey: "unlockedLevels"
+        )
+        
+        var unlockedPets: Set<PetType> = []
+        
+        for pet in pets {
+            if pet.unlocked {
+                unlockedPets.insert(pet.type)
             }
         }
+        
+        UserDefaults.standard.set(
+            unlockedPets.map { $0.rawValue },
+            forKey: "unlockedPets"
+        )
     }
     
-    func removeMoney(_ money: SKSpriteNode) {
-        moneyList.removeAll { $0 == money }
+    func load() {
+        hasCompletedTutorial = UserDefaults.standard.bool(
+            forKey: "hasCompletedTutorial"
+        )
         
-        for pet in petList {
-            if let stinky = pet as? Stinky {
-                if let targetMoney = stinky.targetMoney {
-                    if money == targetMoney {
-                        stinky.targetMoney = nil
-                        stinky.updateTargetCoin()
-                    }
+        if let savedUnlocked = UserDefaults.standard.array(forKey: "unlockedLevels") as? [Int] {
+            let unlockedLevels = Set(savedUnlocked)
+            for i in levels.indices {
+                if unlockedLevels.contains(levels[i].id) {
+                    levels[i].unlocked = true
                 }
             }
         }
-    }
-    
-    func addPet(_ pet: Pet) {
-        petList.append(pet)
-    }
-
-    func updateWallet(amount: Int) {
-        wallet += amount
-    }
-    
-    func increaseFoodLimit() {
-        foodLimit += 1
-    }
-    
-    func increaseEggCount() {
-        eggCount += 1
-    }
-    
-    func upgradeFood() {
-        if foodQuality == FoodQuality.level1 {
-            foodQuality = FoodQuality.level2
-        } else if foodQuality == FoodQuality.level2 {
-            foodQuality = FoodQuality.level3
+        
+        if let savedPetsUnlocked = UserDefaults.standard.array(forKey: "unlockedPets") as? [String] {
+            let unlockedPets = Set(savedPetsUnlocked.compactMap { PetType(rawValue: $0) })
+            for i in pets.indices {
+                if unlockedPets.contains(pets[i].type) {
+                    pets[i].unlocked = true
+                }
+            }
         }
-    }
-    
-    func upgradeLaser() {
-        gunUpgrade += 1
-        gunDamage += 20
     }
 }

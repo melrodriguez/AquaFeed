@@ -84,7 +84,7 @@ class Alien: SKSpriteNode {
             if let self = self {
                 self.isDead = true
                 self.removeFromParent()
-                GameState.shared.removeDeadAlien()
+                LevelState.shared.removeDeadAlien()
             }
         }
     }
@@ -160,7 +160,7 @@ class Alien: SKSpriteNode {
     }
     
     func findNearestFish() -> Fish? {
-        let allFish = GameState.shared.guppyList + GameState.shared.carnivoreList
+        let allFish = LevelState.shared.guppyList + LevelState.shared.carnivoreList
         
         return allFish
             .filter { !$0.isDead }
