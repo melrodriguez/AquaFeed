@@ -83,12 +83,16 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         for node in nodes(at: location) {
             if let money = node as? Money {
-                state.updateWallet(amount: money.type.value)
-                updateWalletLabel()
-                money.setMoneyAsCollected()
-                money.removeFromParent()
-                state.removeMoney(money)
-                return
+                if let body = money.physicsBody {
+                    if body.categoryBitMask == PhysicsCategory.money {
+                        state.updateWallet(amount: money.type.value)
+                        updateWalletLabel()
+                        money.setMoneyAsCollected()
+                        money.removeFromParent()
+                        state.removeMoney(money)
+                        return
+                    }
+                }
             }
             
             if let alien = node as? Alien {

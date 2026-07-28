@@ -162,9 +162,10 @@ class SpawnManager {
         
         let niko = Niko()
         
-        niko.position = CGPoint(x: 500, y: 500)
+        niko.position = CGPoint(x: 650, y: 530)
         GameState.shared.addPet(niko)
         scene.addChild(niko)
+        niko.setState(.normal)
     }
     
     func spawnPearl(at position: CGPoint) -> Money? {
@@ -175,6 +176,11 @@ class SpawnManager {
         pearl.position = position
         
         pearl.physicsBody = SKPhysicsBody(rectangleOf: pearl.size)
+        pearl.physicsBody?.affectedByGravity = false
+        pearl.physicsBody?.categoryBitMask = PhysicsCategory.none
+        pearl.physicsBody?.contactTestBitMask = PhysicsCategory.none
+        pearl.physicsBody?.collisionBitMask = PhysicsCategory.none
+
 
         scene.addChild(pearl)
         pearl.isHidden = true
