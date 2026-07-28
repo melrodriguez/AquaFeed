@@ -51,15 +51,10 @@ class TitleScene: SKScene {
                 view.presentScene(levelSelectionScene, transition: transition)
             } else {
                 let tutorialScene = TutorialScene(size: size)
-                tutorialScene.setupConfig(Levels.level1)
+                tutorialScene.setupConfig(LevelConfigs.level1)
                 let transition = SKTransition.fade(with: .black, duration: 1)
                 view.presentScene(tutorialScene, transition: transition)
             }
-            
-//            let levelScene = LevelScene(size: size)
-//            levelScene.setupConfig(Levels.level1)
-//            let transition = SKTransition.fade(with: .black, duration: 1)
-//            view.presentScene(levelScene, transition: transition)
         }
     }
 }

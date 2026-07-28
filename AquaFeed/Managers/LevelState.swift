@@ -36,7 +36,7 @@ class LevelState {
         gunUpgrade = 1
     }
     
-    func setupLevel() {
+    func setupLevel(config: LevelConfig) {
         pauseDuration = 1.0
         gameOver = false
         guppyList = []

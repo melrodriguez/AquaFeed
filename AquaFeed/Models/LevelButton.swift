@@ -2,10 +2,12 @@ import SpriteKit
 
 class LevelButton: SKSpriteNode {
     let level: Int
+    let isUnlocked: Bool
     private let label = SKLabelNode(fontNamed: "Menlo-Bold")
     
     init(level: Int, isUnlocked: Bool) {
         self.level = level
+        self.isUnlocked = isUnlocked
         
         if isUnlocked {
              super.init(

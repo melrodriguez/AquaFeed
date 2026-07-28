@@ -36,4 +36,30 @@ class LevelSelectionScene: SKScene {
         }
         
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        
+        let location = touch.location(in: self)
+        
+        for node in nodes(at: location) {
+            if let button = node as? LevelButton {
+                if button.level == 1 && button.isUnlocked {
+                    startLevel(config: LevelConfigs.level1)
+                } else if button.level == 2 && button.isUnlocked {
+                    startLevel(config: LevelConfigs.level2)
+                }
+                    
+            }
+        }
+    }
+    
+    func startLevel(config: LevelConfig) {
+        guard let view = self.view else { return }
+        
+        let levelScene = LevelScene(size: size)
+        levelScene.setupConfig(config)
+        let transition = SKTransition.fade(with: .black, duration: 1)
+        view.presentScene(levelScene, transition: transition)
+    }
 }

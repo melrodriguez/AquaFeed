@@ -61,13 +61,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
 
     override func didMove(to view: SKView) {
         // This is just for testing purposes
-        state.setupLevel()
         
-        if config.level == 100 {
-            state.wallet = 4000
-        }
-        
-
         setupBackground()
         setupGround()
         setupMenu()
