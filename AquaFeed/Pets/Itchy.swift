@@ -6,6 +6,8 @@ class Itchy: Pet {
         case charge
     }
     
+    let moveTextures: [SKTexture] = PetTextures.itchySwim
+    let scale: CGFloat = 3.0
     var state: State = .swim
     var normalSpeed: CGFloat = 100
     var chargeSpeed: CGFloat = 400
@@ -15,6 +17,19 @@ class Itchy: Pet {
     var damageCooldown: TimeInterval = 0.5
     var lastDamageTime: TimeInterval = 0
     var chaseAlien: Bool = false
+
+    init() {
+        super.init(
+            texture: moveTextures.first!,
+            scale: scale
+        )
+
+        enterState(state)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func setState(_ newState: State) {
         guard state != newState else {return}
@@ -50,7 +65,7 @@ class Itchy: Pet {
     private func animateWander() {
         let move = SKAction.repeatForever(
             .animate(
-                with: PetType.itchy.moveTextures,
+                with: moveTextures,
                 timePerFrame: 0.12
             )
         )
@@ -95,7 +110,7 @@ class Itchy: Pet {
         removeAction(forKey: "animation")
         
         let turn = SKAction.animate(
-            with: PetType.itchy.turnTextures,
+            with: PetTextures.itchyTurn,
             timePerFrame: 0.06
         )
         
