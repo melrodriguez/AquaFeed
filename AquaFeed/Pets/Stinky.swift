@@ -11,12 +11,25 @@ class Stinky: Pet {
         (sceneHeight - (sceneHeight * 0.70)) / 2
     }
     
+    let moveTextures: [SKTexture] = PetTextures.stinkyMove
+    let hideTextures: [SKTexture] = PetTextures.stinkyHide
+    let scale: CGFloat = 2.5
     var targetMoney: Money?
     var state: State = .hiding
     var goingLeft: Bool = true
     var normalSpeed: CGFloat = 100
-    var fastSpeed: CGFloat = 500
-    
+
+    init() {
+        super.init(
+            texture: moveTextures.first!,
+            scale: scale
+        )
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func alienAppeared() {
         setState(.hiding)
     }
@@ -46,7 +59,6 @@ class Stinky: Pet {
             hide()
         case .collectingCoin:
             animateGoToCoin()
-            updateTargetCoin()
             goToTargetCoin()
         }
     }
@@ -54,7 +66,7 @@ class Stinky: Pet {
     private func animateWander() {
         let move = SKAction.repeatForever(
             .animate(
-                with: PetType.stinky.moveTextures,
+                with: moveTextures,
                 timePerFrame: 0.08
             )
         )
@@ -110,13 +122,22 @@ class Stinky: Pet {
     private func turn() {
         removeAction(forKey: "animation")
         xScale *= -1
-        animateWander()
+        
+        if state == .wander {
+            animateWander()
+        }
     }
     
-    private func updateTargetCoin() {
+    func updateTargetCoin() {
+        if targetMoney != nil {
+            return
+        }
+        
         if let money = findNearestMoney() {
             targetMoney = money
             setState(.collectingCoin)
+        } else {
+            setState(.wander)
         }
     }
     
@@ -132,7 +153,7 @@ class Stinky: Pet {
     private func animateGoToCoin() {
         let move = SKAction.repeatForever(
             .animate(
-                with: PetType.stinky.moveTextures,
+                with: moveTextures,
                 timePerFrame: 0.07
             )
         )
@@ -149,9 +170,7 @@ class Stinky: Pet {
         }
         
         let targetXPos = targetMoney!.position.x
-        let distance = abs(targetXPos - position.x)
-        let duration = distance / fastSpeed
-        
+        let duration = 0.2
         
         if goingLeft && (targetXPos > position.x) {
             goingLeft = false

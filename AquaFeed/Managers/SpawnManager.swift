@@ -125,9 +125,8 @@ class SpawnManager {
     func spawnStinky() {
         guard let scene = scene else { return }
         let minY = (scene.size.height - (scene.size.height * 0.70)) / 2
-        print(minY)
 
-        let stinky = Stinky(type: PetType.stinky)
+        let stinky = Stinky()
         
         stinky.position = CGPoint(x: 50, y: minY)
         stinky.physicsBody = SKPhysicsBody(circleOfRadius: stinky.size.width / 2)
@@ -139,13 +138,12 @@ class SpawnManager {
         
         GameState.shared.addPet(stinky)
         scene.addChild(stinky)
-        stinky.setState(.wander)
     }
     
     func spawnItchy() {
         guard let scene = scene else { return }
         
-        let itchy = Itchy(type: PetType.itchy)
+        let itchy = Itchy()
         
         itchy.position = CGPoint(x: 50, y: 500)
         itchy.physicsBody = SKPhysicsBody(circleOfRadius: itchy.size.width / 2)
@@ -157,7 +155,36 @@ class SpawnManager {
         
         GameState.shared.addPet(itchy)
         scene.addChild(itchy)
-        itchy.setState(.swim)
+    }
+    
+    func spawnNiko() {
+        guard let scene = scene else { return }
+        
+        let niko = Niko()
+        
+        niko.position = CGPoint(x: 650, y: 530)
+        GameState.shared.addPet(niko)
+        scene.addChild(niko)
+        niko.setState(.normal)
+    }
+    
+    func spawnPearl(at position: CGPoint) -> Money? {
+        guard let scene = scene else { return nil }
+        
+        let pearl = Money(type: MoneyType.pearl)
+    
+        pearl.position = position
+        
+        pearl.physicsBody = SKPhysicsBody(rectangleOf: pearl.size)
+        pearl.physicsBody?.affectedByGravity = false
+        pearl.physicsBody?.categoryBitMask = PhysicsCategory.none
+        pearl.physicsBody?.contactTestBitMask = PhysicsCategory.none
+        pearl.physicsBody?.collisionBitMask = PhysicsCategory.none
+
+
+        scene.addChild(pearl)
+        pearl.isHidden = true
+        return pearl
     }
 
     private func getSpawnPoint(for spriteSize: CGSize) -> CGPoint {

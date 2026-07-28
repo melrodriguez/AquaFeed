@@ -16,20 +16,16 @@ class Pet: SKSpriteNode {
     var maxX: CGFloat {
         sceneWidth - 50
     }
-    
-    init(type: PetType) {
-        let scale = type.scale
-        
+
+    init(texture: SKTexture, scale: CGFloat) {
         super.init(
-            texture: type.moveTextures.first!,
+            texture: texture,
             color: .clear,
             size: CGSize (
-                width: type.moveTextures.first!.size().width * scale,
-                height: type.moveTextures.first!.size().height * scale
+                width: texture.size().width * scale,
+                height: texture.size().height * scale
             )
         )
-        
-//        setScale(scale)
     }
     
     required init?(coder aDecoder: NSCoder) {

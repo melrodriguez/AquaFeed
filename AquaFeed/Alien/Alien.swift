@@ -74,7 +74,8 @@ class Alien: SKSpriteNode {
 
     func die() {
         removeAllActions()
-        
+        handleDropCoin()
+
         texture = deadTexture
         physicsBody?.affectedByGravity = true
         
@@ -83,6 +84,7 @@ class Alien: SKSpriteNode {
             if let self = self {
                 self.isDead = true
                 self.removeFromParent()
+                GameState.shared.removeDeadAlien()
             }
         }
     }
@@ -166,5 +168,11 @@ class Alien: SKSpriteNode {
                 getDistance(from: position, to: $0.position) <
                 getDistance(from: position, to: $1.position)
             }
+    }
+    
+    private func handleDropCoin() {
+        guard let levelScene = scene as? LevelScene else { return }
+        
+        levelScene.spawnManager.spawnMoney(at: self.position, type: MoneyType.diamond)
     }
 }

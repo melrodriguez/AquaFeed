@@ -83,12 +83,16 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         for node in nodes(at: location) {
             if let money = node as? Money {
-                state.updateWallet(amount: money.type.value)
-                updateWalletLabel()
-                money.setMoneyAsCollected()
-                money.removeFromParent()
-                state.removeMoney(money)
-                return
+                if let body = money.physicsBody {
+                    if body.categoryBitMask == PhysicsCategory.money {
+                        state.updateWallet(amount: money.type.value)
+                        updateWalletLabel()
+                        money.setMoneyAsCollected()
+                        money.removeFromParent()
+                        state.removeMoney(money)
+                        return
+                    }
+                }
             }
             
             if let alien = node as? Alien {
@@ -220,7 +224,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
 
         state.removeDeadGuppy()
         state.removeDeadCarnivore()
-        state.removeDeadAlien()
         
         // Temporary Game Over Scene
         if state.eggCount == eggLimit {
@@ -288,8 +291,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         }
         else if categories == PhysicsCategory.itchy | PhysicsCategory.alien {
             guard
-                let itchy: Itchy = node(ofType: Itchy.self, from: contact),
-                let alien: Alien = node(ofType: Alien.self, from:contact)
+                let itchy: Itchy = node(ofType: Itchy.self, from: contact)
             else { return }
             
             itchy.isTouchingAlien = true
@@ -323,23 +325,22 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         if item.action(forKey: "despawn") == nil {
             let waitAction = SKAction.wait(forDuration: despawnTime)
             
-            if isFood {
-                let runAction = SKAction.run { [weak self, weak item] in
-                    guard let self, let item else { return }
+            let runAction = SKAction.run { [weak self, weak item] in
+                guard let self, let item else { return }
+                
+                if isFood {
                     self.state.removeFood(item)
+                } else {
+                    self.state.removeMoney(item)
                 }
                 
-                despawn = SKAction.sequence([
-                    waitAction,
-                    runAction,
-                    .removeFromParent()
-                ])
-            } else {
-                despawn = SKAction.sequence([
-                    waitAction,
-                    .removeFromParent()
-                ])
             }
+            
+            despawn = SKAction.sequence([
+                waitAction,
+                runAction,
+                .removeFromParent()
+            ])
             
             item.run(despawn, withKey: "despawn")
         }
@@ -591,6 +592,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func startLevel() {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
+        spawnManager.spawnNiko()
 
         hungerTimer?.invalidate()
         
@@ -604,7 +606,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             for carnivore in self.state.carnivoreList {
                 carnivore.update()
             }
+            
+            for pet in self.state.petList {
+                if let niko = pet as? Niko {
+                    niko.update()
+                }
+            }
         }
-                                         
     }
 }
