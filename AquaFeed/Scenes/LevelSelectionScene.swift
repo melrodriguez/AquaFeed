@@ -48,6 +48,8 @@ class LevelSelectionScene: SKScene {
                     startLevel(config: LevelConfigs.level1)
                 } else if button.level == 2 && button.isUnlocked {
                     startLevel(config: LevelConfigs.level2)
+                } else if button.level == 3 && button.isUnlocked {
+                    startLevel(config: LevelConfigs.level3)
                 }
                     
             }

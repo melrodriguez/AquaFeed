@@ -18,6 +18,7 @@ class LevelState {
     var eggCount: Int
     var gunDamage: Int
     var gunUpgrade: Int
+    var spawnEnemyTimer: Int
     
     private init() {
         pauseDuration = 1.0
@@ -34,6 +35,7 @@ class LevelState {
         eggCount = 0
         gunDamage = 10
         gunUpgrade = 1
+        spawnEnemyTimer = 0
     }
     
     func setupLevel(config: LevelConfig) {
@@ -49,6 +51,11 @@ class LevelState {
         foodQuality = FoodQuality.level1
         eggCount = 0
         gunDamage = 10
+        spawnEnemyTimer = 0
+    }
+    
+    func setEnemyTimer(time: Int) {
+        spawnEnemyTimer = time
     }
     
     func addGuppy(_ Guppy: Guppy) {

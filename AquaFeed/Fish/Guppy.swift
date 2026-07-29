@@ -98,23 +98,19 @@ class Guppy: Fish {
     }
     
     var growthPoints: Int = 2
-    let isStarvingTime: Int = 15
+    let isStarvingTime: Int = 10
     
     func updateGrowthPoint(numPoints: Int) {
         growthPoints += numPoints
     }
     
     func canGrow() -> Bool {
-        if guppySize == .small {
+        if guppySize == .small || guppySize == .medium {
             if growthPoints > 6 {
                 return true
             }
-        } else if guppySize == .medium {
-            if growthPoints > 12 {
-                return true
-            }
         }
-        
+            
         return false
     }
     
@@ -124,10 +120,14 @@ class Guppy: Fish {
             guppySize = .medium
             moneyDrop = MoneyType.silver
             setFishScale(scale: 2.5)
+            hunger = 15
+            growthPoints = 0
         case .medium:
             guppySize = .large
             moneyDrop = MoneyType.gold
             setFishScale(scale: 3.0)
+            hunger = 15
+            growthPoints = 0
         case .large:
             break
         }

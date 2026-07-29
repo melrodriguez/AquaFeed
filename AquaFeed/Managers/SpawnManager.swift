@@ -19,7 +19,7 @@ class SpawnManager {
             deadTextures: FishTextures.guppySmallDead,
             scale: 2.0,
             swimSpeed: GuppySize.small.swimSpeed,
-            hunger: 25,
+            hunger: 20,
             spawnCoinTime: 8
         )
         

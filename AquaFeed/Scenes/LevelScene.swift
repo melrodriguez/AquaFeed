@@ -57,7 +57,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var pauseDuration = 1.0;
     let state = LevelState.shared
     
-    var hungerTimer: Timer?
+    var gameTimer: Timer?
 
     override func didMove(to view: SKView) {
         // This is just for testing purposes
@@ -362,6 +362,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     
     func setupConfig(_ config: LevelConfig) {
         self.config = config
+        
+        if !config.aliens.isEmpty {
+            state.setEnemyTimer(time: config.spawnRate)
+        }
     }
     
     func setupUI() {
@@ -649,10 +653,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
 
-        hungerTimer?.invalidate()
+        gameTimer?.invalidate()
         
-        hungerTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        gameTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
+            if !config.aliens.isEmpty {
+                state.spawnEnemyTimer -= 1
+                state.spawnEnemyTimer = max(state.spawnEnemyTimer, 0)
+
+                if state.spawnEnemyTimer == 0 {
+                    spawnManager.spawnAlien(alienType: config.aliens.first!)
+                    state.setEnemyTimer(time: config.spawnRate)
+                }
+            }
             
             for guppy in self.state.guppyList {
                 guppy.update()
