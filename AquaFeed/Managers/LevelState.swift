@@ -16,9 +16,10 @@ class LevelState {
     var foodLimit: Int
     var foodQuality: FoodQuality
     var eggCount: Int
-    var gunDamage: Int
-    var gunUpgrade: Int
+    var laserDamage: Int
+    var laserUpgrade: Int
     var spawnEnemyTimer: Int
+    var buttons: [MenuButton]
     
     private init() {
         pauseDuration = 1.0
@@ -33,9 +34,10 @@ class LevelState {
         foodLimit = 1
         foodQuality = FoodQuality.level1
         eggCount = 0
-        gunDamage = 10
-        gunUpgrade = 1
+        laserDamage = 10
+        laserUpgrade = 1
         spawnEnemyTimer = 0
+        buttons = []
     }
     
     func setupLevel(config: LevelConfig) {
@@ -50,8 +52,12 @@ class LevelState {
         foodLimit = 1
         foodQuality = FoodQuality.level1
         eggCount = 0
-        gunDamage = 10
+        laserDamage = 10
         spawnEnemyTimer = 0
+    }
+    
+    func addMenuButton(button: MenuButton) {
+        buttons.append(button)
     }
     
     func setEnemyTimer(time: Int) {
@@ -150,7 +156,7 @@ class LevelState {
     }
     
     func upgradeLaser() {
-        gunUpgrade += 1
-        gunDamage += 20
+        laserUpgrade += 1
+        laserDamage += 20
     }
 }

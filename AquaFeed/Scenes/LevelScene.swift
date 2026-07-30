@@ -22,19 +22,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var background = SKSpriteNode(imageNamed: "aquarium")
     var menu = SKSpriteNode(imageNamed: "menu")
     var walletLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-    var eggLabel = SKSpriteNode(imageNamed: "egg_label_00")
-    var foodLimitLabel = SKLabelNode(fontNamed: "Menlo-Bold")
     var boundary = SKSpriteNode(color: .red,
                                 size: CGSize(width: 1376, height: 750))
-    var buyGuppyButton = SKSpriteNode(imageNamed: "menu_board")
-    var buyEggButton = SKSpriteNode(imageNamed: "menu_board")
-    var upgradeFoodQuality = SKSpriteNode(imageNamed: "menu_board")
-    var increaseFoodLimit = SKSpriteNode(imageNamed: "menu_board")
-    var buyCarnivoreButton = SKSpriteNode(imageNamed: "menu_board")
-    var upgradeLaser = SKSpriteNode(imageNamed: "menu_board")
-    var upgradeLaserLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-    var foodUpgradeLabel1 = SKSpriteNode(texture: ItemTextures.food1)
-    var foodUpgradeLabel2 = SKSpriteNode(texture: ItemTextures.food2)
     var ground = SKNode()
     lazy var spawnManager = SpawnManager(scene: self)
     
@@ -94,11 +83,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             if let alien = node as? Alien {
                 if alien.isDead { return }
-                alien.decreaseHealth(damage: state.gunDamage)
+                alien.decreaseHealth(damage: state.laserDamage)
                 alien.bump(from: location)
             }
             
-            handleNodeButtons(node)
+            if let button = node as? MenuButton {
+                handleNodeButton(button)
+            }
             
             // Prevent dropping food when clicking menu
             if let menu = node as? SKSpriteNode,
@@ -117,25 +108,27 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    private func handleNodeButtons(_ node: SKNode) {
-        switch node.name {
+    private func handleNodeButton(_ button: MenuButton) {
+        if button.isHidden { return }
+        
+        switch button.name {
         case "buyGuppy":
             buyGuppy()
             
         case "buyEgg":
-            buyEgg()
+            buyEgg(button)
         
         case "upgradeQuality":
-            buyFoodQualityUpgrade()
+            buyFoodQualityUpgrade(button)
             
         case "increaseFoodLimit":
-            buyFoodLimitIncrease()
+            buyFoodLimitIncrease(button)
         
         case "buyCarnivore":
             buyCarnivore()
         
         case "upgradeLaser":
-            buylaserUpgrade()
+            buylaserUpgrade(button)
         
         default:
             break
@@ -143,8 +136,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func buyGuppy() {
-        if buyGuppyButton.isHidden { return }
-        
         if state.wallet >= guppyPrice {
             state.updateWallet(amount: -guppyPrice)
             spawnManager.spawnGuppy()
@@ -153,45 +144,36 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         return
     }
     
-    func buyEgg() {
-        if buyEggButton.isHidden { return }
+    func buyEgg(_ button: MenuButton) {
         
         if state.wallet >= config.eggPrice {
             state.updateWallet(amount: -config.eggPrice)
             updateWalletLabel()
             state.increaseEggCount()
-            updateEggLabel()
+            button.upgradeEggButton()
         }
         return
     }
     
-    func buyFoodQualityUpgrade() {
-        if upgradeFoodQuality.isHidden { return }
-        
-        if state.foodQuality == maxQualityUpgrade { return }
-        
+    func buyFoodQualityUpgrade(_ button: MenuButton) {
         if state.wallet >= upgradeFoodQualityCost {
             state.updateWallet(amount: -upgradeFoodQualityCost)
             updateWalletLabel()
             state.upgradeFood()
-            updateUpgradeFoodLabel()
+            button.upgradFoodLabel()
         }
     }
     
-    func buyFoodLimitIncrease() {
-        if increaseFoodLimit.isHidden { return }
-        
+    func buyFoodLimitIncrease(_ button: MenuButton) {
         if state.wallet >= increaseFoodLimitCost {
             state.updateWallet(amount: -increaseFoodLimitCost)
             updateWalletLabel()
             state.increaseFoodLimit()
-            updateFoodLimitLabel()
+            button.increaseFoodCount()
         }
     }
     
     func buyCarnivore() {
-        if buyCarnivoreButton.isHidden { return }
-        
         if state.wallet >= carnivorePrice {
             state.updateWallet(amount: -carnivorePrice)
             updateWalletLabel()
@@ -199,14 +181,12 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
-    func buylaserUpgrade() {
-        if upgradeLaser.isHidden { return }
-        
+    func buylaserUpgrade(_ button: MenuButton) {
         if state.wallet >= laserUpgradePrice {
             state.updateWallet(amount: -laserUpgradePrice)
             updateWalletLabel()
             state.upgradeLaser()
-            updateUpgradeLaserLabel()
+            button.upgradeLaserLabel()
         }
     }
     
@@ -384,12 +364,43 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         levelLabel.zPosition = 1
         addChild(levelLabel)
         
-        addBuyGuppyButton()
-        addBuyEggButton()
-        addUpgradeFoodButton()
-        addIncreaseFoodButton()
-        addBuyCarnivoreButton()
-        addUpgradeLaserButton()
+        createButtons()
+    }
+    
+    func createButtons() {
+        var menuButton: MenuButton
+        let numButtons = config.menuButton.count
+        var xPos: CGFloat = 85
+        let yPos = size.height - 85
+        let buttonSize = CGSize(
+            width: self.size.width / 8,
+            height: self.size.height / 6
+        )
+        
+        for button in config.menuButton {
+            if button == MenuButtonType.buyEgg {
+                menuButton = MenuButton(
+                    buttonType: button,
+                    price: config.eggPrice,
+                    size: buttonSize
+                )
+            } else {
+                menuButton = MenuButton(
+                    buttonType: button,
+                    price: nil,
+                    size: buttonSize
+                )
+            }
+            
+            state.buttons.append(menuButton)
+            menuButton.position = CGPoint(
+                x: xPos,
+                y: yPos
+            )
+            
+            xPos += ((self.size.width / 8) + 16)
+            addChild(menuButton)
+        }
     }
     
     func setupMenu() {
@@ -422,231 +433,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     
     func updateWalletLabel() {
         walletLabel.text = "$\(state.wallet)"
-    }
-    
-    func addBuyGuppyButton() {
-        buyGuppyButton.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
-        buyGuppyButton.position = CGPoint(x: 85, y: size.height - 85)
-        buyGuppyButton.name = "buyGuppy"
-        buyGuppyButton.zPosition = 1
-        
-        let guppyLabel = SKSpriteNode(texture: FishTextures.guppySmallSwim.first!)
-        guppyLabel.size = CGSize(
-            width: FishTextures.guppySmallSwim.first!.size().width * 3.5,
-            height: FishTextures.guppySmallSwim.first!.size().height * 3.5,
-        )
-        guppyLabel.zPosition = 1
-        guppyLabel.position = CGPoint(x: 0, y: 15)
-        
-        let label = SKLabelNode(fontNamed: "Menlo-Bold")
-        label.text = "$100"
-        label.zPosition = 1
-        label.fontSize = 30
-        label.fontColor = .white
-        label.verticalAlignmentMode = .center
-        label.horizontalAlignmentMode = .center
-        label.position = CGPoint(x: 0, y: -40)
-
-        buyGuppyButton.addChild(guppyLabel)
-        buyGuppyButton.addChild(label)
-        addChild(buyGuppyButton)
-    }
-    
-    func addBuyCarnivoreButton() {
-        buyCarnivoreButton.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
-        buyCarnivoreButton.position = CGPoint(x: size.width - 725, y: size.height - 85)
-        buyCarnivoreButton.name = "buyCarnivore"
-        buyCarnivoreButton.zPosition = 1
-        
-        let carnivoreLabel = SKSpriteNode(texture: FishTextures.carnivoreSwim.first!)
-        carnivoreLabel.size = CGSize(
-            width: FishTextures.carnivoreSwim.first!.size().width * 2.5,
-            height: FishTextures.carnivoreSwim.first!.size().height * 2.5,
-        )
-        carnivoreLabel.position = CGPoint(x: 0, y: 15)
-        
-        let label = SKLabelNode(fontNamed: "Menlo-Bold")
-        label.text = "$1000"
-        label.zPosition = 1
-        label.fontSize = 30
-        label.fontColor = .white
-        label.verticalAlignmentMode = .center
-        label.horizontalAlignmentMode = .center
-        label.position = CGPoint(x: 0, y: -40)
-
-        buyCarnivoreButton.addChild(carnivoreLabel)
-        buyCarnivoreButton.addChild(label)
-        addChild(buyCarnivoreButton)
-    }
-
-    func addBuyEggButton() {
-        buyEggButton.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
-        buyEggButton.position = CGPoint(x: size.width - 350, y: size.height - 85)
-        buyEggButton.name = "buyEgg"
-        buyEggButton.zPosition = 1
-        
-        eggLabel.size = CGSize(
-            width: eggLabel.size.width * 2.5,
-            height: eggLabel.size.height * 2.5
-        )
-        eggLabel.position = CGPoint(x: 0, y: 20)
-        
-        let label = SKLabelNode(fontNamed: "Menlo-Bold")
-        label.text = "$\(config.eggPrice)"
-        label.fontSize = 30
-        label.fontColor = .white
-        label.verticalAlignmentMode = .center
-        label.horizontalAlignmentMode = .center
-        label.position = CGPoint(x: 0, y: -40)
-
-        buyEggButton.addChild(eggLabel)
-        buyEggButton.addChild(label)
-        addChild(buyEggButton)
-    }
-    
-    func addUpgradeFoodButton() {
-        upgradeFoodQuality.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
-        upgradeFoodQuality.position = CGPoint(x: 275, y: size.height - 85)
-        upgradeFoodQuality.name = "upgradeQuality"
-        upgradeFoodQuality.zPosition = 1
-        
-        let arrow = SKSpriteNode(imageNamed: "arrow")
-        arrow.size = CGSize(
-            width: arrow.size.width * 3.5,
-            height: arrow.size.width * 3.5
-        )
-        arrow.position = CGPoint(x: 0, y: 15)
-        
-        foodUpgradeLabel1.size = CGSize (
-            width: foodUpgradeLabel1.size.width * 3.0,
-            height: foodUpgradeLabel2.size.height * 3.0
-        )
-        foodUpgradeLabel1.position = CGPoint(x: -40, y: 15)
-        
-        foodUpgradeLabel2.size = CGSize (
-            width: foodUpgradeLabel2.size.width * 3.0,
-            height: foodUpgradeLabel2.size.height * 3.0
-        )
-        foodUpgradeLabel2.position = CGPoint(x: 40, y: 15)
-        
-        let label = SKLabelNode(fontNamed: "Menlo-Bold")
-        label.text = "$200"
-        label.fontSize = 30
-        label.fontColor = .white
-        label.verticalAlignmentMode = .center
-        label.horizontalAlignmentMode = .center
-        label.position = CGPoint(x: 0, y: -40)
-        
-        upgradeFoodQuality.addChild(arrow)
-        upgradeFoodQuality.addChild(foodUpgradeLabel1)
-        upgradeFoodQuality.addChild(foodUpgradeLabel2)
-        upgradeFoodQuality.addChild(label)
-        addChild(upgradeFoodQuality)
-    }
-    
-    func addIncreaseFoodButton() {
-        increaseFoodLimit.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
-        increaseFoodLimit.position = CGPoint(x: 460, y: size.height - 85)
-        increaseFoodLimit.name = "increaseFoodLimit"
-        increaseFoodLimit.zPosition = 1
-        
-        let foodLabel = SKSpriteNode(texture: ItemTextures.food1)
-        foodLabel.size = CGSize(
-            width: ItemTextures.food1.size().width * 3.0,
-            height: ItemTextures.food1.size().height * 3.0
-        )
-        foodLabel.position = CGPoint(x: -20, y: 15)
-        
-        foodLimitLabel.fontSize = 30
-        foodLimitLabel.name = "foodLimit"
-        foodLimitLabel.verticalAlignmentMode = .center
-        foodLimitLabel.horizontalAlignmentMode = .center
-        foodLimitLabel.position = CGPoint(x: 20, y: 15)
-        
-        let label = SKLabelNode(fontNamed: "Menlo-Bold")
-        label.text = "$300"
-        label.fontSize = 30
-        label.fontColor = .white
-        label.verticalAlignmentMode = .center
-        label.horizontalAlignmentMode = .center
-        label.position = CGPoint(x: 0, y: -40)
-        
-        increaseFoodLimit.addChild(foodLabel)
-        increaseFoodLimit.addChild(foodLimitLabel)
-        increaseFoodLimit.addChild(label)
-        updateFoodLimitLabel()
-        addChild(increaseFoodLimit)
-    }
-    
-    func updateFoodLimitLabel() {
-        for node in increaseFoodLimit.children {
-            if let label = node as? SKLabelNode,
-               label.name == "foodLimit"
-            {
-                label.text = "x\(state.foodLimit)"
-            }
-        }
-    }
-    
-    func updateEggLabel() {
-        eggLabel.texture = SKTexture(imageNamed: "egg_label_0\(state.eggCount)")
-    }
-    
-    func updateUpgradeFoodLabel() {
-        if state.foodQuality == maxQualityUpgrade {
-            upgradeFoodQuality.removeAllChildren()
-            
-            let label = SKLabelNode(fontNamed: "Menlo-Bold")
-            label.fontColor = .white
-            label.text = "Max"
-            label.fontSize = 35
-            label.position = CGPoint(x: 0, y: 0)
-            upgradeFoodQuality.addChild(label)
-        } else {
-            foodUpgradeLabel1.texture = ItemTextures.food2
-            foodUpgradeLabel2.texture = ItemTextures.food3
-        }
-    }
-    
-    func addUpgradeLaserButton() {
-        upgradeLaser.size = CGSize(width: self.size.width / 8, height: self.size.height / 6)
-        upgradeLaser.position = CGPoint(x: size.width - 535, y: size.height - 85)
-        upgradeLaser.name = "upgradeLaser"
-        upgradeLaser.zPosition = 1
-        
-        let laserLabel = SKSpriteNode(texture: ItemTextures.gun)
-        laserLabel.size = CGSize(
-            width: ItemTextures.gun.size().width * 3.0,
-            height: ItemTextures.gun.size().height * 3.0
-        )
-        laserLabel.position = CGPoint(x: -25, y: 15)
-        
-        let priceLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-        priceLabel.text = "$\(laserUpgradePrice)"
-        priceLabel.verticalAlignmentMode = .center
-        priceLabel.horizontalAlignmentMode = .center
-        priceLabel.position = CGPoint(x: 0, y: -40)
-        
-        upgradeLaserLabel.text = "x\(state.gunUpgrade)"
-        upgradeLaserLabel.name = "laserLevel"
-        upgradeLaserLabel.verticalAlignmentMode = .center
-        upgradeLaserLabel.horizontalAlignmentMode = .center
-        upgradeLaserLabel.position = CGPoint(x: 25, y: 15)
-        
-        upgradeLaser.addChild(laserLabel)
-        upgradeLaser.addChild(priceLabel)
-        upgradeLaser.addChild(upgradeLaserLabel)
-        addChild(upgradeLaser)
-    }
-    
-    func updateUpgradeLaserLabel() {
-        for node in upgradeLaser.children {
-            if let label = node as? SKLabelNode,
-               label.name == "laserLevel"
-            {
-                label.text = "x\(state.gunUpgrade)"
-            }
-        }
     }
     
     func startLevel() {

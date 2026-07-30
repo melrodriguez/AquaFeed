@@ -5,6 +5,7 @@ struct LevelConfig {
     let aliens: [AlienType]
     let eggPrice: Int
     let prize: PetType
+    let menuButton: [MenuButtonType]
 }
 
 struct LevelConfigs {
@@ -15,7 +16,8 @@ struct LevelConfigs {
         spawnRate: 0,
         aliens: [],
         eggPrice: 150,
-        prize: PetType.stinky
+        prize: PetType.stinky,
+        menuButton: [MenuButtonType.buyGuppy, MenuButtonType.buyEgg]
     )
     
     static let level2 = LevelConfig(
@@ -24,7 +26,13 @@ struct LevelConfigs {
         spawnRate: 60,
         aliens: [AlienType.sylvester],
         eggPrice: 500,
-        prize: PetType.niko
+        prize: PetType.niko,
+        menuButton: [
+            MenuButtonType.buyGuppy,
+            MenuButtonType.buyFoodQualityUpgrade,
+            MenuButtonType.buyFoodLimitIncrease,
+            MenuButtonType.buyEgg
+        ]
     )
 
     static let level3 = LevelConfig(
@@ -33,6 +41,14 @@ struct LevelConfigs {
         spawnRate: 45,
         aliens: [AlienType.sylvester],
         eggPrice: 2000,
-        prize: PetType.itchy
+        prize: PetType.itchy,
+        menuButton: [
+            MenuButtonType.buyGuppy,
+            MenuButtonType.buyFoodQualityUpgrade,
+            MenuButtonType.buyFoodLimitIncrease,
+            MenuButtonType.buyCarnivore,
+            MenuButtonType.buyLaserUpgrade,
+            MenuButtonType.buyEgg
+        ]
     )
 }

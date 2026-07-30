@@ -46,9 +46,8 @@ enum MenuButtonType {
 class MenuButton: SKSpriteNode {
     let price: Int?
     let buttonType: MenuButtonType
-    
-    private let label = SKLabelNode(fontNamed: "Menlo-Bold")
-    
+    private let maxQualityUpgrade: FoodQuality = FoodQuality.level3
+
     init(buttonType: MenuButtonType, price: Int?, size: CGSize) {
         self.buttonType = buttonType
         
@@ -66,6 +65,7 @@ class MenuButton: SKSpriteNode {
         
         name = buttonType.name
         zPosition = 1
+        constructButton()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -210,7 +210,7 @@ class MenuButton: SKSpriteNode {
         carnivoreLabel.position = CGPoint(x: 0, y: 15)
         
         let label = SKLabelNode(fontNamed: "Menlo-Bold")
-        label.text = "$1000"
+        label.text = "$\(buttonType.price)"
         label.zPosition = 1
         label.fontSize = 30
         label.fontColor = .white
@@ -248,11 +248,50 @@ class MenuButton: SKSpriteNode {
         addChild(upgradeLaserLabel)
     }
     
-    func upgradeEggButton(eggCount: Int) {
+    func upgradeEggButton() {
         if buttonType != MenuButtonType.buyEgg { return }
         
         if let sprite = childNode(withName: "eggLabel") as? SKSpriteNode {
-            sprite.texture = SKTexture(imageNamed: "egg_label_0\(eggCount)")
+            sprite.texture = SKTexture(imageNamed: "egg_label_0\(LevelState.shared.eggCount)")
+        }
+    }
+    
+    func upgradFoodLabel() {
+        if buttonType != MenuButtonType.buyFoodQualityUpgrade { return }
+        
+        let quality = LevelState.shared.foodQuality
+        
+        if quality == maxQualityUpgrade {
+            removeAllChildren()
+            
+            let label = SKLabelNode(fontNamed: "Menlo-Bold")
+            label.fontColor = .white
+            label.text = "Max"
+            label.fontSize = 35
+            label.position = CGPoint(x: 0, y: 0)
+            addChild(label)
+        } else {
+            if let sprite1 = childNode(withName: "foodUpgradeLabel1") as? SKSpriteNode,
+               let sprite2 = childNode(withName: "foodUpgradeLabel2") as? SKSpriteNode {
+                sprite1.texture = ItemTextures.food2
+                sprite2.texture = ItemTextures.food3
+            }
+        }
+    }
+    
+    func increaseFoodCount() {
+        if buttonType != MenuButtonType.buyFoodLimitIncrease { return }
+        
+        if let label = childNode(withName: "foodLimit") as? SKLabelNode {
+            label.text = "x\(LevelState.shared.foodLimit)"
+        }
+    }
+    
+    func upgradeLaserLabel() {
+        if buttonType != MenuButtonType.buyLaserUpgrade { return }
+        
+        if let label = childNode(withName: "laserUpgradeLabel") as? SKLabelNode {
+            label.text = "lv\(LevelState.shared.laserUpgrade)"
         }
     }
 }

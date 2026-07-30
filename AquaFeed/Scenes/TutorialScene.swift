@@ -23,7 +23,9 @@ class TutorialScene: LevelScene {
             run(SKAction.sequence([
                 SKAction.run {
                     self.showText("Your fish has grown! Good Work!")
-                    self.buyGuppyButton.isHidden = false
+                    if let button = self.childNode(withName: "buyGuppy") as? MenuButton {
+                        button.isHidden = false
+                    }
                     self.hasShownMessage = true
                 },
                 SKAction.wait(forDuration: showTextDuration),
@@ -42,7 +44,9 @@ class TutorialScene: LevelScene {
             run(SKAction.sequence([
                 SKAction.wait(forDuration: 20),
                 SKAction.run {
-                    self.buyEggButton.isHidden = false
+                    if let button = self.childNode(withName: "buyEgg") as? MenuButton {
+                        button.isHidden = false
+                    }
                     self.showText("Buy 3 egg pieces to complete level!")
                     self.shownEggMessage = true
                 },
@@ -67,12 +71,9 @@ class TutorialScene: LevelScene {
         super.setupUI()
         
         // Make these hidden for the tutorial
-        buyGuppyButton.isHidden = true
-        buyEggButton.isHidden = true
-        upgradeFoodQuality.isHidden = true
-        increaseFoodLimit.isHidden = true
-        buyCarnivoreButton.isHidden = true
-        upgradeLaser.isHidden = true
+        for button in state.buttons {
+            button.isHidden = true
+        }
     }
     
     override func completeLevel() {
