@@ -73,4 +73,21 @@ class GameState {
             }
         }
     }
+    
+    func getPetInfo(for type: PetType) -> PetInfo? {
+        return pets.first { $0.type == type }
+    }
+    
+    func setNextLevelUnlocked() {
+        if let index = levels.firstIndex(where: { !$0.unlocked }) {
+            levels[index].unlocked = true
+        }
+    }
+    
+    func unlockPet(for type: PetType) {
+        if let index = pets.firstIndex(where: { $0.type == type }) {
+            pets[index].unlocked = true
+        }
+    }
 }
+ 

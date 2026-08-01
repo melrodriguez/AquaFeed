@@ -52,3 +52,13 @@ struct LevelConfigs {
         ]
     )
 }
+
+extension LevelConfig {
+    var next: LevelConfig? {
+        switch self.level {
+        case 1: return LevelConfigs.level2
+        case 2: return LevelConfigs.level3
+        default: return nil
+        }
+    }
+}

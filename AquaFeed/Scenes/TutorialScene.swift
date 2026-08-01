@@ -77,9 +77,7 @@ class TutorialScene: LevelScene {
     }
     
     override func completeLevel() {
-        GameState.shared.levels[1].unlocked = true
         GameState.shared.hasCompletedTutorial = true
-        GameState.shared.save()
         
         super.completeLevel()
     }

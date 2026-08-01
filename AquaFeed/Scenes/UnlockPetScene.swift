@@ -4,9 +4,11 @@ import SwiftUI
 class UnlockPetScene: SKScene {
     var background = SKSpriteNode(imageNamed: "level_selection_background")
     var pet: PetInfo
+    var levelConfig: LevelConfig?
     
-    init(size: CGSize, pet: PetInfo) {
+    init(size: CGSize, pet: PetInfo, levelConfig: LevelConfig?) {
         self.pet = pet
+        self.levelConfig = levelConfig
         super.init(size: size)
     }
     
@@ -16,9 +18,32 @@ class UnlockPetScene: SKScene {
     
     override func didMove(to view: SKView) {
         setupBackground()
-//        addUnlockLabel()
+        addUnlockLabel()
         displayPet()
-//        addContinueButton()
+        addContinueButton()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        
+        let location = touch.location(in: self)
+        
+        for node in nodes(at: location) {
+            if node.name == "continue" {
+                guard let view = self.view else { return }
+                
+                if levelConfig != nil {
+                    let levelScene = LevelScene(size: size)
+                    levelScene.setupConfig(levelConfig!)
+                    let transition = SKTransition.fade(with: .black, duration: 1)
+                    view.presentScene(levelScene, transition: transition)
+                } else {
+                    let selectionScene = LevelSelectionScene(size: size)
+                    let transition = SKTransition.fade(with: .black, duration: 1)
+                    view.presentScene(selectionScene, transition: transition)
+                }
+            }
+        }
     }
     
     func setupBackground() {
@@ -26,18 +51,16 @@ class UnlockPetScene: SKScene {
         background.position = CGPoint(x: size.width / 2, y: size.height / 2)
         background.zPosition = -1
         addChild(background)
-        
-        let texture = SKTexture(imageNamed: "select_level_label")
+    }
+    
+    func addUnlockLabel() {
+        let texture = SKTexture(imageNamed: "you_unlocked")
         texture.filteringMode = .nearest
         let level_selection_label = SKSpriteNode(texture: texture)
         level_selection_label.setScale(8.0)
         level_selection_label.position = CGPoint(x: size.width / 2, y: size.height - 150)
         addChild(level_selection_label)
     }
-    
-//    func addUnlockLabel() {
-//        
-//    }
     
     func displayPet() {
         let petSprite = SKSpriteNode(texture: pet.texture)
@@ -50,7 +73,7 @@ class UnlockPetScene: SKScene {
         let fullText = pet.type.displayName
         let label = SKLabelNode(fontNamed: "Menlo-Bold")
         label.text = ""
-        label.fontSize = 50
+        label.fontSize = 60
         label.fontColor = .white
         label.verticalAlignmentMode = .center
         label.horizontalAlignmentMode = .center
@@ -77,5 +100,14 @@ class UnlockPetScene: SKScene {
         }
     }
     
+    func addContinueButton() {
+        let texture = SKTexture(imageNamed: "continue")
+        texture.filteringMode = .nearest
+        let continue_label = SKSpriteNode(texture: texture)
+        continue_label.name = "continue"
+        continue_label.setScale(7.0)
+        continue_label.position = CGPoint(x: size.width / 2, y: size.height / 2 - 350)
+        addChild(continue_label)
+    }
     
 }

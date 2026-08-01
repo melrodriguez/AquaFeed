@@ -49,8 +49,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var gameTimer: Timer?
 
     override func didMove(to view: SKView) {
-        // This is just for testing purposes
-        
         setupBackground()
         setupGround()
         setupMenu()
@@ -145,7 +143,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func buyEgg(_ button: MenuButton) {
-        
         if state.wallet >= config.eggPrice {
             state.updateWallet(amount: -config.eggPrice)
             updateWalletLabel()
@@ -223,10 +220,27 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     
     func completeLevel() {
         guard let view = self.view else { return }
-        
-        let titleScene = TitleScene(size: size)
         let transition = SKTransition.fade(with: .black, duration: 1)
-        view.presentScene(titleScene, transition: transition)
+        
+        GameState.shared.setNextLevelUnlocked()
+        let petInfo = GameState.shared.getPetInfo(for: config.prize)
+
+        if config.next != nil && petInfo != nil && !petInfo!.unlocked {
+            GameState.shared.unlockPet(for: config.prize)
+            
+            let scene = UnlockPetScene(
+                size: size,
+                pet: petInfo!,
+                levelConfig: config.next!
+            )
+            view.presentScene(scene, transition: transition)
+            GameState.shared.save()
+        } else {
+            let scene = LevelSelectionScene(size: size)
+            view.presentScene(scene, transition: transition)
+            
+            GameState.shared.save()
+        }
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -342,6 +356,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     
     func setupConfig(_ config: LevelConfig) {
         self.config = config
+        state.setupLevel(config: config)
         
         if !config.aliens.isEmpty {
             state.setEnemyTimer(time: config.spawnRate)
