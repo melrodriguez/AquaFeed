@@ -41,6 +41,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var gameTimer: Timer?
     var onComplete: (() -> Void)?
     var onPause: (() -> Void)?
+    var onDied: (() -> Void)?
     var longPressTimer: Timer?
     var isLongPress = false
 
@@ -477,11 +478,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             if !config.aliens.isEmpty {
                 state.spawnEnemyTimer -= 1
                 state.spawnEnemyTimer = max(state.spawnEnemyTimer, 0)
-
+                
                 if state.spawnEnemyTimer == 0 {
                     spawnManager.spawnAlien(alienType: config.aliens.first!)
                     state.setEnemyTimer(time: config.spawnRate)
                 }
+            }
+            
+            if state.guppyList.isEmpty {
+                onDied?()
             }
             
             for guppy in self.state.guppyList {

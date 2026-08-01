@@ -7,6 +7,7 @@ struct GameView: View {
         case levelSelect
         case playing(LevelConfig, UUID)
         case unlockedPet(PetInfo)
+        case died(LevelConfig)
     }
     
     @State private var screen: Screen = .title
@@ -32,6 +33,9 @@ struct GameView: View {
                 },
                 onExit: {
                     screen = .levelSelect
+                },
+                onDied: {
+                    screen = .died(levelConfig)
                 }
             )
             .id(id)
@@ -42,9 +46,18 @@ struct GameView: View {
                 },
                 petInfo: petInfo
             )
+        case .died(let levelConfig):
+            DiedView (
+                onPlayAgain: {
+                    screen = .playing(levelConfig, UUID())
+                },
+                onExit: {
+                    screen = .levelSelect
+                }
+            )
         }
     }
-    
+
     func onStart() {
         if GameState.shared.hasCompletedTutorial {
             screen = .levelSelect
@@ -68,4 +81,5 @@ struct GameView: View {
     func onContinue() {
         screen = .levelSelect
     }
+    
 }

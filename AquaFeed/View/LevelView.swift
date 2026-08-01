@@ -8,35 +8,31 @@ struct LevelView: View {
     let onComplete: () -> Void
     let onRestart: () -> Void
     let onExit: () -> Void
+    let onDied: () -> Void
     
     init(
         config: LevelConfig,
         onComplete: @escaping () -> Void,
         onRestart: @escaping () -> Void,
-        onExit: @escaping () -> Void
+        onExit: @escaping () -> Void,
+        onDied: @escaping () -> Void
     ) {
         self.config = config
         self.onComplete = onComplete
         self.onRestart = onRestart
         self.onExit = onExit
+        self.onDied = onDied
         
         let size = UIScreen.main.bounds.size
+        let newScene: LevelScene
+        
         if GameState.shared.hasCompletedTutorial {
-            let newScene = LevelScene(size: size, config: config)
-            newScene.onComplete = {
-                onComplete()
-            }
-            
-            _scene = State(initialValue: newScene)
+            newScene = LevelScene(size: size, config: config)
         } else {
-            let newScene = TutorialScene(size: size, config: config)
-            
-            newScene.onComplete = {
-                onComplete()
-            }
-
-            _scene = State(initialValue: newScene)
+            newScene = TutorialScene(size: size, config: config)
         }
+        
+        _scene = State(initialValue: newScene)
     }
     
     var body: some View {
@@ -44,8 +40,14 @@ struct LevelView: View {
             SpriteView(scene: scene)
                 .ignoresSafeArea()
                 .onAppear {
+                    scene.onComplete = {
+                        onComplete()
+                    }
                     scene.onPause = {
                         isPaused = true
+                    }
+                    scene.onDied = {
+                        onDied()
                     }
                 }
             

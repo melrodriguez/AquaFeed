@@ -45,7 +45,3 @@ struct PauseMenuView: View {
         .padding(.top, 30)
     }
 }
-
-//#Preview {
-//    PauseMenuView()
-//}
