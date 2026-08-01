@@ -182,6 +182,7 @@ class MenuButton: SKSpriteNode {
         foodLabel.position = CGPoint(x: -20, y: 15)
         
         let foodLimitLabel = SKLabelNode(fontNamed: "Menlo-Bold")
+        foodLimitLabel.text = "x\(LevelState.shared.foodLimit)"
         foodLimitLabel.fontSize = 30
         foodLimitLabel.name = "foodLimit"
         foodLimitLabel.verticalAlignmentMode = .center

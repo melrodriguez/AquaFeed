@@ -142,16 +142,16 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         case "buyEgg":
             buyEgg(button)
         
-        case "upgradeQuality":
+        case "buyFoodQualityUpgrade":
             buyFoodQualityUpgrade(button)
             
-        case "increaseFoodLimit":
+        case "buyFoodLimitIncrease":
             buyFoodLimitIncrease(button)
         
         case "buyCarnivore":
             buyCarnivore()
         
-        case "upgradeLaser":
+        case "buyLaserUpgrade":
             buylaserUpgrade(button)
         
         default:
