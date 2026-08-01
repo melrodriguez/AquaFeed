@@ -41,6 +41,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var gameTimer: Timer?
     var onComplete: (() -> Void)?
     var onPause: (() -> Void)?
+    var longPressTimer: Timer?
+    var isLongPress = false
 
     init(size: CGSize, config: LevelConfig) {
         self.config = config
@@ -65,6 +67,26 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isLongPress = false
+        
+        longPressTimer = Timer.scheduledTimer(
+            withTimeInterval: 0.5,
+            repeats: false
+        ) { [weak self] _ in
+            self?.isLongPress = true
+            self?.isPaused = true
+            self?.onPause?()
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        longPressTimer?.invalidate()
+        longPressTimer = nil
+        
+        if isLongPress {
+            return
+        }
+        
         guard let touch = touches.first else { return }
         
         let location = touch.location(in: self)

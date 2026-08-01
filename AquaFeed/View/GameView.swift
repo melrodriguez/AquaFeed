@@ -5,7 +5,7 @@ struct GameView: View {
     enum Screen {
         case title
         case levelSelect
-        case playing(LevelConfig)
+        case playing(LevelConfig, UUID)
         case unlockedPet(PetInfo)
     }
     
@@ -19,18 +19,22 @@ struct GameView: View {
             }
         case .levelSelect:
             LevelSelectionView { levelConfig in
-                screen = .playing(levelConfig)
+                screen = .playing(levelConfig, UUID())
             }
-        case .playing(let levelConfig):
+        case .playing(let levelConfig, let id):
             LevelView(
                 config: levelConfig,
                 onComplete: {
                     onComplete(pet: levelConfig.prize)
                 },
+                onRestart: {
+                    screen = .playing(levelConfig, UUID())
+                },
                 onExit: {
                     screen = .levelSelect
                 }
             )
+            .id(id)
         case .unlockedPet(let petInfo):
             UnlockedPetView(
                 onContinue: {
@@ -45,7 +49,7 @@ struct GameView: View {
         if GameState.shared.hasCompletedTutorial {
             screen = .levelSelect
         } else {
-            screen = .playing(LevelConfigs.level1)
+            screen = .playing(LevelConfigs.level1, UUID())
         }
     }
     
