@@ -5,10 +5,10 @@ class UnlockPetScene: SKScene {
     var background = SKSpriteNode(imageNamed: "level_selection_background")
     var pet: PetInfo
     var levelConfig: LevelConfig?
-    
-    init(size: CGSize, pet: PetInfo, levelConfig: LevelConfig?) {
+    var onContinue: (() -> Void)?
+
+    init(size: CGSize, pet: PetInfo) {
         self.pet = pet
-        self.levelConfig = levelConfig
         super.init(size: size)
     }
     
@@ -30,18 +30,7 @@ class UnlockPetScene: SKScene {
         
         for node in nodes(at: location) {
             if node.name == "continue" {
-                guard let view = self.view else { return }
-                
-                if levelConfig != nil {
-                    let levelScene = LevelScene(size: size)
-                    levelScene.setupConfig(levelConfig!)
-                    let transition = SKTransition.fade(with: .black, duration: 1)
-                    view.presentScene(levelScene, transition: transition)
-                } else {
-                    let selectionScene = LevelSelectionScene(size: size)
-                    let transition = SKTransition.fade(with: .black, duration: 1)
-                    view.presentScene(selectionScene, transition: transition)
-                }
+                onContinue?()
             }
         }
     }

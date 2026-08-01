@@ -9,7 +9,6 @@ struct LevelConfig {
 }
 
 struct LevelConfigs {
-    
     static let level1 = LevelConfig(
         aquarium: 1,
         level: 1,

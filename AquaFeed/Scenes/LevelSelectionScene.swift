@@ -3,6 +3,7 @@ import SwiftUI
 
 class LevelSelectionScene: SKScene {
     var background = SKSpriteNode(imageNamed: "level_selection_background")
+    var onLevelSelected: ((LevelConfig) -> Void)?
     
     override func didMove(to view: SKView) {
         setupBackground()
@@ -45,23 +46,14 @@ class LevelSelectionScene: SKScene {
         for node in nodes(at: location) {
             if let button = node as? LevelButton {
                 if button.level == 1 && button.isUnlocked {
-                    startLevel(config: LevelConfigs.level1)
+                    onLevelSelected?(LevelConfigs.level1)
                 } else if button.level == 2 && button.isUnlocked {
-                    startLevel(config: LevelConfigs.level2)
+                    onLevelSelected?(LevelConfigs.level2)
                 } else if button.level == 3 && button.isUnlocked {
-                    startLevel(config: LevelConfigs.level3)
+                    onLevelSelected?(LevelConfigs.level3)
                 }
                     
             }
         }
-    }
-    
-    func startLevel(config: LevelConfig) {
-        guard let view = self.view else { return }
-        
-        let levelScene = LevelScene(size: size)
-        levelScene.setupConfig(config)
-        let transition = SKTransition.fade(with: .black, duration: 1)
-        view.presentScene(levelScene, transition: transition)
     }
 }

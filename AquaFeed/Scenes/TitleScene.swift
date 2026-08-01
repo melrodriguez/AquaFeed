@@ -7,6 +7,7 @@ class TitleScene: SKScene {
     var playButton = SKSpriteNode(imageNamed: "playButton0")
     var tutorialButton = SKSpriteNode(color: .yellow,
                                       size: CGSize(width: 200, height: 100))
+    var onStart: (() -> Void)?
     
     override func didMove(to view: SKView) {
         setupBackground()
@@ -41,20 +42,8 @@ class TitleScene: SKScene {
         let node = atPoint(location)
         
         if node.name == "playButton" || node.parent?.name == "playButton" {
-            guard let view = self.view else { return }
-            
             GameState.shared.load()
-            
-            if GameState.shared.hasCompletedTutorial {
-                let levelSelectionScene = LevelSelectionScene(size: size)
-                let transition = SKTransition.fade(with: .black, duration: 1)
-                view.presentScene(levelSelectionScene, transition: transition)
-            } else {
-                let tutorialScene = TutorialScene(size: size)
-                tutorialScene.setupConfig(LevelConfigs.level1)
-                let transition = SKTransition.fade(with: .black, duration: 1)
-                view.presentScene(tutorialScene, transition: transition)
-            }
+            onStart?()
         }
     }
 }

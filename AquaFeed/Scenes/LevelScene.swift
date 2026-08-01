@@ -18,7 +18,7 @@ let eggLimit = 3
 let maxQualityUpgrade = FoodQuality.level3
 
 class LevelScene: SKScene, SKPhysicsContactDelegate {
-    var config: LevelConfig!
+    var config: LevelConfig
     var background = SKSpriteNode(imageNamed: "aquarium")
     var menu = SKSpriteNode(imageNamed: "menu")
     var walletLabel = SKLabelNode(fontNamed: "Menlo-Bold")
@@ -31,14 +31,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         size.height * 0.70
     }
     
-    var minY: CGFloat {
-        (size.height - maxHeight) / 2
-    }
-    
-    var maxY: CGFloat {
-        size.height - (size.height * (0.20))
-    }
-    
     var groundY: CGFloat {
         (size.height - maxHeight) / 2 - 20
     }
@@ -47,6 +39,18 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     let state = LevelState.shared
     
     var gameTimer: Timer?
+    var onComplete: (() -> Void)?
+    var onPause: (() -> Void)?
+
+    init(size: CGSize, config: LevelConfig) {
+        self.config = config
+        super.init(size: size)
+        setupConfig(config)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func didMove(to view: SKView) {
         setupBackground()
@@ -227,20 +231,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
 
         if config.next != nil && petInfo != nil && !petInfo!.unlocked {
             GameState.shared.unlockPet(for: config.prize)
-            
-            let scene = UnlockPetScene(
-                size: size,
-                pet: petInfo!,
-                levelConfig: config.next!
-            )
-            view.presentScene(scene, transition: transition)
-            GameState.shared.save()
-        } else {
-            let scene = LevelSelectionScene(size: size)
-            view.presentScene(scene, transition: transition)
-            
-            GameState.shared.save()
         }
+        
+        GameState.shared.save()
+        onComplete?()
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
