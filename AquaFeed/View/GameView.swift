@@ -8,6 +8,7 @@ struct GameView: View {
         case playing(LevelConfig, UUID)
         case unlockedPet(PetInfo)
         case died(LevelConfig)
+        case readySetGo(LevelConfig)
     }
     
     @State private var screen: Screen = .title
@@ -20,7 +21,7 @@ struct GameView: View {
             }
         case .levelSelect:
             LevelSelectionView { levelConfig in
-                screen = .playing(levelConfig, UUID())
+                screen = .readySetGo(levelConfig)
             }
         case .playing(let levelConfig, let id):
             LevelView(
@@ -29,7 +30,7 @@ struct GameView: View {
                     onComplete(pet: levelConfig.prize)
                 },
                 onRestart: {
-                    screen = .playing(levelConfig, UUID())
+                    screen = .readySetGo(levelConfig)
                 },
                 onExit: {
                     screen = .levelSelect
@@ -49,12 +50,16 @@ struct GameView: View {
         case .died(let levelConfig):
             DiedView (
                 onPlayAgain: {
-                    screen = .playing(levelConfig, UUID())
+                    screen = .readySetGo(levelConfig)
                 },
                 onExit: {
                     screen = .levelSelect
                 }
             )
+        case .readySetGo(let levelConfig):
+            ReadySetGoView {
+                screen = .playing(levelConfig, UUID())
+            }
         }
     }
 
