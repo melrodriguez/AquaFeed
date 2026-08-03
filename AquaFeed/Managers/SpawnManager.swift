@@ -9,7 +9,7 @@ class SpawnManager {
         self.scene = scene
     }
     
-    func spawnGuppy() {
+    func spawnGuppy(isBirthed: Bool, position: CGPoint? = nil) {
         guard let scene = scene else { return }
         
         let guppy = Guppy(
@@ -23,7 +23,16 @@ class SpawnManager {
             spawnCoinTime: 8
         )
         
-        guppy.position = getSpawnPoint(for: guppy.size)
+        if isBirthed {
+            guard let position = position else { return }
+            guppy.position = CGPoint(
+                x: position.x,
+                y: position.y - 70
+            )
+        } else {
+            guppy.position = getSpawnPoint(for: guppy.size)
+        }
+        
         guppy.physicsBody = SKPhysicsBody(circleOfRadius: guppy.size.width / 2)
         guppy.physicsBody?.affectedByGravity = false
         guppy.physicsBody?.isDynamic = true
@@ -155,11 +164,27 @@ class SpawnManager {
         itchy.physicsBody?.contactTestBitMask = PhysicsCategory.alien
         itchy.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        print("Added Itchy?")
         state.addPet(itchy)
         scene.addChild(itchy)
     }
     
+    func spawnPrego() {
+        guard let scene = scene else { return }
+        
+        let prego = Prego()
+        
+        prego.position = CGPoint(x: 50, y: 600)
+        prego.physicsBody = SKPhysicsBody(circleOfRadius: prego.size.width / 2)
+        prego.physicsBody?.affectedByGravity = false
+        prego.physicsBody?.isDynamic = true
+        prego.physicsBody?.categoryBitMask = PhysicsCategory.none
+        prego.physicsBody?.contactTestBitMask = PhysicsCategory.none
+        prego.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+        state.addPet(prego)
+        scene.addChild(prego)
+    }
+
     func spawnNiko() {
         guard let scene = scene else { return }
         
@@ -198,6 +223,8 @@ class SpawnManager {
             spawnItchy()
         case .niko:
             spawnNiko()
+        case .prego:
+            spawnPrego()
         }
     }
 

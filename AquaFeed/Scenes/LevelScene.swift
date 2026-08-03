@@ -160,7 +160,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func buyGuppy() {
         if state.wallet >= guppyPrice {
             state.updateWallet(amount: -guppyPrice)
-            spawnManager.spawnGuppy()
+            spawnManager.spawnGuppy(isBirthed: false)
             updateWalletLabel()
         }
         return
@@ -455,12 +455,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startLevel() {
-        for pet in petsToSpawn {
-            spawnManager.spawnPet(type: pet)
-        }
+//        for pet in petsToSpawn {
+//            spawnManager.spawnPet(type: pet)
+//        }
+        spawnManager.spawnPrego()
         
-        spawnManager.spawnGuppy()
-        spawnManager.spawnGuppy()
+        spawnManager.spawnGuppy(isBirthed: false)
+        spawnManager.spawnGuppy(isBirthed: false)
 
         gameTimer?.invalidate()
         
@@ -513,6 +514,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             for pet in self.state.petList {
                 if let niko = pet as? Niko {
                     niko.update()
+                }
+                
+                if let prego = pet as? Prego {
+                    prego.update()
                 }
             }
         }
