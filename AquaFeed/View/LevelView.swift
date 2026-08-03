@@ -12,6 +12,7 @@ struct LevelView: View {
     
     init(
         config: LevelConfig,
+        petsToSpawn: [PetType],
         onComplete: @escaping () -> Void,
         onRestart: @escaping () -> Void,
         onExit: @escaping () -> Void,
@@ -27,9 +28,9 @@ struct LevelView: View {
         let newScene: LevelScene
         
         if GameState.shared.hasCompletedTutorial {
-            newScene = LevelScene(size: size, config: config)
+            newScene = LevelScene(size: size, config: config, petsToSpawn: petsToSpawn)
         } else {
-            newScene = TutorialScene(size: size, config: config)
+            newScene = TutorialScene(size: size, config: config, petsToSpawn: petsToSpawn)
         }
         
         _scene = State(initialValue: newScene)

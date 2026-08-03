@@ -5,10 +5,10 @@ struct GameView: View {
     enum Screen {
         case title
         case levelSelect
-        case playing(LevelConfig, UUID)
+        case playing(LevelConfig, [PetType], UUID)
         case unlockedPet(PetInfo)
-        case died(LevelConfig)
-        case readySetGo(LevelConfig)
+        case died(LevelConfig, [PetType])
+        case readySetGo(LevelConfig, [PetType])
     }
     
     @State private var screen: Screen = .title
@@ -21,22 +21,23 @@ struct GameView: View {
             }
         case .levelSelect:
             LevelSelectionView { levelConfig in
-                screen = .readySetGo(levelConfig)
+                playNewLevel(config: levelConfig)
             }
-        case .playing(let levelConfig, let id):
+        case .playing(let levelConfig, let petsToSpawn, let id):
             LevelView(
                 config: levelConfig,
+                petsToSpawn: petsToSpawn,
                 onComplete: {
                     onComplete(pet: levelConfig.prize)
                 },
                 onRestart: {
-                    screen = .readySetGo(levelConfig)
+                    replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
                 },
                 onExit: {
                     screen = .levelSelect
                 },
                 onDied: {
-                    screen = .died(levelConfig)
+                    screen = .died(levelConfig, petsToSpawn)
                 }
             )
             .id(id)
@@ -47,18 +48,18 @@ struct GameView: View {
                 },
                 petInfo: petInfo
             )
-        case .died(let levelConfig):
+        case .died(let levelConfig, let petsToSpawn):
             DiedView (
                 onPlayAgain: {
-                    screen = .readySetGo(levelConfig)
+                    replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
                 },
                 onExit: {
                     screen = .levelSelect
                 }
             )
-        case .readySetGo(let levelConfig):
+        case .readySetGo(let levelConfig, let petsToSpawn):
             ReadySetGoView {
-                screen = .playing(levelConfig, UUID())
+                screen = .playing(levelConfig, petsToSpawn, UUID())
             }
         }
     }
@@ -67,7 +68,7 @@ struct GameView: View {
         if GameState.shared.hasCompletedTutorial {
             screen = .levelSelect
         } else {
-            screen = .playing(LevelConfigs.level1, UUID())
+            screen = .playing(LevelConfigs.level1, [], UUID())
         }
     }
     
@@ -85,6 +86,32 @@ struct GameView: View {
     
     func onContinue() {
         screen = .levelSelect
+    }
+    
+    func playNewLevel(config: LevelConfig) {
+        let unlockedPetCount = GameState.shared.pets.filter { $0.unlocked }.count
+        var petsToSpawn: [PetType] = []
+
+        if unlockedPetCount > 3 {
+            print("We got to pet selection")
+            petsToSpawn.append(PetType.stinky)
+            petsToSpawn.append(PetType.itchy)
+            petsToSpawn.append(PetType.niko)
+            screen = .readySetGo(config, petsToSpawn)
+        } else {
+            for pet in GameState.shared.pets {
+                print("\(pet.type.displayName)")
+                if pet.unlocked {
+                    petsToSpawn.append(pet.type)
+                }
+            }
+            
+            screen = .readySetGo(config, petsToSpawn)
+        }
+    }
+    
+    func replayLevel(config: LevelConfig, petsToSpawn: [PetType]) {
+        screen = .readySetGo(config, petsToSpawn)
     }
     
 }

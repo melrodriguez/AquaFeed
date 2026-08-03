@@ -139,6 +139,7 @@ class SpawnManager {
         
         state.addPet(stinky)
         scene.addChild(stinky)
+        stinky.setState(.wander)
     }
     
     func spawnItchy() {
@@ -156,6 +157,7 @@ class SpawnManager {
         
         state.addPet(itchy)
         scene.addChild(itchy)
+        itchy.setState(.swim)
     }
     
     func spawnNiko() {
@@ -186,6 +188,17 @@ class SpawnManager {
         scene.addChild(pearl)
         pearl.isHidden = true
         return pearl
+    }
+    
+    func spawnPet(type: PetType) {
+        switch type {
+        case .stinky:
+            spawnStinky()
+        case .itchy:
+            spawnItchy()
+        case .niko:
+            spawnNiko()
+        }
     }
 
     private func getSpawnPoint(for spriteSize: CGSize) -> CGPoint {

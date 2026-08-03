@@ -78,9 +78,15 @@ class GameState {
         return pets.first { $0.type == type }
     }
     
-    func setNextLevelUnlocked() {
+    func setNextLevelUnlocked(currentLevel: Int) {
+        if currentLevel == 5 { return }
+        
+        let nextLevel = currentLevel + 1
+        
         if let index = levels.firstIndex(where: { !$0.unlocked }) {
-            levels[index].unlocked = true
+            if levels[index].id == nextLevel {
+                levels[index].unlocked = true
+            }
         }
     }
     

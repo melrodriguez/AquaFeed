@@ -1,10 +1,3 @@
-//
-//  LevelScene.swift
-//  AquaFeed
-//
-//  Created by Rodriguez, Melody A on 7/1/26.
-//
-
 import SpriteKit
 import SwiftUI
 
@@ -44,9 +37,11 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var onDied: (() -> Void)?
     var longPressTimer: Timer?
     var isLongPress = false
+    var petsToSpawn: [PetType]
 
-    init(size: CGSize, config: LevelConfig) {
+    init(size: CGSize, config: LevelConfig, petsToSpawn: [PetType]) {
         self.config = config
+        self.petsToSpawn = petsToSpawn
         super.init(size: size)
         setupConfig(config)
     }
@@ -249,7 +244,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         guard let view = self.view else { return }
         let transition = SKTransition.fade(with: .black, duration: 1)
         
-        GameState.shared.setNextLevelUnlocked()
+        GameState.shared.setNextLevelUnlocked(currentLevel: config.level)
         let petInfo = GameState.shared.getPetInfo(for: config.prize)
 
         if config.next != nil && petInfo != nil && !petInfo!.unlocked {
@@ -468,6 +463,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startLevel() {
+        for pet in petsToSpawn {
+            spawnManager.spawnPet(type: pet)
+        }
+        
         spawnManager.spawnGuppy()
         spawnManager.spawnGuppy()
 
