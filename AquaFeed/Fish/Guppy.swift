@@ -149,13 +149,11 @@ class Guppy: Fish {
             swimTextures = guppySize.sickSwimTextures
             turnTextures = guppySize.sickTurnTextures
             showingHungryVisual = true
-            startSwimming()
         } else {
             if showingHungryVisual {
                 swimTextures = guppySize.swimTextures
                 turnTextures = guppySize.turnTextures
                 showingHungryVisual = false
-                startSwimming()
             }
         }
     }

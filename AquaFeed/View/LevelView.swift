@@ -60,6 +60,7 @@ struct LevelView: View {
                 PauseMenuView (
                     onResume: {
                         scene.isPaused = false
+                        scene.isGamePaused = false
                         isPaused = false
                     },
                     onRestart: {

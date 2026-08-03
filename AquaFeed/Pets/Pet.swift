@@ -33,10 +33,10 @@ class Pet: SKSpriteNode {
     }
     
     func alienAppeared() {
-        print("AHH ENEMY APPEARED")
+        return
     }
     
     func allAliensDisappeared() {
-        print("OKAY FIRE")
+        return
     }
 }

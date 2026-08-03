@@ -13,9 +13,9 @@ class GameState {
     ]
     
     var pets: [PetInfo] = [
-        PetInfo(type: PetType.stinky, texture: PetTextures.stinkyMove.first!, unlocked: false),
-        PetInfo(type: PetType.itchy, texture: PetTextures.itchySwim.first!, unlocked: false),
         PetInfo(type: PetType.niko, texture: PetTextures.nikoTextures.first!, unlocked: false),
+        PetInfo(type: PetType.stinky, texture: PetTextures.stinkyMove.first!, unlocked: false),
+        PetInfo(type: PetType.itchy, texture: PetTextures.itchySwim.first!, unlocked: false)
     ]
     
     var hasCompletedTutorial: Bool = false

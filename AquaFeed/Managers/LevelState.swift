@@ -48,7 +48,7 @@ class LevelState {
         alienList = []
         foodList = []
         moneyList = []
-        wallet = 10000
+        wallet = 100000
         foodLimit = 1
         foodQuality = FoodQuality.level1
         eggCount = 0

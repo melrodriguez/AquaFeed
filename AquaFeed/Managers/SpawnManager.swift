@@ -155,9 +155,9 @@ class SpawnManager {
         itchy.physicsBody?.contactTestBitMask = PhysicsCategory.alien
         itchy.physicsBody?.collisionBitMask = PhysicsCategory.none
         
+        print("Added Itchy?")
         state.addPet(itchy)
         scene.addChild(itchy)
-        itchy.setState(.swim)
     }
     
     func spawnNiko() {

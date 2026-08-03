@@ -134,7 +134,7 @@ class Itchy: Pet {
 
     func frameUpdate() {
         if state == .charge, let alien = targetAlien {
-            if alien.parent == nil {
+            if alien.isDead == true {
                 targetAlien = nil
                 setState(.swim)
             }

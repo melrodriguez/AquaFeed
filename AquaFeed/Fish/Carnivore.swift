@@ -14,13 +14,11 @@ class Carnivore: Fish {
             swimTextures = FishTextures.sickCarnivoreSwim
             turnTextures = FishTextures.sickCarnivoreTurn
             showingHungryVisual = true
-            startSwimming()
         } else {
             if showingHungryVisual {
                 swimTextures = FishTextures.carnivoreSwim
                 turnTextures = FishTextures.carnivoreTurn
                 showingHungryVisual = false
-                startSwimming()
             }
         }
     }

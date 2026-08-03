@@ -78,6 +78,9 @@ struct GameView: View {
         
         if petInfo != nil && !petInfo!.unlocked {
             screen = .unlockedPet(petInfo!)
+            GameState.shared.unlockPet(for: pet)
+            GameState.shared.save()
+
             return
         }
         
@@ -100,8 +103,8 @@ struct GameView: View {
             screen = .readySetGo(config, petsToSpawn)
         } else {
             for pet in GameState.shared.pets {
-                print("\(pet.type.displayName)")
                 if pet.unlocked {
+                    print("\(pet.type.displayName)")
                     petsToSpawn.append(pet.type)
                 }
             }

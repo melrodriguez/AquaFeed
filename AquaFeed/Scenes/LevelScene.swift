@@ -36,8 +36,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     var onPause: (() -> Void)?
     var onDied: (() -> Void)?
     var longPressTimer: Timer?
-    var isLongPress = false
+    var isLongPress: Bool = false
     var petsToSpawn: [PetType]
+    var isGamePaused: Bool = false
 
     init(size: CGSize, config: LevelConfig, petsToSpawn: [PetType]) {
         self.config = config
@@ -71,6 +72,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         ) { [weak self] _ in
             self?.isLongPress = true
             self?.isPaused = true
+            self?.isGamePaused = true
             self?.onPause?()
         }
     }
@@ -201,6 +203,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func buylaserUpgrade(_ button: MenuButton) {
+        print("buyLaser")
         if state.wallet >= laserUpgradePrice {
             state.updateWallet(amount: -laserUpgradePrice)
             updateWalletLabel()
@@ -241,17 +244,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func completeLevel() {
-        guard let view = self.view else { return }
-        let transition = SKTransition.fade(with: .black, duration: 1)
-        
         GameState.shared.setNextLevelUnlocked(currentLevel: config.level)
-        let petInfo = GameState.shared.getPetInfo(for: config.prize)
-
-        if config.next != nil && petInfo != nil && !petInfo!.unlocked {
-            GameState.shared.unlockPet(for: config.prize)
-        }
-        
-        GameState.shared.save()
         onComplete?()
     }
     
@@ -474,6 +467,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         
         gameTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
+            guard !self.isGamePaused else { return }
+            guard !self.state.gameOver else { return }
+            
             if !config.aliens.isEmpty {
                 state.spawnEnemyTimer -= 1
                 state.spawnEnemyTimer = max(state.spawnEnemyTimer, 0)
@@ -486,7 +482,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
             
-            if state.guppyList.isEmpty {
+            if state.guppyList.isEmpty && state.carnivoreList.isEmpty {
+                state.gameOver = true
                 onDied?()
             }
             

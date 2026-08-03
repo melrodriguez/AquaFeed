@@ -1,9 +1,8 @@
 import SpriteKit
 import SwiftUI
 
-let swimAnimationSpeedMultiplier: CGFloat = 0.0004
+let swimAnimationSpeedMultiplier: CGFloat = 0.0008
 
-// TODO: Check if type thing is useful
 class Fish: SKSpriteNode {
     
     var state: FishState = .wander
@@ -97,9 +96,7 @@ class Fish: SKSpriteNode {
         }
     }
     
-    func startSwimming() {
-        removeAction(forKey: "animation")
-        
+    func swimAction() -> SKAction {
         let swim = SKAction.repeatForever(
             .animate(
                 with: swimTextures,
@@ -107,27 +104,32 @@ class Fish: SKSpriteNode {
             )
         )
         
-        run(swim, withKey: "animation")
+        return swim
     }
     
-    func turnFish() {
-        removeAction(forKey: "animation")
-        
+    func turnFishAction(faceLeft: Bool) -> SKAction {
         let turn = SKAction.animate(
             with: turnTextures,
             timePerFrame: 0.06
         )
         
-        run(turn) { [weak self] in
+        let flip = SKAction.run { [weak self] in
             guard let self = self else { return }
             
-            self.xScale = self.facingLeft ? abs(self.xScale) : -abs(self.xScale)
-            self.startSwimming()
+            self.facingLeft = faceLeft
+            
+            self.xScale = self.facingLeft
+                ? abs(self.xScale)
+                : -abs(self.xScale)
         }
+        
+        return SKAction.sequence([
+            turn,
+            flip
+        ])
     }
     
     func startState() {
-        startSwimming()
         enterWanderState()
     }
     
@@ -168,22 +170,35 @@ class Fish: SKSpriteNode {
         let moveAction = SKAction.move(to: target,
                                        duration: duration)
         
+        var actions: [SKAction] = []
+        
         if target.x > position.x && facingLeft {
-            facingLeft = false
-            turnFish()
+            actions.append(turnFishAction(faceLeft: false))
         } else if target.x < position.x && !facingLeft {
-            facingLeft = true
-            turnFish()
+            actions.append(turnFishAction(faceLeft: true))
         }
         
-        let sequence = SKAction.sequence([
-            moveAction,
+        actions.append(
             .run { [weak self] in
-                self?.enterPauseState()
+                guard let self = self else { return }
+                
+                self.run(
+                    self.swimAction(),
+                    withKey: "animation"
+                )
             }
-        ])
-            
-        run(sequence, withKey: "wander")
+        )
+        
+        actions.append(moveAction)
+        
+        actions.append(.run { [weak self] in
+            self?.enterPauseState()
+        })
+        
+        run(
+            SKAction.sequence(actions),
+            withKey: "wander"
+        )
     }
     
     func getWanderLocation() -> CGPoint {
@@ -285,15 +300,26 @@ class Fish: SKSpriteNode {
             
             removeAllActions()
             
+            var actions: [SKAction] = []
+
             if food.position.x > position.x && facingLeft {
-                facingLeft = false
-                turnFish()
+                actions.append(turnFishAction(faceLeft: false))
             } else if food.position.x < position.x && !facingLeft {
-                facingLeft = true
-                turnFish()
-            } else {
-                startSwimming()
+                actions.append(turnFishAction(faceLeft: true))
             }
+            
+            actions.append(
+                .run { [weak self] in
+                    guard let self = self else { return }
+                    
+                    self.run(
+                        self.swimAction(),
+                        withKey: "animation"
+                    )
+                }
+            )
+            
+            run(SKAction.sequence(actions))
         }
     }
 
@@ -308,7 +334,8 @@ class Fish: SKSpriteNode {
         
         run(eat) { [weak self] in
             guard let self = self else { return }
-            self.startSwimming()
+            
+            self.removeAction(forKey: "animation")
             self.enterWanderState()
         }
     }

@@ -36,9 +36,9 @@ enum MoneyType {
     var scale: CGFloat {
         switch self {
         case.silver:
-            return 3.0
+            return 3.4
         case.gold:
-            return 3.5
+            return 4.0
         case.diamond:
             return 4.0
         case.pearl:

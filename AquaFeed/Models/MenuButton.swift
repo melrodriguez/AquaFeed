@@ -229,7 +229,7 @@ class MenuButton: SKSpriteNode {
             width: ItemTextures.gun.size().width * 3.0,
             height: ItemTextures.gun.size().height * 3.0
         )
-        laserLabel.position = CGPoint(x: -25, y: 15)
+        laserLabel.position = CGPoint(x: -30, y: 15)
         
         let priceLabel = SKLabelNode(fontNamed: "Menlo-Bold")
         priceLabel.text = "$\(buttonType.price)"
@@ -238,11 +238,11 @@ class MenuButton: SKSpriteNode {
         priceLabel.position = CGPoint(x: 0, y: -40)
         
         var upgradeLaserLabel = SKLabelNode(fontNamed: "Menlo-Bold")
-        upgradeLaserLabel.text = "x\(1)"
+        upgradeLaserLabel.text = "lv\(1)"
         upgradeLaserLabel.name = "laserLevel"
         upgradeLaserLabel.verticalAlignmentMode = .center
         upgradeLaserLabel.horizontalAlignmentMode = .center
-        upgradeLaserLabel.position = CGPoint(x: 25, y: 15)
+        upgradeLaserLabel.position = CGPoint(x: 30, y: 15)
         
         addChild(laserLabel)
         addChild(priceLabel)
@@ -291,7 +291,7 @@ class MenuButton: SKSpriteNode {
     func upgradeLaserLabel() {
         if buttonType != MenuButtonType.buyLaserUpgrade { return }
         
-        if let label = childNode(withName: "laserUpgradeLabel") as? SKLabelNode {
+        if let label = childNode(withName: "laserLevel") as? SKLabelNode {
             label.text = "lv\(LevelState.shared.laserUpgrade)"
         }
     }
