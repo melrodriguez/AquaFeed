@@ -7,6 +7,7 @@ struct LevelView: View {
     let config: LevelConfig
     let onComplete: () -> Void
     let onRestart: () -> Void
+    let onChangePets: () -> Void
     let onExit: () -> Void
     let onDied: () -> Void
     
@@ -15,12 +16,14 @@ struct LevelView: View {
         petsToSpawn: [PetType],
         onComplete: @escaping () -> Void,
         onRestart: @escaping () -> Void,
+        onChangePets: @escaping () -> Void,
         onExit: @escaping () -> Void,
         onDied: @escaping () -> Void
     ) {
         self.config = config
         self.onComplete = onComplete
         self.onRestart = onRestart
+        self.onChangePets = onChangePets
         self.onExit = onExit
         self.onDied = onDied
         
@@ -65,6 +68,9 @@ struct LevelView: View {
                     },
                     onRestart: {
                         onRestart()
+                    },
+                    onChangePets: {
+                        onChangePets()
                     },
                     onExit: {
                         onExit()

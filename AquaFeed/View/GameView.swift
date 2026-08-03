@@ -9,6 +9,7 @@ struct GameView: View {
         case unlockedPet(PetInfo)
         case died(LevelConfig, [PetType])
         case readySetGo(LevelConfig, [PetType])
+        case petSelection(LevelConfig)
     }
     
     @State private var screen: Screen = .title
@@ -32,6 +33,9 @@ struct GameView: View {
                 },
                 onRestart: {
                     replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
+                },
+                onChangePets: {
+                    screen = .petSelection(levelConfig)
                 },
                 onExit: {
                     screen = .levelSelect
@@ -60,6 +64,10 @@ struct GameView: View {
         case .readySetGo(let levelConfig, let petsToSpawn):
             ReadySetGoView {
                 screen = .playing(levelConfig, petsToSpawn, UUID())
+            }
+        case .petSelection(let levelConfig):
+            PetSelectionView { selectedPets in
+                screen = .readySetGo(levelConfig, selectedPets)
             }
         }
     }
@@ -96,11 +104,7 @@ struct GameView: View {
         var petsToSpawn: [PetType] = []
 
         if unlockedPetCount > 3 {
-            print("We got to pet selection")
-            petsToSpawn.append(PetType.stinky)
-            petsToSpawn.append(PetType.itchy)
-            petsToSpawn.append(PetType.niko)
-            screen = .readySetGo(config, petsToSpawn)
+            screen = .petSelection(config)
         } else {
             for pet in GameState.shared.pets {
                 if pet.unlocked {

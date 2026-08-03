@@ -20,8 +20,12 @@ enum PetType: String, Codable {
     }
 }
 
-struct PetInfo {
+struct PetInfo: Identifiable {
     let type: PetType
     let texture: SKTexture
     var unlocked: Bool
+    
+    var id: PetType {
+        type
+    }
 }

@@ -455,10 +455,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startLevel() {
-//        for pet in petsToSpawn {
-//            spawnManager.spawnPet(type: pet)
-//        }
-        spawnManager.spawnPrego()
+        for pet in petsToSpawn {
+            spawnManager.spawnPet(type: pet)
+        }
         
         spawnManager.spawnGuppy(isBirthed: false)
         spawnManager.spawnGuppy(isBirthed: false)
@@ -511,13 +510,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 carnivore.update()
             }
             
-            for pet in self.state.petList {
-                if let niko = pet as? Niko {
-                    niko.update()
-                }
-                
-                if let prego = pet as? Prego {
-                    prego.update()
+            if state.alienList.isEmpty {
+                for pet in self.state.petList {
+                    if let niko = pet as? Niko {
+                        niko.update()
+                    }
+                    
+                    if let prego = pet as? Prego {
+                        prego.update()
+                    }
                 }
             }
         }
