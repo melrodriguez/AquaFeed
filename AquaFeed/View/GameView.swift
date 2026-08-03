@@ -38,7 +38,7 @@ struct GameView: View {
                     screen = .petSelection(levelConfig)
                 },
                 onExit: {
-                    screen = .levelSelect
+                    screen = .title
                 },
                 onDied: {
                     screen = .died(levelConfig, petsToSpawn)
@@ -58,7 +58,7 @@ struct GameView: View {
                     replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
                 },
                 onExit: {
-                    screen = .levelSelect
+                    screen = .title
                 }
             )
         case .readySetGo(let levelConfig, let petsToSpawn):

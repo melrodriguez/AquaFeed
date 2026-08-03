@@ -6,6 +6,7 @@ struct LevelSelectionView: View {
     
     var body: some View {
         SpriteView(scene: makeScene())
+            .ignoresSafeArea()
     }
     
     func makeScene() -> LevelSelectionScene {
