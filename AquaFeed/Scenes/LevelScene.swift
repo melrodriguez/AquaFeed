@@ -389,7 +389,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     
     func createButtons() {
         var menuButton: MenuButton
-        let numButtons = config.menuButton.count
         var xPos: CGFloat = 85
         let yPos = size.height - 85
         let buttonSize = CGSize(
@@ -473,6 +472,22 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             if !config.aliens.isEmpty {
                 state.spawnEnemyTimer -= 1
                 state.spawnEnemyTimer = max(state.spawnEnemyTimer, 0)
+                
+                if state.spawnEnemyTimer == 10 {
+                    let label = SKLabelNode(fontNamed: "Menlo-Bold")
+                    label.text = "An enemy is approaching!"
+                    label.position = CGPoint(x: size.width / 2, y: 50)
+                    label.verticalAlignmentMode = .center
+                    label.horizontalAlignmentMode = .center
+                    addChild(label)
+                    
+                    let showAndHide = SKAction.sequence([
+                        .wait(forDuration: 2.0),
+                        .removeFromParent()
+                    ])
+                    
+                    label.run(showAndHide)
+                }
                 
                 if state.spawnEnemyTimer == 0 {
                     for alien in config.aliens {
