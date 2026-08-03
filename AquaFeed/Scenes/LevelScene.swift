@@ -479,7 +479,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 state.spawnEnemyTimer = max(state.spawnEnemyTimer, 0)
                 
                 if state.spawnEnemyTimer == 0 {
-                    spawnManager.spawnAlien(alienType: config.aliens.first!)
+                    for alien in config.aliens {
+                        spawnManager.spawnAlien(alienType: alien)
+                    }
                     state.setEnemyTimer(time: config.spawnRate)
                 }
             }

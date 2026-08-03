@@ -50,6 +50,40 @@ struct LevelConfigs {
             MenuButtonType.buyEgg
         ]
     )
+    
+    static let level4 = LevelConfig(
+        aquarium: 1,
+        level: 4,
+        spawnRate: 45,
+        aliens: [AlienType.balrog],
+        eggPrice: 3000,
+        prize: PetType.itchy,
+        menuButton: [
+            MenuButtonType.buyGuppy,
+            MenuButtonType.buyFoodQualityUpgrade,
+            MenuButtonType.buyFoodLimitIncrease,
+            MenuButtonType.buyCarnivore,
+            MenuButtonType.buyLaserUpgrade,
+            MenuButtonType.buyEgg
+        ]
+    )
+    
+    static let level5 = LevelConfig(
+        aquarium: 1,
+        level: 5,
+        spawnRate: 45,
+        aliens: [AlienType.sylvester, AlienType.balrog],
+        eggPrice: 5000,
+        prize: PetType.itchy,
+        menuButton: [
+            MenuButtonType.buyGuppy,
+            MenuButtonType.buyFoodQualityUpgrade,
+            MenuButtonType.buyFoodLimitIncrease,
+            MenuButtonType.buyCarnivore,
+            MenuButtonType.buyLaserUpgrade,
+            MenuButtonType.buyEgg
+        ]
+    )
 }
 
 extension LevelConfig {
