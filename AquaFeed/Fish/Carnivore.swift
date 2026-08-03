@@ -14,13 +14,11 @@ class Carnivore: Fish {
             swimTextures = FishTextures.sickCarnivoreSwim
             turnTextures = FishTextures.sickCarnivoreTurn
             showingHungryVisual = true
-            startSwimming()
         } else {
             if showingHungryVisual {
                 swimTextures = FishTextures.carnivoreSwim
                 turnTextures = FishTextures.carnivoreTurn
                 showingHungryVisual = false
-                startSwimming()
             }
         }
     }
@@ -43,7 +41,7 @@ class Carnivore: Fish {
     override func findNearestFood() -> SKSpriteNode? {
         let detectionRangeFish: CGFloat = 1000
         
-        return GameState.shared.guppyList
+        return LevelState.shared.guppyList
             .filter { $0.guppySize == .small}
             .filter {
                 getDistance(from: position, to: $0.position) <=

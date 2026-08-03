@@ -1,0 +1,62 @@
+import SpriteKit
+import SwiftUI
+
+class LevelSelectionScene: SKScene {
+    var background = SKSpriteNode(imageNamed: "level_selection_background")
+    var onLevelSelected: ((LevelConfig) -> Void)?
+    
+    override func didMove(to view: SKView) {
+        setupBackground()
+        setupLevelButtons()
+    }
+    
+    func setupBackground() {
+        background.size = self.size
+        background.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        background.zPosition = -1
+        addChild(background)
+        
+        let texture = SKTexture(imageNamed: "select_level_label")
+        texture.filteringMode = .nearest
+        let level_selection_label = SKSpriteNode(texture: texture)
+        level_selection_label.setScale(8.0)
+        level_selection_label.position = CGPoint(x: size.width / 2, y: size.height - 150)
+        addChild(level_selection_label)
+    }
+    
+    func setupLevelButtons() {
+        var xPos = 250
+        let yPos = 650
+        
+        for level in 1...5 {
+            let index = level - 1
+            let button = LevelButton(level: level, isUnlocked: GameState.shared.levels[index].unlocked)
+            button.position = CGPoint(x: xPos, y: yPos)
+            addChild(button)
+            xPos += 200
+        }
+        
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        
+        let location = touch.location(in: self)
+        
+        for node in nodes(at: location) {
+            if let button = node as? LevelButton {
+                if button.level == 1 && button.isUnlocked {
+                    onLevelSelected?(LevelConfigs.level1)
+                } else if button.level == 2 && button.isUnlocked {
+                    onLevelSelected?(LevelConfigs.level2)
+                } else if button.level == 3 && button.isUnlocked {
+                    onLevelSelected?(LevelConfigs.level3)
+                } else if button.level == 4 && button.isUnlocked {
+                    onLevelSelected?(LevelConfigs.level4)
+                } else if button.level == 5 && button.isUnlocked {
+                    onLevelSelected?(LevelConfigs.level5)
+                }
+            }
+        }
+    }
+}

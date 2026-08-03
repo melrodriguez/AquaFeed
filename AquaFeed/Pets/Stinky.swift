@@ -142,7 +142,7 @@ class Stinky: Pet {
     }
     
     private func findNearestMoney() ->  Money? {
-        return GameState.shared.moneyList
+        return LevelState.shared.moneyList
             .filter { !$0.isCollected }
             .min {
                 getDistance(from: position, to: $0.position) <

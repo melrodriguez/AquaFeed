@@ -82,9 +82,8 @@ class Alien: SKSpriteNode {
         let wait = SKAction.wait(forDuration: 0.5)
         run(wait) { [weak self] in
             if let self = self {
-                self.isDead = true
                 self.removeFromParent()
-                GameState.shared.removeDeadAlien()
+                LevelState.shared.removeDeadAlien()
             }
         }
     }
@@ -139,7 +138,8 @@ class Alien: SKSpriteNode {
         health -= damage
         health = max(0, health)
         
-        if health == 0 {
+        if health == 0 && !isDead {
+            isDead = true
             die()
         }
     }
@@ -160,7 +160,7 @@ class Alien: SKSpriteNode {
     }
     
     func findNearestFish() -> Fish? {
-        let allFish = GameState.shared.guppyList + GameState.shared.carnivoreList
+        let allFish = LevelState.shared.guppyList + LevelState.shared.carnivoreList
         
         return allFish
             .filter { !$0.isDead }

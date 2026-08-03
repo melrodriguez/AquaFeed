@@ -134,7 +134,7 @@ class Itchy: Pet {
 
     func frameUpdate() {
         if state == .charge, let alien = targetAlien {
-            if alien.parent == nil {
+            if alien.isDead == true {
                 targetAlien = nil
                 setState(.swim)
             }
@@ -163,10 +163,10 @@ class Itchy: Pet {
                     if alien.isDead {
                         targetAlien = nil
                         isTouchingAlien = false
-                        GameState.shared.removeDeadAlien()
+                        LevelState.shared.removeDeadAlien()
                         setState(.swim)
 
-                        if !GameState.shared.alienList.isEmpty {
+                        if !LevelState.shared.alienList.isEmpty {
                             setState(.charge)
                         }
                     }
@@ -176,7 +176,7 @@ class Itchy: Pet {
     }
     
     func findNearestAlien() -> Alien? {
-        return GameState.shared.alienList
+        return LevelState.shared.alienList
             .min {
                 getDistance(from: position, to: $0.position) <
                 getDistance(from: position, to: $1.position)
