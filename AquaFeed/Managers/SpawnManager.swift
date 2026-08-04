@@ -184,6 +184,23 @@ class SpawnManager {
         state.addPet(prego)
         scene.addChild(prego)
     }
+    
+    func spawnZorf() {
+        guard let scene = scene else { return }
+        
+        let zorf = Zorf()
+        
+        zorf.position = CGPoint(x: 50, y: 650)
+        zorf.physicsBody = SKPhysicsBody(circleOfRadius: zorf.size.width / 2)
+        zorf.physicsBody?.affectedByGravity = false
+        zorf.physicsBody?.isDynamic = true
+        zorf.physicsBody?.categoryBitMask = PhysicsCategory.none
+        zorf.physicsBody?.contactTestBitMask = PhysicsCategory.none
+        zorf.physicsBody?.collisionBitMask = PhysicsCategory.none
+        
+        state.addPet(zorf)
+        scene.addChild(zorf)
+    }
 
     func spawnNiko() {
         guard let scene = scene else { return }
@@ -214,7 +231,7 @@ class SpawnManager {
         pearl.isHidden = true
         return pearl
     }
-    
+
     func spawnPet(type: PetType) {
         switch type {
         case .stinky:
@@ -225,6 +242,8 @@ class SpawnManager {
             spawnNiko()
         case .prego:
             spawnPrego()
+        case .zorf:
+            spawnZorf()
         }
     }
 

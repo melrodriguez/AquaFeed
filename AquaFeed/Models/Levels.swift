@@ -74,7 +74,7 @@ struct LevelConfigs {
         spawnRate: 45,
         aliens: [AlienType.sylvester, AlienType.balrog],
         eggPrice: 5000,
-        prize: PetType.itchy,
+        prize: PetType.zorf,
         menuButton: [
             MenuButtonType.buyGuppy,
             MenuButtonType.buyFoodQualityUpgrade,

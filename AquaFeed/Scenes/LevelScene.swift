@@ -203,7 +203,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func buylaserUpgrade(_ button: MenuButton) {
-        print("buyLaser")
         if state.wallet >= laserUpgradePrice {
             state.updateWallet(amount: -laserUpgradePrice)
             updateWalletLabel()
@@ -518,6 +517,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                     
                     if let prego = pet as? Prego {
                         prego.update()
+                    }
+                    
+                    if let zorf = pet as? Zorf {
+                        zorf.update()
                     }
                 }
             }

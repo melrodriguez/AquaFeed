@@ -5,6 +5,7 @@ enum PetType: String, Codable {
     case itchy
     case niko
     case prego
+    case zorf
     
     var displayName: String {
         switch self {
@@ -16,6 +17,8 @@ enum PetType: String, Codable {
             return "Niko the Clam"
         case .prego:
             return "Prego the Momma Fish"
+        case .zorf:
+            return "Zorf the Sea Horse"
         }
     }
 }

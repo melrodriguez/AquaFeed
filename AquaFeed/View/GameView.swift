@@ -82,7 +82,6 @@ struct GameView: View {
     
     func onComplete(pet: PetType) {
         let petInfo = GameState.shared.getPetInfo(for: pet)
-        print(petInfo!.unlocked)
         
         if petInfo != nil && !petInfo!.unlocked {
             screen = .unlockedPet(petInfo!)
@@ -108,7 +107,6 @@ struct GameView: View {
         } else {
             for pet in GameState.shared.pets {
                 if pet.unlocked {
-                    print("\(pet.type.displayName)")
                     petsToSpawn.append(pet.type)
                 }
             }

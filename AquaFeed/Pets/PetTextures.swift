@@ -16,4 +16,7 @@ enum PetTextures {
     static let pregoSwim = textures(from: petAtlas, prefix: "prego_swim")
     static let pregoTurn = textures(from: petAtlas, prefix: "prego_turn")
     static let pregoEject = textures(from: petAtlas, prefix: "prego_eject")
+    
+    static let zorfSwim = textures(from: petAtlas, prefix: "zorf_swim")
+    static let zorfTurn = textures(from: petAtlas, prefix: "zorf_turn")
 }

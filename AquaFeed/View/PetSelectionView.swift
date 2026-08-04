@@ -20,7 +20,7 @@ struct PetSelectionView: View {
                     .foregroundStyle(.white)
                 
                 HStack {
-                    ForEach(GameState.shared.pets) { pet in
+                    ForEach(GameState.shared.pets.filter { $0.unlocked }) { pet in
                         ZStack() {
                             Rectangle()
                                 .fill(petsToSpawn.contains(pet.type)
