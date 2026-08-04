@@ -7,7 +7,7 @@ struct GameView: View {
         case levelSelect
         case playing(LevelConfig, [PetType], UUID)
         case unlockedPet(PetInfo, LevelConfig)
-        case died(LevelConfig, [PetType])
+        case died(LevelConfig, [PetType], Bool)
         case readySetGo(LevelConfig, [PetType], Bool)
         case petSelection(LevelConfig, Bool)
         case timeTrialMode([PetType], UUID)
@@ -44,7 +44,7 @@ struct GameView: View {
                     screen = .title
                 },
                 onDied: {
-                    screen = .died(levelConfig, petsToSpawn)
+                    screen = .died(levelConfig, petsToSpawn, false)
                 }
             )
             .id(id)
@@ -55,10 +55,14 @@ struct GameView: View {
                 },
                 petInfo: petInfo
             )
-        case .died(let levelConfig, let petsToSpawn):
+        case .died(let levelConfig, let petsToSpawn, let isTimeTrial):
             DiedView (
                 onPlayAgain: {
-                    replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
+                    if isTimeTrial {
+                        replayTimeTrial(petsToSpawn: petsToSpawn)
+                    } else {
+                        replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
+                    }
                 },
                 onExit: {
                     screen = .title
@@ -83,7 +87,6 @@ struct GameView: View {
                 petsToSpawn: petsToSpawn,
                 onTimeTrialComplete: {
                     screen = .levelSelect
-                    print("completed")
                 },
                 onRestart: {
                     replayTimeTrial(petsToSpawn: petsToSpawn)
@@ -95,7 +98,7 @@ struct GameView: View {
                     screen = .title
                 },
                 onDied: {
-                    print("died")
+                    screen = .died(LevelConfigs.level1, petsToSpawn, true)
                 }
             )
             .id(id)
