@@ -105,14 +105,12 @@ class GameState {
         
         if let index = levels.firstIndex(where: { $0.id == nextLevel }) {
             levels[index].unlocked = true
-            print("\(levels[index].id) is set to unlocked")
         }
     }
     
     func setLevelAsComplete(currentLevel: Int) {
         if let index = levels.firstIndex(where: { $0.id == currentLevel }) {
             levels[index].completed = true
-            print("\(levels[index].id) is set to completed")
         }
     }
     
