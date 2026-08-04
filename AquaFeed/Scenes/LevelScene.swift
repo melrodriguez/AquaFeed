@@ -243,7 +243,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func completeLevel() {
-        GameState.shared.setNextLevelUnlocked(currentLevel: config.level)
         onComplete?()
     }
     

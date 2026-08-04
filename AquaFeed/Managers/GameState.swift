@@ -5,11 +5,11 @@ class GameState {
     static let shared = GameState()
     
     var levels: [Level] = [
-        Level(id: 1, unlocked: true),
-        Level(id: 2, unlocked: false),
-        Level(id: 3, unlocked: false),
-        Level(id: 4, unlocked: false),
-        Level(id: 5, unlocked: false),
+        Level(id: 1, unlocked: true, completed: false),
+        Level(id: 2, unlocked: false, completed: false),
+        Level(id: 3, unlocked: false, completed: false),
+        Level(id: 4, unlocked: false, completed: false),
+        Level(id: 5, unlocked: false, completed: false)
     ]
     
     var pets: [PetInfo] = [
@@ -20,7 +20,8 @@ class GameState {
         PetInfo(type: PetType.zorf, texture: PetTextures.zorfSwim.first!, unlocked: false)
     ]
     
-    var hasCompletedTutorial: Bool = false
+    var hasCompletedTutorial: Bool = true
+    var unlockedNewMode: Bool = true
     
     func save() {
         UserDefaults.standard.set(hasCompletedTutorial, forKey: "hasCompletedTutorial")
@@ -85,10 +86,16 @@ class GameState {
         
         let nextLevel = currentLevel + 1
         
-        if let index = levels.firstIndex(where: { !$0.unlocked }) {
-            if levels[index].id == nextLevel {
-                levels[index].unlocked = true
-            }
+        if let index = levels.firstIndex(where: { $0.id == nextLevel }) {
+            levels[index].unlocked = true
+            print("\(levels[index].id) is set to unlocked")
+        }
+    }
+    
+    func setLevelAsComplete(currentLevel: Int) {
+        if let index = levels.firstIndex(where: { $0.id == currentLevel }) {
+            levels[index].completed = true
+            print("\(levels[index].id) is set to completed")
         }
     }
     
@@ -96,6 +103,10 @@ class GameState {
         if let index = pets.firstIndex(where: { $0.type == type }) {
             pets[index].unlocked = true
         }
+    }
+    
+    func getLevelInfo(for config: LevelConfig) -> Level? {
+        return levels.first { $0.id == config.level }
     }
 }
  

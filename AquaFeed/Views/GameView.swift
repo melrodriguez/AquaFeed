@@ -6,7 +6,7 @@ struct GameView: View {
         case title
         case levelSelect
         case playing(LevelConfig, [PetType], UUID)
-        case unlockedPet(PetInfo)
+        case unlockedPet(PetInfo, LevelConfig)
         case died(LevelConfig, [PetType])
         case readySetGo(LevelConfig, [PetType])
         case petSelection(LevelConfig)
@@ -29,7 +29,7 @@ struct GameView: View {
                 config: levelConfig,
                 petsToSpawn: petsToSpawn,
                 onComplete: {
-                    onComplete(pet: levelConfig.prize)
+                    onComplete(pet: levelConfig.prize, config: levelConfig)
                 },
                 onRestart: {
                     replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
@@ -45,10 +45,10 @@ struct GameView: View {
                 }
             )
             .id(id)
-        case .unlockedPet(let petInfo):
+        case .unlockedPet(let petInfo, let levelConfig):
             UnlockedPetView(
                 onContinue: {
-                    onContinue()
+                    onContinue(config: levelConfig)
                 },
                 petInfo: petInfo
             )
@@ -80,11 +80,14 @@ struct GameView: View {
         }
     }
     
-    func onComplete(pet: PetType) {
+    func onComplete(pet: PetType, config: LevelConfig) {
+        GameState.shared.setNextLevelUnlocked(currentLevel: config.level)
+        GameState.shared.setLevelAsComplete(currentLevel: config.level)
+        
         let petInfo = GameState.shared.getPetInfo(for: pet)
         
         if petInfo != nil && !petInfo!.unlocked {
-            screen = .unlockedPet(petInfo!)
+            screen = .unlockedPet(petInfo!, config)
             GameState.shared.unlockPet(for: pet)
             GameState.shared.save()
 
@@ -94,7 +97,24 @@ struct GameView: View {
         screen = .levelSelect
     }
     
-    func onContinue() {
+    func onContinue(config: LevelConfig) {
+        let nextLevel = config.next
+        if nextLevel != nil {
+            let levelInfo = GameState.shared.getLevelInfo(for: nextLevel!)
+            if levelInfo != nil {
+                if !levelInfo!.completed {
+                    playNewLevel(config: nextLevel!)
+                    return
+                }
+            }
+        }
+       
+        // add message has not been shown
+        if config.level == 5 {
+            screen = .title
+            return
+        }
+        
         screen = .levelSelect
     }
     
