@@ -8,8 +8,9 @@ struct GameView: View {
         case playing(LevelConfig, [PetType], UUID)
         case unlockedPet(PetInfo, LevelConfig)
         case died(LevelConfig, [PetType])
-        case readySetGo(LevelConfig, [PetType])
-        case petSelection(LevelConfig)
+        case readySetGo(LevelConfig, [PetType], Bool)
+        case petSelection(LevelConfig, Bool)
+        case timeTrialMode([PetType], UUID)
     }
     
     @State private var screen: Screen = .title
@@ -23,6 +24,8 @@ struct GameView: View {
         case .levelSelect:
             LevelSelectionView { levelConfig in
                 playNewLevel(config: levelConfig)
+            } onTimeTrialMode: {
+                setupTimeTrialMode()
             }
         case .playing(let levelConfig, let petsToSpawn, let id):
             LevelView(
@@ -35,7 +38,7 @@ struct GameView: View {
                     replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
                 },
                 onChangePets: {
-                    screen = .petSelection(levelConfig)
+                    screen = .petSelection(levelConfig, false)
                 },
                 onExit: {
                     screen = .title
@@ -61,14 +64,41 @@ struct GameView: View {
                     screen = .title
                 }
             )
-        case .readySetGo(let levelConfig, let petsToSpawn):
-            ReadySetGoView {
-                screen = .playing(levelConfig, petsToSpawn, UUID())
+        case .readySetGo(let levelConfig, let petsToSpawn, let isTimeTrial):
+            if isTimeTrial {
+                ReadySetGoView {
+                    screen = .timeTrialMode(petsToSpawn, UUID())
+                }
+            } else {
+                ReadySetGoView {
+                    screen = .playing(levelConfig, petsToSpawn, UUID())
+                }
             }
-        case .petSelection(let levelConfig):
+        case .petSelection(let levelConfig, let isTimeTrial):
             PetSelectionView { selectedPets in
-                screen = .readySetGo(levelConfig, selectedPets)
+                screen = .readySetGo(levelConfig, selectedPets, isTimeTrial)
             }
+        case .timeTrialMode(let petsToSpawn, let id):
+            TimeTrialView(
+                petsToSpawn: petsToSpawn,
+                onTimeTrialComplete: {
+                    screen = .levelSelect
+                    print("completed")
+                },
+                onRestart: {
+                    replayTimeTrial(petsToSpawn: petsToSpawn)
+                },
+                onChangePets: {
+                    setupTimeTrialMode()
+                },
+                onExit: {
+                    screen = .title
+                },
+                onDied: {
+                    print("died")
+                }
+            )
+            .id(id)
         }
     }
 
@@ -123,7 +153,7 @@ struct GameView: View {
         var petsToSpawn: [PetType] = []
 
         if unlockedPetCount > 3 {
-            screen = .petSelection(config)
+            screen = .petSelection(config, false)
         } else {
             for pet in GameState.shared.pets {
                 if pet.unlocked {
@@ -131,12 +161,19 @@ struct GameView: View {
                 }
             }
             
-            screen = .readySetGo(config, petsToSpawn)
+            screen = .readySetGo(config, petsToSpawn, false)
         }
     }
     
     func replayLevel(config: LevelConfig, petsToSpawn: [PetType]) {
-        screen = .readySetGo(config, petsToSpawn)
+        screen = .readySetGo(config, petsToSpawn, false)
     }
     
+    func setupTimeTrialMode() {
+        screen = .petSelection(LevelConfigs.level1, true)
+    }
+    
+    func replayTimeTrial(petsToSpawn: [PetType]) {
+        screen = .readySetGo(LevelConfigs.level1, petsToSpawn, true)
+    }
 }

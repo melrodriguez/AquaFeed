@@ -32,19 +32,19 @@ struct TitleView: View {
             if showUnlockMessage {
                 UnlockMessageView {
                     showUnlockMessage = false
-                    GameState.shared.unlockedNewMode = true
-                    GameState.shared.save()
                 }
             }
         }
         .onAppear {
-            //GameState.shared.load()
+            GameState.shared.load()
             
             let completedLevels = GameState.shared.levels
                 .filter { $0.completed }
             
             if completedLevels.contains(where: {$0.id == 5 && $0.completed }) {
                 if !GameState.shared.unlockedNewMode {
+                    GameState.shared.unlockedNewMode = true
+                    GameState.shared.save()
                     showUnlockMessage = true
                 }
             }

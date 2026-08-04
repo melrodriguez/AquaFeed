@@ -7,6 +7,7 @@ struct UnlockedPetView: View {
     
     var body: some View {
         SpriteView(scene: makeScene())
+            .ignoresSafeArea()
     }
     
     func makeScene() -> UnlockPetScene {

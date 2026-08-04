@@ -20,12 +20,17 @@ class GameState {
         PetInfo(type: PetType.zorf, texture: PetTextures.zorfSwim.first!, unlocked: false)
     ]
     
-    var hasCompletedTutorial: Bool = true
-    var unlockedNewMode: Bool = true
+    var hasCompletedTutorial: Bool = false
+    var unlockedNewMode: Bool = false
+    var hasCompletedTimeTrialOnce: Bool = false
+    var timeTrialHighScore: TimeInterval = 0.0
     
     func save() {
         UserDefaults.standard.set(hasCompletedTutorial, forKey: "hasCompletedTutorial")
-        
+        UserDefaults.standard.set(unlockedNewMode, forKey: "unlockedNewMode")
+        UserDefaults.standard.set(hasCompletedTimeTrialOnce, forKey: "hasCompletedTimeTrialOnce")
+        UserDefaults.standard.set(timeTrialHighScore, forKey: "timeTrialHighScore")
+
         var unlockedLevels: Set<Int> = []
         
         for level in levels {
@@ -56,6 +61,18 @@ class GameState {
     func load() {
         hasCompletedTutorial = UserDefaults.standard.bool(
             forKey: "hasCompletedTutorial"
+        )
+        
+        unlockedNewMode = UserDefaults.standard.bool(
+            forKey: "unlockedNewMode"
+        )
+        
+        hasCompletedTimeTrialOnce = UserDefaults.standard.bool(
+            forKey: "hasCompletedTimeTrialOnce"
+        )
+        
+        timeTrialHighScore = UserDefaults.standard.double(
+            forKey: "timeTrialHighScore"
         )
         
         if let savedUnlocked = UserDefaults.standard.array(forKey: "unlockedLevels") as? [Int] {

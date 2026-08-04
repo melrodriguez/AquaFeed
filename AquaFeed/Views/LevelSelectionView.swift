@@ -3,7 +3,8 @@ import SpriteKit
 
 struct LevelSelectionView: View {
     let onLevelSelected: (LevelConfig) -> Void
-    
+    let onTimeTrialMode: () -> Void
+
     @State private var showTimeTrialButton = false
     
     var body: some View {
@@ -49,9 +50,7 @@ struct LevelSelectionView: View {
                     }
                 }
                 
-                Button {
-                    print("time trial :)")
-                } label: {
+                Button(action: onTimeTrialMode) {
                     ZStack() {
                         Rectangle()
                             .fill(.yellow)
@@ -85,5 +84,7 @@ struct LevelSelectionView: View {
 #Preview {
     LevelSelectionView { config in
         print("Selected config:", config)
+    } onTimeTrialMode: {
+        print("time trial :)")
     }
 }

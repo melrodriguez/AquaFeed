@@ -453,6 +453,9 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startLevel() {
+        gameTimer?.invalidate()
+        gameTimer = nil
+        
         for pet in petsToSpawn {
             spawnManager.spawnPet(type: pet)
         }
@@ -460,7 +463,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         spawnManager.spawnGuppy(isBirthed: false)
         spawnManager.spawnGuppy(isBirthed: false)
 
-        gameTimer?.invalidate()
         
         gameTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self = self else { return }
@@ -524,5 +526,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+    }
+    
+    deinit {
+        gameTimer?.invalidate()
+        longPressTimer?.invalidate()
     }
 }
