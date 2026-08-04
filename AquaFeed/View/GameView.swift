@@ -9,6 +9,7 @@ struct GameView: View {
         case unlockedPet(PetInfo)
         case died(LevelConfig, [PetType])
         case readySetGo(LevelConfig, [PetType])
+        case petSelection(LevelConfig)
     }
     
     @State private var screen: Screen = .title
@@ -33,8 +34,11 @@ struct GameView: View {
                 onRestart: {
                     replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
                 },
+                onChangePets: {
+                    screen = .petSelection(levelConfig)
+                },
                 onExit: {
-                    screen = .levelSelect
+                    screen = .title
                 },
                 onDied: {
                     screen = .died(levelConfig, petsToSpawn)
@@ -54,12 +58,16 @@ struct GameView: View {
                     replayLevel(config: levelConfig, petsToSpawn: petsToSpawn)
                 },
                 onExit: {
-                    screen = .levelSelect
+                    screen = .title
                 }
             )
         case .readySetGo(let levelConfig, let petsToSpawn):
             ReadySetGoView {
                 screen = .playing(levelConfig, petsToSpawn, UUID())
+            }
+        case .petSelection(let levelConfig):
+            PetSelectionView { selectedPets in
+                screen = .readySetGo(levelConfig, selectedPets)
             }
         }
     }
@@ -74,7 +82,6 @@ struct GameView: View {
     
     func onComplete(pet: PetType) {
         let petInfo = GameState.shared.getPetInfo(for: pet)
-        print(petInfo!.unlocked)
         
         if petInfo != nil && !petInfo!.unlocked {
             screen = .unlockedPet(petInfo!)
@@ -96,15 +103,10 @@ struct GameView: View {
         var petsToSpawn: [PetType] = []
 
         if unlockedPetCount > 3 {
-            print("We got to pet selection")
-            petsToSpawn.append(PetType.stinky)
-            petsToSpawn.append(PetType.itchy)
-            petsToSpawn.append(PetType.niko)
-            screen = .readySetGo(config, petsToSpawn)
+            screen = .petSelection(config)
         } else {
             for pet in GameState.shared.pets {
                 if pet.unlocked {
-                    print("\(pet.type.displayName)")
                     petsToSpawn.append(pet.type)
                 }
             }

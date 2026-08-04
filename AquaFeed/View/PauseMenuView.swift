@@ -3,6 +3,7 @@ import SwiftUI
 struct PauseMenuView: View {
     let onResume: () -> Void
     let onRestart: () -> Void
+    let onChangePets: () -> Void
     let onExit: () -> Void
     
     var body: some View {
@@ -19,7 +20,7 @@ struct PauseMenuView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 500)
-                    .padding(.top, 100)
+                    .padding(.top, 50)
             }
             
             Button(action: onRestart) {
@@ -31,6 +32,15 @@ struct PauseMenuView: View {
                     .padding(.top, 50)
             }
             
+            Button(action: onChangePets) {
+                Image("change_pets")
+                    .interpolation(.none)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 500)
+                    .padding(.top, 50)
+            }
+
             Button(action: onExit) {
                 Image("exit")
                     .interpolation(.none)

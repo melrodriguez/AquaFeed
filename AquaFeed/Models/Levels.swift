@@ -57,7 +57,7 @@ struct LevelConfigs {
         spawnRate: 45,
         aliens: [AlienType.balrog],
         eggPrice: 3000,
-        prize: PetType.itchy,
+        prize: PetType.prego,
         menuButton: [
             MenuButtonType.buyGuppy,
             MenuButtonType.buyFoodQualityUpgrade,
@@ -74,7 +74,7 @@ struct LevelConfigs {
         spawnRate: 45,
         aliens: [AlienType.sylvester, AlienType.balrog],
         eggPrice: 5000,
-        prize: PetType.itchy,
+        prize: PetType.zorf,
         menuButton: [
             MenuButtonType.buyGuppy,
             MenuButtonType.buyFoodQualityUpgrade,
@@ -91,6 +91,8 @@ extension LevelConfig {
         switch self.level {
         case 1: return LevelConfigs.level2
         case 2: return LevelConfigs.level3
+        case 3: return LevelConfigs.level4
+        case 4: return LevelConfigs.level5
         default: return nil
         }
     }

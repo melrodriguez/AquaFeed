@@ -160,7 +160,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     func buyGuppy() {
         if state.wallet >= guppyPrice {
             state.updateWallet(amount: -guppyPrice)
-            spawnManager.spawnGuppy()
+            spawnManager.spawnGuppy(isBirthed: false)
             updateWalletLabel()
         }
         return
@@ -203,7 +203,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func buylaserUpgrade(_ button: MenuButton) {
-        print("buyLaser")
         if state.wallet >= laserUpgradePrice {
             state.updateWallet(amount: -laserUpgradePrice)
             updateWalletLabel()
@@ -459,8 +458,8 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             spawnManager.spawnPet(type: pet)
         }
         
-        spawnManager.spawnGuppy()
-        spawnManager.spawnGuppy()
+        spawnManager.spawnGuppy(isBirthed: false)
+        spawnManager.spawnGuppy(isBirthed: false)
 
         gameTimer?.invalidate()
         
@@ -510,9 +509,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 carnivore.update()
             }
             
-            for pet in self.state.petList {
-                if let niko = pet as? Niko {
-                    niko.update()
+            if state.alienList.isEmpty {
+                for pet in self.state.petList {
+                    if let niko = pet as? Niko {
+                        niko.update()
+                    }
+                    
+                    if let prego = pet as? Prego {
+                        prego.update()
+                    }
+                    
+                    if let zorf = pet as? Zorf {
+                        zorf.update()
+                    }
                 }
             }
         }

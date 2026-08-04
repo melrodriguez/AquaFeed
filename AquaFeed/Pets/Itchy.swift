@@ -79,11 +79,27 @@ class Itchy: Pet {
         let duration = distance / normalSpeed
         
         let move = SKAction.move(to: endPos, duration: duration)
+        
+        var actions: [SKAction] = []
+        
+        if goingLeft && xScale < 0 {
+            actions.append(turnAction())
+        } else if !goingLeft && xScale > 0 {
+            actions.append(turnAction())
+        }
+        
+        actions.append(move)
+        
         let next = SKAction.run{ [weak self] in
             self?.wander()
         }
         
-        run(.sequence([move, next]))
+        actions.append(next)
+        
+        run(
+            .sequence(actions),
+            withKey: "wander"
+        )
     }
     
     private func getWanderLocation() -> CGPoint {
@@ -91,12 +107,10 @@ class Itchy: Pet {
         
         if currentXPos <= minX {
             goingLeft = false
-            turn()
         }
         
         if currentXPos >= maxX {
             goingLeft = true
-            turn()
         }
         
         if goingLeft {
@@ -106,20 +120,24 @@ class Itchy: Pet {
         }
     }
     
-    private func turn() {
-        removeAction(forKey: "animation")
-        
+    private func turnAction() -> SKAction {
         let turn = SKAction.animate(
             with: PetTextures.itchyTurn,
             timePerFrame: 0.06
         )
         
-        run(turn) { [weak self] in
+        let flip = SKAction.run { [weak self] in
             guard let self = self else { return }
             
-            self.xScale = self.goingLeft ? abs(self.xScale) : -abs(self.xScale)
-            self.animateWander()
+            self.xScale = self.goingLeft
+                ? abs(self.xScale)
+                : -abs(self.xScale)
         }
+        
+        return SKAction.sequence([
+            turn,
+            flip
+        ])
     }
     
     private func animateCharge() {
@@ -127,9 +145,12 @@ class Itchy: Pet {
     }
     
     private func chargeTurn() {
-        self.xScale *= -1
-        self.animateCharge()
-        self.chaseAlien = true
+        self.xScale = goingLeft
+            ? abs(xScale)
+            : -abs(xScale)
+        
+        animateCharge()
+        chaseAlien = true
     }
 
     func frameUpdate() {
