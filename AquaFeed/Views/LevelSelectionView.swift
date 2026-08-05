@@ -51,14 +51,11 @@ struct LevelSelectionView: View {
                 }
                 
                 Button(action: onTimeTrialMode) {
-                    ZStack() {
-                        Rectangle()
-                            .fill(.yellow)
-                            .frame(width: 600, height: 150)
-                        Text("Time Trial")
-                            .font(.custom("Menlo-Bold", size: 70))
-                            .foregroundStyle(.white)
-                    }
+                    Image("time_trial")
+                        .interpolation(.none)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 700)
                 }
                 .offset(y: 100)
                 .opacity(showTimeTrialButton ? 1 : 0)

@@ -52,6 +52,8 @@ struct TitleView: View {
     }
 }
 
-//#Preview {
-//    TitleView()
-//}
+#Preview {
+    TitleView() {
+        print("I'm starting")
+    }
+}

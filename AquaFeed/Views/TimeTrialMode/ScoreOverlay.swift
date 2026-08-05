@@ -11,24 +11,18 @@ struct ScoreOverlayView: View {
     
     var body: some View {
         ZStack() {
-            Rectangle()
-                .fill(
-                    Color(
-                        red: 122 / 255,
-                        green: 52 / 255,
-                        blue: 18 / 255
-                    )
-                )
-                .frame(
-                    width: 700,
-                    height: 300
-                )
+            Image("text_box_2")
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 700)
             
             VStack {
                 Text("Current Score: " +  formatTime(totalTime))
                     .multilineTextAlignment(.center)
                     .font(.custom("Menlo-Bold", size: 40))
                     .foregroundStyle(.white)
+                    .padding()
                 Text("High Score: " + formatTime(GameState.shared.timeTrialHighScore))
                     .multilineTextAlignment(.center)
                     .font(.custom("Menlo-Bold", size: 40))
@@ -54,4 +48,13 @@ struct ScoreOverlayView: View {
             hundredths
         )
     }
+}
+
+#Preview {
+    ScoreOverlayView(
+        totalTime: 1.0,
+        onFinished: {
+            print("finished")
+        }
+    )
 }

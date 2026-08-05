@@ -8,18 +8,11 @@ struct UnlockMessageView: View {
     
     var body: some View {
         ZStack() {
-            Rectangle()
-                .fill(
-                    Color(
-                        red: 122 / 255,
-                        green: 52 / 255,
-                        blue: 18 / 255
-                    )
-                )
-                .frame(
-                    width: 600,
-                    height: 700
-                )
+            Image("text_box_1")
+                .interpolation(.none)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 600)
             
             Text(displayText)
                 .multilineTextAlignment(.center)
