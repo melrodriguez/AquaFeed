@@ -69,9 +69,6 @@ struct LevelSelectionView: View {
                 showTimeTrialButton = true
             }
         }
-        .onDisappear {
-            SoundManager.shared.pauseMusic()
-        }
     }
     
     func selectLevel(level: Level) {

@@ -13,7 +13,8 @@ struct PetSelectionView: View {
                 green: 111 / 255,
                 blue: 146 / 255
             )
-            
+            .scaledToFill()
+
             VStack(spacing: 150) {
                 Text("Choose Pet")
                     .font(.custom("Menlo-Bold", size: 80))

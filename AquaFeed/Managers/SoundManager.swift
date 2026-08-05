@@ -1,20 +1,18 @@
 import AVFoundation
+import SpriteKit
 
 class SoundManager {
     static let shared = SoundManager()
     
     private var musicPlayer: AVAudioPlayer?
-    private var soundEffectPlayer: AVAudioPlayer?
     private(set) var currentTrack: String?
-    
+
     private init() {}
     
     func playMusic(named fileName: String, loop: Bool = true) {
         guard let url = Bundle.main.url(forResource: fileName, withExtension: "mp3") else {
-            print("uih oh")
             return
         }
-        
         currentTrack = fileName
         
         do {
@@ -31,12 +29,10 @@ class SoundManager {
     }
     
     func stopMusic() {
-        print("Stop")
         musicPlayer?.stop()
     }
     
     func pauseMusic() {
-        print("Pause")
         musicPlayer?.pause()
     }
     
