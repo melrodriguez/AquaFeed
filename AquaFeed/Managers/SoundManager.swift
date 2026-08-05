@@ -16,9 +16,6 @@ class SoundManager {
         currentTrack = fileName
         
         do {
-            print("play")
-            print("volume:", musicPlayer?.volume ?? -1)
-            print("duration:", musicPlayer?.duration ?? 0)
             musicPlayer = try AVAudioPlayer(contentsOf: url)
             musicPlayer?.numberOfLoops = loop ? -1 : 0
             musicPlayer?.prepareToPlay()
