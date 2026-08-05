@@ -21,6 +21,21 @@ enum PetType: String, Codable {
             return "Zorf the Sea Horse"
         }
     }
+    
+    var description: String {
+        switch self {
+        case .stinky:
+            return "Catches falling coins. Very fast!"
+        case .itchy:
+            return "Helps you defend your tank from aliens."
+        case .niko:
+            return "Gives you a pearl every so often."
+        case .prego:
+            return "Births babies guppies."
+        case .zorf:
+            return "Spits out food pellets. Yummy!"
+        }
+    }
 }
 
 struct PetInfo: Identifiable {

@@ -4,6 +4,8 @@ import SpriteKit
 struct PetSelectionView: View {
     let MaxPetsToSpawn: Int = 3
     @State private var petsToSpawn: [PetType] = []
+    @State private var petName: String = ""
+    @State private var petDescription: String = ""
     let onContinue: ([PetType]) -> Void
     
     var body: some View {
@@ -15,7 +17,7 @@ struct PetSelectionView: View {
             )
             .scaledToFill()
 
-            VStack(spacing: 150) {
+            VStack() {
                 Text("Choose Pet")
                     .font(.custom("Menlo-Bold", size: 80))
                     .foregroundStyle(.white)
@@ -46,6 +48,14 @@ struct PetSelectionView: View {
                     }
                 }
                 
+                Text(petName)
+                    .font(.custom("Menlo-Bold", size: 70))
+                    .foregroundStyle(.white)
+                    .padding()
+                Text(petDescription)
+                    .font(.custom("Menlo-Bold", size: 50))
+                    .foregroundStyle(.white)
+
                 Button {
                     sendPetsToSpawnList()
                     onContinue(petsToSpawn)
@@ -57,6 +67,7 @@ struct PetSelectionView: View {
                         .frame(width: 600)
 
                 }
+                .offset(y: 80)
             }
         }
         .aspectRatio(contentMode: .fill)
@@ -73,6 +84,9 @@ struct PetSelectionView: View {
         } else if petsToSpawn.count < MaxPetsToSpawn {
             petsToSpawn.append(pet)
         }
+        
+        petName = pet.displayName
+        petDescription = pet.description
     }
     
     func sendPetsToSpawnList() {
