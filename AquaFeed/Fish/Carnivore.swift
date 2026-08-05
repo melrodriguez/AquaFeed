@@ -34,7 +34,7 @@ class Carnivore: Fish {
         run(eat) { [weak self] in
             guard let self = self else { return }
             self.updateAppearance()
-            self.startState()
+            self.enterWanderState()
         }
         
         run(SKAction.playSoundFileNamed(

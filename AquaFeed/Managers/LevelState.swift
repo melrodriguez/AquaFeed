@@ -99,10 +99,14 @@ class LevelState {
     }
 
     func addFood(_ food: Food) {
+        if food.spawnByZorf { return }
         foodList.append(food)
     }
     
     func removeFood(_ food: SKSpriteNode) {
+        guard let food = food as? Food else { return }
+        if food.spawnByZorf { return }
+        
         foodList.removeAll { $0 == food }
     }
     

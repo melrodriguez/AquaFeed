@@ -118,12 +118,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             if let alien = node as? Alien {
                 if alien.isDead { return }
-                
                 run(SKAction.playSoundFileNamed(
                     "laser.mp3",
                     waitForCompletion: false
                 ))
-                
                 alien.decreaseHealth(damage: state.laserDamage)
                 alien.bump(from: location)
             }
@@ -151,7 +149,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                     waitForCompletion: false
                 ))
                 state.updateWallet(amount: -5)
-                spawnManager.spawnFood(at: location, quality: state.foodQuality)
+                spawnManager.spawnFood(at: location, quality: state.foodQuality, spawnByZorf: false)
                 updateWalletLabel()
             }
         }
@@ -528,23 +526,15 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 state.spawnEnemyTimer = max(state.spawnEnemyTimer, 0)
                 
                 if state.spawnEnemyTimer == 10 {
-                    let label = SKLabelNode(fontNamed: "Menlo-Bold")
-                    label.text = "An enemy is approaching!"
-                    label.position = CGPoint(x: size.width / 2, y: 50)
-                    label.verticalAlignmentMode = .center
-                    label.horizontalAlignmentMode = .center
-                    addChild(label)
-                    
-                    let showAndHide = SKAction.sequence([
-                        .wait(forDuration: 2.0),
-                        .removeFromParent()
-                    ])
-                    
-                    label.run(showAndHide)
+                    run(SKAction.playSoundFileNamed(
+                        "AWOOGA.mp3",
+                        waitForCompletion: false
+                    ))
                 }
                 
                 if state.spawnEnemyTimer == 0 {
                     for alien in config.aliens {
+                        print("Spawn?")
                         spawnManager.spawnAlien(alienType: alien)
                         
                         run(SKAction.playSoundFileNamed(
@@ -586,10 +576,5 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-    }
-    
-    deinit {
-        gameTimer?.invalidate()
-        longPressTimer?.invalidate()
     }
 }

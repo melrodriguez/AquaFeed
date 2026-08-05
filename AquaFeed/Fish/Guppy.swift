@@ -98,7 +98,7 @@ class Guppy: Fish {
     }
     
     var growthPoints: Int = 2
-    let isStarvingTime: Int = 10
+    let isStarvingTime: Int = 15
     
     func updateGrowthPoint(numPoints: Int) {
         growthPoints += numPoints
@@ -120,13 +120,13 @@ class Guppy: Fish {
             guppySize = .medium
             moneyDrop = MoneyType.silver
             setFishScale(scale: 2.5)
-            hunger = 15
+            hunger = 20
             growthPoints = 0
         case .medium:
             guppySize = .large
             moneyDrop = MoneyType.gold
             setFishScale(scale: 3.0)
-            hunger = 15
+            hunger = 20
             growthPoints = 0
         case .large:
             break
@@ -159,7 +159,7 @@ class Guppy: Fish {
     }
     
     override func animateEat() {
-        removeAction(forKey: "animation")
+        removeAllActions()
         
         let eat = SKAction.animate(
             with: eatTextures,
@@ -174,7 +174,7 @@ class Guppy: Fish {
                 self.updateAppearance()
             }
             
-            self.startState()
+            self.enterWanderState()
         }
         
         run(SKAction.playSoundFileNamed(

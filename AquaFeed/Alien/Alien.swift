@@ -39,6 +39,7 @@ class Alien: SKSpriteNode {
     var swimTextures: [SKTexture]
     var deadTexture: SKTexture
     var facingLeft: Bool = true
+    let menuHeight: CGFloat = 1500
 
     init(alienType: AlienType) {
         self.health = alienType.health
@@ -161,7 +162,11 @@ class Alien: SKSpriteNode {
         )
         
         position.x += bumpVelocity.dx
-        position.y += bumpVelocity.dy
+        var newPositionY = bumpVelocity.dy + position.y
+        position.y = min(
+            newPositionY,
+            menuHeight
+        )
     }
     
     func findNearestFish() -> Fish? {

@@ -46,6 +46,7 @@ struct PetSelectionView: View {
                 }
                 
                 Button {
+                    sendPetsToSpawnList()
                     onContinue(petsToSpawn)
                 } label: {
                     Image("continue")
@@ -71,6 +72,14 @@ struct PetSelectionView: View {
         } else if petsToSpawn.count < MaxPetsToSpawn {
             petsToSpawn.append(pet)
         }
+    }
+    
+    func sendPetsToSpawnList() {
+        if let index = petsToSpawn.firstIndex(of: PetType.niko) {
+            petsToSpawn.insert(petsToSpawn.remove(at: index), at: 0)
+        }
+        
+        onContinue(petsToSpawn)
     }
 }
 

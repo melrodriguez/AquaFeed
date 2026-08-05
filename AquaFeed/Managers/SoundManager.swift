@@ -16,7 +16,6 @@ class SoundManager {
         }
         
         currentTrack = fileName
-        print(currentTrack)
         
         do {
             print("play")

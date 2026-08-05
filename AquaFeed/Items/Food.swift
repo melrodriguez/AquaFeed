@@ -53,9 +53,12 @@ enum FoodQuality {
 
 class Food: SKSpriteNode {
     var quality: FoodQuality
+    var spawnByZorf: Bool
     
-    init(quality: FoodQuality) {
+    init(quality: FoodQuality, spawnByZorf: Bool) {
         self.quality = quality
+        self.spawnByZorf = spawnByZorf
+        
         super.init(
             texture: quality.texture,
             color: .clear,

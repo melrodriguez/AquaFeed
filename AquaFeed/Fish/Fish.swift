@@ -129,10 +129,6 @@ class Fish: SKSpriteNode {
         ])
     }
     
-    func startState() {
-        enterWanderState()
-    }
-    
     func enterPauseState() {
         state = .pause
         
@@ -207,9 +203,9 @@ class Fish: SKSpriteNode {
         
         let rect = CGRect(
             x: edgeInset,
-            y: (sceneHeight - maxY) - 150,
+            y: (sceneHeight - maxY) - size.height / 2 - 50,
             width: sceneWidth - edgeInset * 2,
-            height: maxY - 70 - size.height / 2
+            height: maxY - 150 - size.height / 2
         )
 
         // Keeping this to test bounds further

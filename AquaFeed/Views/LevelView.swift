@@ -45,12 +45,14 @@ struct LevelView: View {
                 .ignoresSafeArea()
                 .onAppear {
                     scene.onComplete = {
+                        invalidateGameTimer()
                         onComplete()
                     }
                     scene.onPause = {
                         isPaused = true
                     }
                     scene.onDied = {
+                        invalidateGameTimer()
                         onDied()
                     }
                     
@@ -71,12 +73,14 @@ struct LevelView: View {
                         isPaused = false
                     },
                     onRestart: {
+                        invalidateGameTimer()
                         onRestart()
                     },
                     onChangePets: {
                         onChangePets()
                     },
                     onExit: {
+                        invalidateGameTimer()
                         onExit()
                     }
                 )
@@ -86,5 +90,10 @@ struct LevelView: View {
         .onAppear {
             scene.scaleMode = .fill
         }
+    }
+    
+    func invalidateGameTimer() {
+        scene.gameTimer?.invalidate()
+        scene.gameTimer = nil
     }
 }
