@@ -5,11 +5,11 @@ class GameState {
     static let shared = GameState()
     
     var levels: [Level] = [
-        Level(id: 1, unlocked: true),
-        Level(id: 2, unlocked: false),
-        Level(id: 3, unlocked: false),
-        Level(id: 4, unlocked: false),
-        Level(id: 5, unlocked: false),
+        Level(id: 1, unlocked: true, completed: false),
+        Level(id: 2, unlocked: false, completed: false),
+        Level(id: 3, unlocked: false, completed: false),
+        Level(id: 4, unlocked: false, completed: false),
+        Level(id: 5, unlocked: false, completed: false)
     ]
     
     var pets: [PetInfo] = [
@@ -21,10 +21,16 @@ class GameState {
     ]
     
     var hasCompletedTutorial: Bool = false
+    var unlockedNewMode: Bool = false
+    var hasCompletedTimeTrialOnce: Bool = false
+    var timeTrialHighScore: TimeInterval = 0.0
     
     func save() {
         UserDefaults.standard.set(hasCompletedTutorial, forKey: "hasCompletedTutorial")
-        
+        UserDefaults.standard.set(unlockedNewMode, forKey: "unlockedNewMode")
+        UserDefaults.standard.set(hasCompletedTimeTrialOnce, forKey: "hasCompletedTimeTrialOnce")
+        UserDefaults.standard.set(timeTrialHighScore, forKey: "timeTrialHighScore")
+
         var unlockedLevels: Set<Int> = []
         
         for level in levels {
@@ -57,6 +63,18 @@ class GameState {
             forKey: "hasCompletedTutorial"
         )
         
+        unlockedNewMode = UserDefaults.standard.bool(
+            forKey: "unlockedNewMode"
+        )
+        
+        hasCompletedTimeTrialOnce = UserDefaults.standard.bool(
+            forKey: "hasCompletedTimeTrialOnce"
+        )
+        
+        timeTrialHighScore = UserDefaults.standard.double(
+            forKey: "timeTrialHighScore"
+        )
+        
         if let savedUnlocked = UserDefaults.standard.array(forKey: "unlockedLevels") as? [Int] {
             let unlockedLevels = Set(savedUnlocked)
             for i in levels.indices {
@@ -85,10 +103,14 @@ class GameState {
         
         let nextLevel = currentLevel + 1
         
-        if let index = levels.firstIndex(where: { !$0.unlocked }) {
-            if levels[index].id == nextLevel {
-                levels[index].unlocked = true
-            }
+        if let index = levels.firstIndex(where: { $0.id == nextLevel }) {
+            levels[index].unlocked = true
+        }
+    }
+    
+    func setLevelAsComplete(currentLevel: Int) {
+        if let index = levels.firstIndex(where: { $0.id == currentLevel }) {
+            levels[index].completed = true
         }
     }
     
@@ -96,6 +118,10 @@ class GameState {
         if let index = pets.firstIndex(where: { $0.type == type }) {
             pets[index].unlocked = true
         }
+    }
+    
+    func getLevelInfo(for config: LevelConfig) -> Level? {
+        return levels.first { $0.id == config.level }
     }
 }
  

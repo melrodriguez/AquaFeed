@@ -40,6 +40,7 @@ struct DiedView: View {
 
                 }
             }
+            .allowsHitTesting(showMenu)
         }
         .aspectRatio(contentMode: .fill)
         .onAppear {

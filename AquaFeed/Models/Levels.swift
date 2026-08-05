@@ -96,4 +96,15 @@ extension LevelConfig {
         default: return nil
         }
     }
+    
+    static func getLevel(_ level: Int) -> LevelConfig? {
+        switch level {
+        case 1: return LevelConfigs.level1
+        case 2: return LevelConfigs.level2
+        case 3: return LevelConfigs.level3
+        case 4: return LevelConfigs.level4
+        case 5: return LevelConfigs.level5
+        default: return nil
+        }
+    }
 }

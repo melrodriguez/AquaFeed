@@ -30,6 +30,7 @@ class LevelState {
         foodList = []
         moneyList = []
         petList = []
+        buttons = []
         wallet = 200
         foodLimit = 1
         foodQuality = FoodQuality.level1
@@ -37,7 +38,6 @@ class LevelState {
         laserDamage = 10
         laserUpgrade = 1
         spawnEnemyTimer = 0
-        buttons = []
     }
     
     func setupLevel(config: LevelConfig) {
@@ -48,7 +48,7 @@ class LevelState {
         alienList = []
         foodList = []
         moneyList = []
-        wallet = 100000
+        wallet = 200
         foodLimit = 1
         foodQuality = FoodQuality.level1
         eggCount = 0
