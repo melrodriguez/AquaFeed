@@ -152,6 +152,11 @@ class Zorf: Pet {
             spawnFood,
             goBackToWander
         ]))
+        
+        run(SKAction.playSoundFileNamed(
+            "eject.mp3",
+            waitForCompletion: false
+        ))
     }
     
     func update() {

@@ -52,6 +52,10 @@ class Niko: Pet {
             assignPearl()
             texture = PetTextures.nikoTextures[0]
         case .wait:
+            run(SKAction.playSoundFileNamed(
+                "niko_open.mp3",
+                waitForCompletion: false
+            ))
             startWait()
         }
     }
@@ -90,7 +94,7 @@ class Niko: Pet {
         
         if state == .wait {
             guard let pearl = pearl else { return }
-            
+
             if pearl.parent == nil {
                 guard let levelScene = scene as? LevelScene else { return }
                 

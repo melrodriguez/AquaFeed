@@ -63,9 +63,14 @@ struct LevelSelectionView: View {
             }
         }
         .onAppear {
+            SoundManager.shared.playMusic(named: "menu_music")
+            
             if GameState.shared.unlockedNewMode {
                 showTimeTrialButton = true
             }
+        }
+        .onDisappear {
+            SoundManager.shared.pauseMusic()
         }
     }
     

@@ -95,6 +95,8 @@ struct TimeTrialView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
+            SoundManager.shared.playMusic(named: "time_trial_music")
+            
             scene.scaleMode = .fill
             if timeStartTime == nil {
                 startTimer()

@@ -53,7 +53,7 @@ class LevelState {
         foodQuality = FoodQuality.level1
         eggCount = 0
         laserDamage = 10
-        spawnEnemyTimer = 0
+        spawnEnemyTimer = config.spawnRate
     }
     
     func addMenuButton(button: MenuButton) {
@@ -124,6 +124,7 @@ class LevelState {
                 if let targetMoney = stinky.targetMoney {
                     if money == targetMoney {
                         stinky.targetMoney = nil
+                        stinky.setState(.wander)
                         stinky.updateTargetCoin()
                     }
                 }

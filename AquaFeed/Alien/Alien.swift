@@ -86,6 +86,11 @@ class Alien: SKSpriteNode {
                 LevelState.shared.removeDeadAlien()
             }
         }
+        
+        run(SKAction.playSoundFileNamed(
+            "alien_die.mp3",
+            waitForCompletion: false
+        ))
     }
     
     func getDistance(from: CGPoint, to: CGPoint) -> CGFloat {

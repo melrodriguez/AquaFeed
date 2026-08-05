@@ -121,8 +121,11 @@ class Stinky: Pet {
     
     private func turn() {
         removeAction(forKey: "animation")
-        xScale *= -1
         
+        xScale = goingLeft
+            ? abs(xScale)
+            : -abs(xScale)
+
         if state == .wander {
             animateWander()
         }

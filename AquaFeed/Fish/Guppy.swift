@@ -176,5 +176,10 @@ class Guppy: Fish {
             
             self.startState()
         }
+        
+        run(SKAction.playSoundFileNamed(
+            "eat.mp3",
+            waitForCompletion: false
+        ))
     }
 }

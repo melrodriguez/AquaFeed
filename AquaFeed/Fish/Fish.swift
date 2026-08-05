@@ -325,6 +325,7 @@ class Fish: SKSpriteNode {
 
     // TODO: FIX THE TRANSITION BETWEEN SICK AND SWIM
     func animateEat() {
+        if isDead == true { return }
         removeAction(forKey: "animation")
         
         let eat = SKAction.animate(
@@ -378,6 +379,11 @@ class Fish: SKSpriteNode {
             self.isDead = true
             removeFromParent()
         }
+        
+        run(SKAction.playSoundFileNamed(
+            "fish_die.mp3",
+            waitForCompletion: false
+        ))
     }
     
     func findNearestFood() -> SKSpriteNode? {

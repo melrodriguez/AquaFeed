@@ -58,6 +58,11 @@ struct PetSelectionView: View {
             }
         }
         .aspectRatio(contentMode: .fill)
+        .onAppear {
+            if SoundManager.shared.currentTrack != "menu_music" {
+                SoundManager.shared.playMusic(named: "menu_music")
+            }
+        }
     }
     
     func addToPetsToSpawn(_ pet: PetType) {

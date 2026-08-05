@@ -37,6 +37,7 @@ struct TitleView: View {
         }
         .onAppear {
             GameState.shared.load()
+            SoundManager.shared.playMusic(named: "title_music")
             
             let completedLevels = GameState.shared.levels
                 .filter { $0.completed }

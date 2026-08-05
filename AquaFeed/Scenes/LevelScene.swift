@@ -67,7 +67,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         isLongPress = false
         
         longPressTimer = Timer.scheduledTimer(
-            withTimeInterval: 0.5,
+            withTimeInterval: 1.0,
             repeats: false
         ) { [weak self] _ in
             self?.isLongPress = true
@@ -93,6 +93,19 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             if let money = node as? Money {
                 if let body = money.physicsBody {
                     if body.categoryBitMask == PhysicsCategory.money {
+                        
+                        if money.type == MoneyType.diamond || money.type == MoneyType.pearl {
+                            run(SKAction.playSoundFileNamed(
+                                "collect_diamond.mp3",
+                                waitForCompletion: false
+                            ))
+                        } else {
+                            run(SKAction.playSoundFileNamed(
+                                "collect_coin.mp3",
+                                waitForCompletion: false
+                            ))
+                        }
+                        
                         state.updateWallet(amount: money.type.value)
                         updateWalletLabel()
                         money.setMoneyAsCollected()
@@ -105,11 +118,21 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
             
             if let alien = node as? Alien {
                 if alien.isDead { return }
+                
+                run(SKAction.playSoundFileNamed(
+                    "laser.mp3",
+                    waitForCompletion: false
+                ))
+                
                 alien.decreaseHealth(damage: state.laserDamage)
                 alien.bump(from: location)
             }
             
             if let button = node as? MenuButton {
+                run(SKAction.playSoundFileNamed(
+                    "button.mp3",
+                    waitForCompletion: false
+                ))
                 handleNodeButton(button)
             }
             
@@ -123,6 +146,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
         guard location.y > groundY else { return }
         if state.foodList.count < state.foodLimit {
             if state.wallet >= 5 {
+                run(SKAction.playSoundFileNamed(
+                    "spawn_food.mp3",
+                    waitForCompletion: false
+                ))
                 state.updateWallet(amount: -5)
                 spawnManager.spawnFood(at: location, quality: state.foodQuality)
                 updateWalletLabel()
@@ -168,6 +195,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
     
     func buyEgg(_ button: MenuButton) {
         if state.wallet >= config.eggPrice {
+            run(SKAction.playSoundFileNamed(
+                "hatch.mp3",
+                waitForCompletion: false
+            ))
             state.updateWallet(amount: -config.eggPrice)
             updateWalletLabel()
             state.increaseEggCount()
@@ -258,6 +289,7 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 let food: Food = node(ofType: Food.self, from: contact),
                 let guppy: Guppy = node(ofType: Guppy.self, from: contact)
             else { return }
+            if guppy.isDead { return }
                 
             fishFed(food, guppy)
         } else if categories == PhysicsCategory.money | PhysicsCategory.ground {
@@ -271,7 +303,10 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 let carnivore: Carnivore = node(ofType: Carnivore.self, from: contact)
             else { return }
             
+            
             if carnivore.state == FishState.seekFood {
+                if guppy != carnivore.targetFood { return }
+                
                 carnivore.animateEat()
                 carnivore.hunger += 60
                 carnivore.targetFood = nil
@@ -285,6 +320,13 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 let alien: Alien = node(ofType: Alien.self, from: contact)
             else { return }
             
+            if alien.isDead { return }
+            
+            run(SKAction.playSoundFileNamed(
+                "crunch.mp3",
+                waitForCompletion: false
+            ))
+            
             fish.die(showDieAnimation: false)
             alien.prey = nil
         }
@@ -293,6 +335,18 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 let money: Money = node(ofType: Money.self, from: contact)
             else { return }
             
+            if money.type == MoneyType.diamond || money.type == MoneyType.pearl {
+                run(SKAction.playSoundFileNamed(
+                    "collect_diamond.mp3",
+                    waitForCompletion: false
+                ))
+            } else {
+                run(SKAction.playSoundFileNamed(
+                    "collect_coin.mp3",
+                    waitForCompletion: false
+                ))
+            }
+
             state.updateWallet(amount: money.type.value)
             updateWalletLabel()
             money.setMoneyAsCollected()
@@ -492,6 +546,11 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 if state.spawnEnemyTimer == 0 {
                     for alien in config.aliens {
                         spawnManager.spawnAlien(alienType: alien)
+                        
+                        run(SKAction.playSoundFileNamed(
+                            "alien_spawned.mp3",
+                            waitForCompletion: false
+                        ))
                     }
                     state.setEnemyTimer(time: config.spawnRate)
                 }
@@ -502,15 +561,16 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 onDied?()
             }
             
-            for guppy in self.state.guppyList {
-                guppy.update()
-            }
-            
-            for carnivore in self.state.carnivoreList {
-                carnivore.update()
-            }
             
             if state.alienList.isEmpty {
+                for guppy in self.state.guppyList {
+                    guppy.update()
+                }
+                
+                for carnivore in self.state.carnivoreList {
+                    carnivore.update()
+                }
+                
                 for pet in self.state.petList {
                     if let niko = pet as? Niko {
                         niko.update()

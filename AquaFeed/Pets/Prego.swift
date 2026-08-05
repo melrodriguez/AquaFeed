@@ -149,6 +149,11 @@ class Prego: Pet {
             spawnGuppy,
             goBackToWander
         ]))
+        
+        run(SKAction.playSoundFileNamed(
+            "eject.mp3",
+            waitForCompletion: false
+        ))
     }
     
     func update() {

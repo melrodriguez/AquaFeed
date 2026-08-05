@@ -53,6 +53,10 @@ struct LevelView: View {
                     scene.onDied = {
                         onDied()
                     }
+                    
+                    if SoundManager.shared.currentTrack != "level_music" {
+                        SoundManager.shared.playMusic(named: "level_music")
+                    }
                 }
             
             if isPaused {
