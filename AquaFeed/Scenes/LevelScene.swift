@@ -534,7 +534,6 @@ class LevelScene: SKScene, SKPhysicsContactDelegate {
                 
                 if state.spawnEnemyTimer == 0 {
                     for alien in config.aliens {
-                        print("Spawn?")
                         spawnManager.spawnAlien(alienType: alien)
                         
                         run(SKAction.playSoundFileNamed(
