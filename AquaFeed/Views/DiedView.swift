@@ -44,12 +44,14 @@ struct DiedView: View {
         }
         .aspectRatio(contentMode: .fill)
         .onAppear {
+            SoundManager.shared.playMusic(named: "death", loop: false)
+            
             showImage = true
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 7.0) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
                 showImage = false
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                     showMenu = true
                 }
             }
@@ -57,6 +59,13 @@ struct DiedView: View {
     }
 }
 
-//#Preview {
-//    DiedView()
-//}
+#Preview {
+    DiedView (
+        onPlayAgain: {
+            print("play again")
+        },
+        onExit: {
+           print("exit")
+        }
+    )
+}

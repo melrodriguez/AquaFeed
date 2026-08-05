@@ -141,7 +141,7 @@ class Zorf: Pet {
                 y: self.position.y
             )
             
-            levelScene.spawnManager.spawnFood(at: position, quality: FoodQuality.level2)
+            levelScene.spawnManager.spawnFood(at: position, quality: FoodQuality.level2, spawnByZorf: true)
         }
         
         let goBackToWander = SKAction.run { [weak self] in
@@ -152,6 +152,11 @@ class Zorf: Pet {
             spawnFood,
             goBackToWander
         ]))
+        
+        run(SKAction.playSoundFileNamed(
+            "eject.mp3",
+            waitForCompletion: false
+        ))
     }
     
     func update() {

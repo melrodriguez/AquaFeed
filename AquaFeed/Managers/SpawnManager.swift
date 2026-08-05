@@ -42,7 +42,7 @@ class SpawnManager {
         
         state.addGuppy(guppy)
         scene.addChild(guppy)
-        guppy.startState()
+        guppy.enterWanderState()
     }
     
     func spawnCarnivore() {
@@ -71,7 +71,7 @@ class SpawnManager {
         
         state.addCarnivore(carnivore)
         scene.addChild(carnivore)
-        carnivore.startState()
+        carnivore.enterWanderState()
     }
     
     func spawnAlien(alienType: AlienType) {
@@ -91,10 +91,10 @@ class SpawnManager {
         scene.addChild(alien)
     }
     
-    func spawnFood(at position: CGPoint, quality: FoodQuality) {
+    func spawnFood(at position: CGPoint, quality: FoodQuality, spawnByZorf: Bool) {
         guard let scene = scene else { return }
         
-        let food = Food(quality: quality)
+        let food = Food(quality: quality, spawnByZorf: spawnByZorf)
         food.position = position
         food.name = "food"
         

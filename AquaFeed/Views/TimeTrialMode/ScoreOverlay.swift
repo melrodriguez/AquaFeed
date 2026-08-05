@@ -30,6 +30,8 @@ struct ScoreOverlayView: View {
             }
         }
         .onAppear {
+            SoundManager.shared.playMusic(named: "achievement_unlocked", loop: false)
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 onFinished()
             }

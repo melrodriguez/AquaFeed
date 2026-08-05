@@ -34,19 +34,18 @@ class Carnivore: Fish {
         run(eat) { [weak self] in
             guard let self = self else { return }
             self.updateAppearance()
-            self.startState()
+            self.enterWanderState()
         }
+        
+        run(SKAction.playSoundFileNamed(
+            "crunch.mp3",
+            waitForCompletion: false
+        ))
     }
     
     override func findNearestFood() -> SKSpriteNode? {
-        let detectionRangeFish: CGFloat = 1000
-        
         return LevelState.shared.guppyList
             .filter { $0.guppySize == .small}
-            .filter {
-                getDistance(from: position, to: $0.position) <=
-                    detectionRangeFish
-            }
             .min {
                 getDistance(from: position, to: $0.position) <
                 getDistance(from: position, to: $1.position)

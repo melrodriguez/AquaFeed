@@ -78,6 +78,8 @@ struct TimeTrialView: View {
                         onChangePets()
                     },
                     onExit: {
+                        scene.gameTimer?.invalidate()
+                        scene.gameTimer = nil
                         onExit()
                     }
                 )
@@ -95,6 +97,8 @@ struct TimeTrialView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
+            SoundManager.shared.playMusic(named: "time_trial_music")
+            
             scene.scaleMode = .fill
             if timeStartTime == nil {
                 startTimer()
@@ -144,6 +148,8 @@ struct TimeTrialView: View {
             isPaused = true
         }
         scene.onDied = {
+            scene.gameTimer?.invalidate()
+            scene.gameTimer = nil
             onDied()
         }
         

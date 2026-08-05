@@ -61,6 +61,11 @@ struct ReadySetGoView: View {
         .task {
             await startCountdown()
         }
+        .onAppear {
+            if SoundManager.shared.currentTrack == "menu_music" {
+                SoundManager.shared.pauseMusic()
+            }
+        }
     }
     
     private func startCountdown() async {

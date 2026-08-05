@@ -53,5 +53,11 @@ struct PauseMenuView: View {
             Spacer()
         }
         .padding(.top, 30)
+        .onAppear {
+            SoundManager.shared.setVolume(0.3)
+        }
+        .onDisappear {
+            SoundManager.shared.setVolume(1.0)
+        }
     }
 }

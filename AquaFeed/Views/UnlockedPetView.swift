@@ -8,8 +8,11 @@ struct UnlockedPetView: View {
     var body: some View {
         SpriteView(scene: makeScene())
             .ignoresSafeArea()
+            .onAppear {
+                SoundManager.shared.playMusic(named: "achievement_unlocked", loop: false)
+            }
     }
-    
+
     func makeScene() -> UnlockPetScene {
         let size = UIScreen.main.bounds.size
         let scene = UnlockPetScene(size: size, pet: petInfo)
